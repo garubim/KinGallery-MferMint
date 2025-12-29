@@ -6,48 +6,27 @@
   },
   "miniapp": {
     "version": "1",
-    "name": "mfer-o",
-    "homeUrl": "https://mfer-o-base.netlify.app/",
-    "iconUrl": "https://mfer-o-base.netlify.app/images/icon.png",
-    "splashImageUrl": "https://mfer-o-base.netlify.app/images/splash.png",
-    "splashBackgroundColor": "#ffffff",
-    "webhookUrl": "https://mfer-o-base.netlify.app/api/webhook",
-    "subtitle": "mfer-o Mini App",
-    "description": "Mini app mfer-o integrado com Base App / Farcaster",
-    "screenshotUrls": [
-      "https://mfer-o-base.netlify.app/images/s1.png",
-      "https://mfer-o-base.netlify.app/images/s2.png"
-    ],
-    "primaryCategory": "social",
-    "tags": ["mfer","miniapp","baseapp"],
-    "heroImageUrl": "https://mfer-o-base.netlify.app/images/og.png",
-    "tagline": "Play instantly",
-    "ogTitle": "mfer-o Mini App",
-    "ogDescription": "Mini app mfer-o integrado com Base",
-    "ogImageUrl": "https://mfer-o-base.netlify.app/images/og.png",
-    "noindex": false
-  }
-}
-{
-  "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
-  },
-  "miniapp": {
-    "version": "1",
-    "name": "Whaaa?! Mfer-0-base",
-    "homeUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/",
-    "iconUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/icon.png",
-    "splashImageUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/splash.png",
-    "splashBackgroundColor": "#000000",
+    "name": "KinGallery",
+    "homeUrl": "https://kingallery.netlify.app/",
+    "iconUrl": "https://kingallery.netlify.app/icon.png",
+    "splashImageUrl": "https://kingallery.netlify.app/splash.png",
+    "splashBackgroundColor": "#071017",
     "webhookUrl": "",
-    "subtitle": "Mint NFTs on Base",
-    "description": "Mint exclusive Kin's NFTs on Base network.",
+    "subtitle": "Mint Arte Onchain",
+    "description": "Mini app para expor e mintar arte de artistas na Base, com paymaster sponsorship.",
     "screenshotUrls": [
-      "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/screenshot1.png"
+      "https://kingallery.netlify.app/screenshot1.png"
     ],
     "primaryCategory": "collectibles",
+    "tags": ["arte", "nft", "base", "paymaster"],
+    "heroImageUrl": "https://kingallery.netlify.app/hero.png",
+    "tagline": "Desperte a KinGallery",
+    "ogTitle": "KinGallery - Mint Arte",
+    "ogDescription": "Mint NFTs artísticos na Base com gas sponsorship.",
+    "ogImageUrl": "https://kingallery.netlify.app/og.png",
+    "noindex": true
+  }
+}
     "tags": ["nft", "base", "mint"],
     "heroImageUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/og.png",
     "tagline": "Mint your NFT on Base!",

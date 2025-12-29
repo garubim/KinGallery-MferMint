@@ -2,6 +2,7 @@
 
 import { OnchainKitProvider } from '@coinbase/onchainkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { MiniKitProvider } from '@coinbase/onchainkit/minikit';
 import React from 'react';
 import { base } from 'viem/chains';
 
@@ -15,10 +16,12 @@ export default function RootProvider({ children }: { children: React.ReactNode }
         chain={base}
         config={{
           wallet: { display: 'modal', preference: 'all' },
-          appearance: { name: 'Paymaster App', mode: 'auto', theme: 'default' },
+          appearance: { name: 'KinGallery', mode: 'auto', theme: 'default' },
         }}
       >
-        {children}
+        <MiniKitProvider>
+          {children}
+        </MiniKitProvider>
       </OnchainKitProvider>
     </QueryClientProvider>
   );
