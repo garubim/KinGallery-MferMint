@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SetRelayer DApp (Base)</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Arial;margin:20px}
+    button{padding:10px 14px;margin:6px}
+    pre{background:#f6f8fa;padding:10px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h2>Enviar setRelayer (abra no Base App)</h2>
+  <p>Abra esta página no navegador do <strong>Base App / Coinbase Wallet</strong> onde sua smart‑wallet está conectada.<br>
+  Pressione <em>Conectar</em> e depois <em>Enviar setRelayer</em>.</p>
+
+  <div>
+    <button id="connect">Conectar Carteira</button>
+    <button id="send" disabled>Enviar setRelayer</button>
+  </div>
+
+  <p><strong>Informações</strong></p>
+  <pre id="info">Gallery: 0x4a4005306fB72AA234CD0A550d03E55DE889c5E7
+Calldata: 0x6548e9bc0000000000000000000000004d639d1bd428899599f0da564926da1a1a3bd3a8
+(Valor = 0)</pre>
+
+  <p><strong>Status</strong></p>
+  <pre id="log">Pronto.</pre>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.16.0/dist/ethers.umd.min.js"></script>
+  <script>
+    const GALLERY = '0x4a4005306fB72AA234CD0A550d03E55DE889c5E7';
+    const CALDATA = '0x6548e9bc0000000000000000000000004d639d1bd428899599f0da564926da1a1a3bd3a8';
+    const BASE_CHAIN_ID = '0x2105'; // 8453 decimal
+    const BASE_CHAIN_PARAMS = {
+      chainId: BASE_CHAIN_ID,
+      chainName: 'Base',
+      nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+      rpcUrls: ['https://mainnet.base.org'],
+      blockExplorerUrls: ['https://basescan.org']
+    };
+
+    const infoEl = document.getElementById('info');
+    const logEl = document.getElementById('log');
+    const connectBtn = document.getElementById('connect');
+    const sendBtn = document.getElementById('send');
+
+    function log(...args){ logEl.textContent += '\n' + args.map(a=>typeof a==='object'?JSON.stringify(a,null,2):String(a)).join(' '); logEl.scrollTop = logEl.scrollHeight; }
+
+    // tenta obter chainId com várias estratégias (compatibilidade)
+    async function getChainIdFallback(){
+      if(!window.ethereum) return null;
+      try{
+        // prefer request
+        try{ const cid = await window.ethereum.request({ method: 'eth_chainId' }); if(cid) return cid; }catch(e){}
+        // older providers
+        if(window.ethereum.chainId) return window.ethereum.chainId;
+        if(window.ethereum.networkVersion) return '0x' + parseInt(window.ethereum.networkVersion).toString(16);
+        // ethers provider fallback
+        try{ const p = new ethers.BrowserProvider(window.ethereum); const cid = await p.send('eth_chainId', []); if(cid) return cid; }catch(e){}
+      }catch(e){}
+      return null;
+    }
+
+    // checa chainId, mas NÃO tenta trocar automaticamente - apenas avisa o usuário
+    async function checkBaseNetwork(){
+      if(!window.ethereum) return false;
+      const current = await getChainIdFallback();
+      if(current === null){
+        log('Aviso: provider não expõe chainId; verifique manualmente se está na Base (8453)');
+        return false;
+      }
+      if(current.toLowerCase() !== BASE_CHAIN_ID.toLowerCase()){
+        log('Aviso: wallet NÃO está na rede Base (chainId atual: ' + current + '). Troque manualmente para Base (8453)');
+        return false;
+      }
+      log('Wallet está na rede Base');
+      return true;
+    }
+
+    connectBtn.onclick = async ()=>{
+      try{
+        if(!window.ethereum){ alert('Nenhum provider injetado. Abra no Base App (in-app browser).'); return; }
+        // solicitar contas com fallbacks
+        try{
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+        }catch(reqErr){
+          try{ await window.ethereum.request({ method: 'requestAccounts' }); }catch(_){}
+        }
+        // checar chainId (não vamos forçar troca automática)
+        try{ await checkBaseNetwork(); }catch(e){ log('Aviso: não foi possível checar rede automaticamente'); }
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        let accounts = [];
+        try{ accounts = await provider.listAccounts(); }catch(e){ /* ignore */ }
+        // fallback para propriedades antigas
+        if((!accounts || accounts.length === 0) && window.ethereum.selectedAddress) accounts = [window.ethereum.selectedAddress];
+        if((!accounts || accounts.length === 0) && window.ethereum.accounts) accounts = window.ethereum.accounts;
+        if(!accounts || accounts.length === 0){ log('Conectado como (sem conta) — aceite a conexão na wallet e tente novamente'); return; }
+        log('Conectado como', accounts[0]||'(sem conta)');
+        sendBtn.disabled = false;
+      }catch(e){ log('erro conectar', e.message||e); }
+    }
+
+    sendBtn.onclick = async ()=>{
+      try{
+        sendBtn.disabled = true;
+        log('Preparando transação...');
+        // checar rede antes de enviar, mas não forçar troca
+        try{ const ok = await checkBaseNetwork(); if(!ok) log('Continuando: confirme manualmente que está na Base antes de assinar'); }catch(e){ log('Continuando mesmo sem confirmação de rede'); }
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        let signer;
+        try{ signer = await provider.getSigner(); }catch(e){ log('Falha ao obter signer:', e.message||e); throw e; }
+        let from = null;
+        try{ from = await signer.getAddress(); }catch(e){
+          // sem conta conectada
+          log('Nenhuma conta disponível para assinar (signer.getAddress falhou). Faça Connect novamente na wallet.');
+          throw e;
+        }
+        log('from:', from);
+        const txReq = { to: GALLERY, data: CALDATA, value: 0 };
+        // incluir 'from' para que a simulação/estimateGas use o remetente correto
+        txReq.from = from;
+        // tentar estimar gas e enviar `gasLimit` explícito (evitar `gas` apenas)
+        try{
+          const estimated = await provider.estimateGas(txReq);
+          const gasLimitBig = estimated + (estimated / 10n); // +10% de folga
+          const gasHex = '0x' + gasLimitBig.toString(16);
+          txReq.gasLimit = gasHex;
+          log('Estimated gas:', String(estimated), 'using gasLimit:', gasHex);
+        }catch(eg){
+          log('Falha ao estimar gas:', eg.message||eg, '\nContinuando sem override de gas (wallet pode pedir confirmação manual)');
+        }
+        log('Enviando tx...');
+        const txResp = await signer.sendTransaction(txReq);
+        log('tx hash:', txResp.hash);
+        log('Aguardando confirmação...');
+        await txResp.wait();
+        log('Transação confirmada');
+      }catch(e){ log('Erro ao enviar tx:', e.message||e); }
+      finally{ sendBtn.disabled = false; }
+    }
+  </script>
+</body>
+</html>
