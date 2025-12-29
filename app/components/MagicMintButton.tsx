@@ -2,21 +2,23 @@
 
 import { TransactionButton } from '@coinbase/onchainkit/transaction';
 import { useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
 import CustomAnimatedText from './CustomAnimatedText';
 import CodePoem from './CodePoem';
 
 const magicPhrases = [
-  "Desperte a KinGallery – Mint com um sorriso mágico!",
+  "Awaken the KinGallery – Mint with a magical smile!",
   "you just ordered a perpetual motion mood ring for the entire cryptosphere",
   "completing an eternal transactional soul",
-  "no núcleo da noite, o código respira",
-  "sussurros onchain dobram-se em loops",
-  "mintamos o eco e chamemos de lar",
+  "in the core of the night, the code breathes",
+  "onchain whispers fold into loops",
+  "we mint the echo and call it home",
   "The soul spins at This base is where that smile comes home.",
   "function getEternalLoop()",
 ];
 
 export default function MagicMintButton() {
+  const { address } = useAccount();
   const [currentPhrase, setCurrentPhrase] = useState(magicPhrases[0]);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -52,7 +54,7 @@ export default function MagicMintButton() {
             functionName: 'payAndMint',
             args: [
               process.env.NEXT_PUBLIC_MFER_ADDRESS || '',
-              '0x...', // user address
+              address || '0x0000000000000000000000000000000000000000',
               `magic-${Date.now()}`,
             ],
             value: '300000000000000', // 0.0003 ETH
