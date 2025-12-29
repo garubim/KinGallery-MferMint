@@ -39,7 +39,7 @@ export default function MagicMintButton() {
       <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 10 }}>
         <TransactionButton
           calls={[{
-            to: process.env.NEXT_PUBLIC_GALLERY_ADDRESS || '',
+            to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '',
             abi: [{
               type: 'function',
               name: 'payAndMint',
