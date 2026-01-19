@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "evmVersion": "paris",
+    "viaIR": false,
+    "metadata": {
+      "useLiteralContent": true,
+      "bytecodeHash": "ipfs"
+    }
+  },
+  "metadata": null,
+  "buildTime": "2026-01-14T21:06:11.195Z"
+}

@@ -1,0 +1,11 @@
+{
+  "errors": [
+    {
+      "component": "general",
+      "formattedMessage": "Unknown key \"outputSelection\"",
+      "message": "Unknown key \"outputSelection\"",
+      "severity": "error",
+      "type": "JSONError"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+"use client";
+
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+
+/**
+ * Matrix Confetti Effect
+ * 
+ * Animação de celebração durante o sucesso do mint
+ * - Caracteres Matrix caindo como confete
+ * - Efeito de "celebração" visual
+ * - Desaparece após 3-4 segundos
+ */
+
+interface MatrixParticle {
+  id: number;
+  left: number;
+  delay: number;
+  duration: number;
+  char: string;
+}
+
+const MATRIX_CHARS = ['0', '1', 'Ⓜ️', 'Ⓣ️', 'Ⓡ️', 'Ⓘ️', 'Ⓧ️'];
+
+export default function MatrixConfetti() {
+  const [particles, setParticles] = useState<MatrixParticle[]>([]);
+
+  useEffect(() => {
+    // Gera partículas de confete Matrix
+    const generatedParticles: MatrixParticle[] = Array.from(
+      { length: 40 },
+      (_, i) => ({
+        id: i,
+        left: Math.random() * 100,
+        delay: Math.random() * 0.3,
+        duration: 2 + Math.random() * 1.5,
+        char: MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)],
+      })
+    );
+
+    setParticles(generatedParticles);
+
+    // Remove confete após 4 segundos
+    const timer = setTimeout(() => {
+      setParticles([]);
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 1,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Backdrop blur effect */}
+      <motion.div
+        initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+        animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: 'rgba(0, 255, 136, 0.05)',
+        }}
+      />
+
+      {/* Matrix particles */}
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          initial={{
+            opacity: 1,
+            y: -20,
+            x: 0,
+            rotate: 0,
+          }}
+          animate={{
+            opacity: 0,
+            y: window.innerHeight + 100,
+            x: (Math.random() - 0.5) * 200,
+            rotate: Math.random() * 360,
+          }}
+          transition={{
+            duration: particle.duration,
+            delay: particle.delay,
+            ease: 'easeIn',
+          }}
+          style={{
+            position: 'fixed',
+            left: `${particle.left}%`,
+            top: '0',
+            fontSize: '24px',
+            fontWeight: 700,
+            color: '#00ff88',
+            textShadow: '0 0 10px #00ff88',
+            fontFamily: 'monospace',
+            lineHeight: 1,
+          }}
+        >
+          {particle.char}
+        </motion.div>
+      ))}
+
+      {/* Glow effect center */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+          background: 'radial-gradient(circle, rgba(0,255,136,0.2) 0%, rgba(0,255,136,0) 70%)',
+          borderRadius: '50%',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
+  );
+}

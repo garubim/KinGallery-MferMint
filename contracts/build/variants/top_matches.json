@@ -1,0 +1,72 @@
+[
+  {
+    "label": "meta=ipfs,evm=paris,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17596,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=ipfs,evm=london,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17596,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=ipfs,evm=berlin,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17596,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=none,evm=paris,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17514,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=none,evm=london,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17514,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=none,evm=berlin,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17514,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=bzzr1,evm=paris,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17594,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=bzzr1,evm=london,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17594,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=bzzr1,evm=berlin,opt=true,runs=200,viaIR=false",
+    "firstDiff": 1003,
+    "matchPrefix": 1003,
+    "compiledLen": 17594,
+    "onchainLen": 18756
+  },
+  {
+    "label": "meta=ipfs,evm=paris,opt=true,runs=1000,viaIR=false",
+    "firstDiff": 122,
+    "matchPrefix": 122,
+    "compiledLen": 18774,
+    "onchainLen": 18756
+  }
+]

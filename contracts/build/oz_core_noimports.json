@@ -1,0 +1,26 @@
+[
+  {
+    "file": "ERC721.sol",
+    "hashFlat": "c055007673ebaa34e64de37c2e915fa5da8c0ed90175a84d583c7db1b663f201",
+    "hashOff": "c055007673ebaa34e64de37c2e915fa5da8c0ed90175a84d583c7db1b663f201",
+    "match": true
+  },
+  {
+    "file": "ERC2981.sol",
+    "hashFlat": "4831c6496db9e31ebd47f0bb70739e36cf23c4ce1c1881d16e73df3c6e71a7d3",
+    "hashOff": "4831c6496db9e31ebd47f0bb70739e36cf23c4ce1c1881d16e73df3c6e71a7d3",
+    "match": true
+  },
+  {
+    "file": "Strings.sol",
+    "hashFlat": "e51499bc5c8a1085a8c167ce1052881dbc40057232f9a2a8a9efff147ae010bc",
+    "hashOff": "e51499bc5c8a1085a8c167ce1052881dbc40057232f9a2a8a9efff147ae010bc",
+    "match": true
+  },
+  {
+    "file": "Context.sol",
+    "hashFlat": "f84908a4dcfd977bbe519538db48b87ef620dc6d0de11a7746779f6af87913b9",
+    "hashOff": "f84908a4dcfd977bbe519538db48b87ef620dc6d0de11a7746779f6af87913b9",
+    "match": true
+  }
+]

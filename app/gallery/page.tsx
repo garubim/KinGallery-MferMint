@@ -1,0 +1,574 @@
+'use client';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
+import ArtworkMetadata from '../components/ArtworkMetadata';
+
+export default function GalleryPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [mounted, setMounted] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const [tokenId, setTokenId] = useState<number | null>(null);
+  const [ethMferId, setEthMferId] = useState<number | null>(null);
+  const [ethMferImageUrl, setEthMferImageUrl] = useState<string | null>(null);
+  const [mintDate, setMintDate] = useState<string | null>(null);
+  const [blockNumber, setBlockNumber] = useState<number | null>(null);
+  const [collisionInfo, setCollisionInfo] = useState<any | null>(null);
+  const [showConfetti, setShowConfetti] = useState(true);
+  const [revealEntangled, setRevealEntangled] = useState(false);
+  const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
+
+  useEffect(() => {
+    setMounted(true);
+    const tx = searchParams.get('tx');
+    const ethMfer = searchParams.get('ethMferId');
+    const collision = searchParams.get('collision');
+    
+    // Armazena a tx para exibir como "certidão"
+    if (tx) {
+      setTxHash(tx);
+    }
+    
+    // Parse collision info se existir
+    if (collision) {
+      try {
+        const collisionData = JSON.parse(decodeURIComponent(collision));
+        setCollisionInfo(collisionData);
+        console.log('🌠 COLISÃO ESPECIAL DETECTADA:', collisionData);
+      } catch (e) {
+        console.error('Erro ao parsear collision:', e);
+      }
+    }
+    
+    // Armazena ethMferId (Legacy Mfer entangled)
+    if (ethMfer) {
+      setEthMferId(parseInt(ethMfer));
+    }
+
+    // 🚀 BUSCA COMPLETA: tokenId + blockNumber + timestamp da transação
+    if (tx) {
+      fetch('https://mainnet.base.org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getTransactionReceipt',
+          params: [tx]
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('📦 Transaction Receipt:', data.result);
+        
+        if (data.result) {
+          // Extrai tokenId do log (Transfer event)
+          if (data.result?.logs) {
+            const transferLog = data.result.logs.find((log: any) => 
+              log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+            );
+            if (transferLog?.topics[3]) {
+              const tokenIdHex = transferLog.topics[3];
+              const tokenIdNum = parseInt(tokenIdHex, 16);
+              console.log('✨ Token ID:', tokenIdNum);
+              setTokenId(tokenIdNum);
+            }
+          }
+          
+          // Extrai blockNumber
+          if (data.result?.blockNumber) {
+            const blockNum = parseInt(data.result.blockNumber, 16);
+            console.log('📍 Block Number:', blockNum);
+            setBlockNumber(blockNum);
+          }
+        }
+      })
+      .catch(err => console.error('❌ Erro ao buscar receipt:', err));
+
+      // Busca timestamp do bloco
+      setTimeout(() => {
+        if (tx) {
+          fetch('https://mainnet.base.org', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 2,
+              method: 'eth_getTransactionByHash',
+              params: [tx]
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.result?.blockNumber) {
+              // Com o blockNumber, busca o timestamp do bloco
+              const blockNumHex = data.result.blockNumber;
+              return fetch('https://mainnet.base.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 3,
+                  method: 'eth_getBlockByNumber',
+                  params: [blockNumHex, false]
+                })
+              });
+            }
+          })
+          .then(res => res?.json())
+          .then(data => {
+            if (data.result?.timestamp) {
+              const timestamp = parseInt(data.result.timestamp, 16) * 1000;
+              const date = new Date(timestamp).toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              console.log('📅 Mint Date:', date);
+              setMintDate(date);
+            }
+          })
+          .catch(err => console.error('❌ Erro ao buscar timestamp:', err));
+        }
+      }, 1000);
+    }
+
+    // 🎨 Busca imagem do Legacy Mfer entangled no IPFS
+    if (ethMfer) {
+      const mferId = parseInt(ethMfer);
+      fetch(`https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo/${mferId}`)
+        .then(res => res.json())
+        .then(metadata => {
+          if (metadata.image) {
+
+            const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            setEthMferImageUrl(imageUrl);
+          }
+        })
+        .catch(err => console.error('Erro ao buscar Mfer image:', err));
+    }
+
+    setTimeout(() => setShowConfetti(false), 3000);
+    setTimeout(() => setRevealEntangled(true), 4000);
+  }, [searchParams]);
+
+  if (!mounted) return null;
+
+  return (
+    <div className="gallery-page">
+      {showConfetti && (
+        <div className="confetti-overlay">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className="confetti-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${2 + Math.random() * 2}s`,
+              }}
+            >
+              {['0', '1', '█', '▓', '▒', '░'][Math.floor(Math.random() * 6)]}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="main-container">
+        <div className="nft-wrapper">
+          <div className="glass-shell">
+              <img 
+                src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                alt="Your Mfer"
+                className="nft-artwork"
+              />
+              <div className="glass-reflex">
+                <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
+                <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-2" />
+              </div>
+              
+              <button 
+                className="fullscreen-btn"
+                onClick={() => window.open(getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK), '_blank')}
+                title="View full size"
+              >
+                ⛶
+              </button>
+            </div>
+
+            {!revealEntangled && (
+              <div className="mystery-overlay">
+                <div className="mystery-icon">🌀</div>
+                <p className="mystery-text">Discovering entangled Mfer...</p>
+              </div>
+            )}
+          </div>
+
+        <div className="metadata-wrapper">
+          <ArtworkMetadata 
+            showPricing={false}
+            tokenId={tokenId || undefined}
+            entangledMferId={ethMferId || undefined}
+            ethMferImageUrl={ethMferImageUrl || undefined}
+            transactionHash={txHash || undefined}
+            mintDate={mintDate || undefined}
+            blockNumber={blockNumber || undefined}
+            collisionInfo={collisionInfo || undefined}
+          />
+        </div>
+      </div>
+
+      {revealEntangled && (
+        <div className="mosaic-section">
+
+          <div className="mosaic-grid">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <div key={i} className="mosaic-item">
+                <img 
+                  src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                  alt={`Mfer #${i + 1}`}
+                  className="mosaic-img"
+                />
+                <div className="mosaic-overlay">
+                  <span className="mosaic-id">#{i + 1}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .gallery-page {
+          min-height: 100vh;
+          background: url('/walls/disc-wall-brightgold.webp');
+          background-size: cover;
+          background-position: center;
+          color: white;
+          padding: 40px 20px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .gallery-page::before {
+          content: '';
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: min(640px, 98vw);
+          height: min(98vh, 1100px);
+          background: url('/walls/disc-wall-brightgold.webp') center/cover no-repeat;
+          opacity: 0.4;
+          z-index: -1;
+          border-radius: 20px;
+          pointer-events: none;
+        }
+
+        .confetti-overlay {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1000;
+        }
+
+        .confetti-particle {
+          position: absolute;
+          top: -20px;
+          font-size: 24px;
+          color: rgba(0, 230, 255, 0.8);
+          animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+          to { 
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+          }
+        }
+
+        .main-container {
+          max-width: 360px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 24px;
+          padding: 20px;
+        }
+
+        .nft-wrapper {
+          position: relative;
+          width: 100%;
+        }
+
+        .glass-shell {
+          position: relative;
+          width: 100%;
+          max-width: 360px;
+          aspect-ratio: 3/4;
+          margin: 0 auto;
+          border-radius: 12px;
+          background: rgba(0, 0, 0, 0);
+          backdrop-filter: blur(20px);
+          border: 8px solid #0a0f1a;
+          box-shadow: 
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            0 20px 50px rgba(0, 0, 0, 0.8);
+          overflow: hidden;
+        }
+
+        .nft-artwork {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 4px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .glass-reflex {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        .reflex-layer {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.7;
+          mix-blend-mode: screen;
+        }
+
+        .fullscreen-btn {
+          position: absolute;
+          bottom: 12px;
+          right: 12px;
+          width: 32px;
+          height: 32px;
+          background: transparent;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          z-index: 10;
+        }
+
+        .fullscreen-btn:hover {
+          background: rgba(0, 0, 0, 0.3);
+          color: white;
+          border-color: rgba(255, 255, 255, 0.4);
+          transform: scale(1.05);
+        }
+
+        .mystery-overlay {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          padding: 16px 24px;
+          border-radius: 16px;
+          text-align: center;
+        }
+
+        .mystery-icon {
+          font-size: 32px;
+          animation: spin 2s linear infinite;
+          margin-bottom: 8px;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .mystery-text {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .entangled-section {
+          margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .entangled-badge {
+          background: linear-gradient(135deg, rgba(0, 230, 255, 0.2), rgba(255, 0, 230, 0.2));
+          border: 2px solid rgba(0, 230, 255, 0.6);
+          padding: 12px 24px;
+          border-radius: 24px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          backdrop-filter: blur(10px);
+          animation: glow-pulse 2s ease infinite;
+        }
+
+        @keyframes glow-pulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(0, 230, 255, 0.4); }
+          50% { box-shadow: 0 0 40px rgba(0, 230, 255, 0.8); }
+        }
+
+        .badge-icon {
+          font-size: 24px;
+        }
+
+        .badge-text {
+          font-size: 16px;
+          font-weight: 600;
+          color: white;
+        }
+
+        .entangled-mfer-preview {
+          margin-top: 16px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .entangled-mfer-image {
+          width: 120px;
+          height: 120px;
+          border-radius: 12px;
+          border: 2px solid rgba(0, 230, 255, 0.6);
+          box-shadow: 0 0 20px rgba(0, 230, 255, 0.4);
+          object-fit: cover;
+          animation: fadeIn 0.6s ease;
+        }
+
+        .magic-mint-btn {
+          width: 100%;
+          max-width: 360px;
+          padding: 18px;
+          background: linear-gradient(135deg, #00e6ff, #0052ff);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 18px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s;
+          animation: fadeIn 0.6s ease;
+        }
+
+        .magic-mint-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(0, 230, 255, 0.5);
+        }
+
+        .metadata-wrapper {
+          width: 100%;
+          max-width: 360px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .actions-box {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .action-btn {
+          width: 100%;
+          padding: 16px;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+        }
+
+        .action-btn.primary {
+          background: linear-gradient(135deg, #00e6ff, #0052ff);
+          color: white;
+        }
+
+        .action-btn.primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 230, 255, 0.4);
+        }
+
+        .mosaic-section {
+          max-width: 360px;
+          margin: 40px auto 0;
+          padding-top: 40px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mosaic-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 110px);
+          gap: 8px;
+          justify-content: center;
+          margin: 0 auto;
+          max-width: 360px;
+        }
+
+        .mosaic-item {
+          position: relative;
+          aspect-ratio: 1;
+          border-radius: 12px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: transform 0.2s;
+        }
+
+        .mosaic-item:hover {
+          transform: scale(1.05);
+        }
+
+        .mosaic-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .mosaic-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
+          display: flex;
+          align-items: flex-end;
+          padding: 12px;
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+
+        .mosaic-item:hover .mosaic-overlay {
+          opacity: 1;
+        }
+
+        .mosaic-id {
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+        }
+      `}</style>
+    </div>
+  );
+}

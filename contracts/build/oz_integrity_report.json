@@ -1,0 +1,50 @@
+[
+  {
+    "file": "ERC721.sol",
+    "status": "mismatch",
+    "flatHash": "0cbccf2bb02034de8493c85410bc78849edd1bdcf0e7c7674c0c9aa51c78eca1",
+    "offHash": "7af3ff063370acb5e1f1a2aab125ceca457cd1fa60ff8afa37aabc366349d286",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/token/ERC721/ERC721.sol\n\n// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC721/ERC721.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[ERC721] Non-Fungible Token Standard, including\n * the Metadata extension, but not including the Enumerable extension, wh",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.9.0) (token/ERC721/ERC721.sol)\n\npragma solidity ^0.8.0;\n\nimport \"./IERC721.sol\";\nimport \"./IERC721Receiver.sol\";\nimport \"./extensions/IERC721Metadata.sol\";\nimport \"../../utils/Address.sol\";\nimport \"../../utils/Context.sol\";\nimport \"../../utils/Strings.sol\";\nimport \"../../utils/introspection/ERC165.sol\";\n\n/**\n * @dev Impleme"
+  },
+  {
+    "file": "ERC2981.sol",
+    "status": "mismatch",
+    "flatHash": "419e741bce825b7a4eee3c774a28da709a26436ac5227986d4d76bcf7eb9ae8d",
+    "offHash": "dd89d98523e7fb3c913edb8eed1c795f071c7646f10a6248d36308e65b5c7185",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/token/common/ERC2981.sol\n\n// OpenZeppelin Contracts (last updated v4.9.0) (token/common/ERC2981.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Implementation of the NFT Royalty Standard, a standardized way to retrieve royalty payment information.\n *\n * Royalty information can be specified globally for all token ids v",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.9.0) (token/common/ERC2981.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../../interfaces/IERC2981.sol\";\nimport \"../../utils/introspection/ERC165.sol\";\n\n/**\n * @dev Implementation of the NFT Royalty Standard, a standardized way to retrieve royalty payment information.\n *\n * Royalty information can be specified globally for all tok"
+  },
+  {
+    "file": "Strings.sol",
+    "status": "mismatch",
+    "flatHash": "563321907ac5bdcf52f198ec686126d487cd7406c420b3a7d54cf6fff73d6070",
+    "offHash": "cb2df477077a5963ab50a52768cb74ec6f32177177a78611ddbbe2c07e2d36de",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/utils/Strings.sol\n\n// OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev String operations.\n */\nlibrary Strings {\n    bytes16 private constant _SYMBOLS = \"0123456789abcdef\";\n    uint8 private constant _ADDRESS_LENGTH = 20;\n\n    /**\n     * @dev Converts a `uint25",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.9.0) (utils/Strings.sol)\n\npragma solidity ^0.8.0;\n\nimport \"./math/Math.sol\";\nimport \"./math/SignedMath.sol\";\n\n/**\n * @dev String operations.\n */\nlibrary Strings {\n    bytes16 private constant _SYMBOLS = \"0123456789abcdef\";\n    uint8 private constant _ADDRESS_LENGTH = 20;\n\n    /**\n     * @dev Converts a `uint256` to its ASCI"
+  },
+  {
+    "file": "Context.sol",
+    "status": "mismatch",
+    "flatHash": "4cf2d84cac7be3f4eca5392b4fbaddc448dabfbf2b30660a768fbacdb002eaa2",
+    "offHash": "1458c260d010a08e4c20a4a517882259a23a4baa0b5bd9add9fb6d6a1549814a",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/utils/Context.sol\n\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be ac",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transacti"
+  },
+  {
+    "file": "IERC165.sol",
+    "status": "mismatch",
+    "flatHash": "62abddf98aefcbe9707111f1fc2b2e096dd0475cad14740be2749c910c5660a9",
+    "offHash": "701e025d13ec6be09ae892eb029cd83b3064325801d73654847a5fb11c58b1e5",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/utils/introspection/IERC165.sol\n\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Interface of the ERC165 standard, as defined in the\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\n *\n * Implementers can declare support of contract interfaces, which can the",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/introspection/IERC165.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Interface of the ERC165 standard, as defined in the\n * https://eips.ethereum.org/EIPS/eip-165[EIP].\n *\n * Implementers can declare support of contract interfaces, which can then be\n * queried by others ({ERC165Checker}).\n *\n * For an implementation, see {ERC165}."
+  },
+  {
+    "file": "Address.sol",
+    "status": "mismatch",
+    "flatHash": "b2044060580d328458803333306772d2750d2e874dbded9bbddba4dcda3d459b",
+    "offHash": "8b85a2463eda119c2f42c34fa3d942b61aee65df381f48ed436fe8edb3a7d602",
+    "sampleFlat": "// File: https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/utils/Address.sol\n\n// OpenZeppelin Contracts (last updated v4.9.0) (utils/Address.sol)\n\npragma solidity ^0.8.1;\n\n/**\n * @dev Collection of functions related to the address type\n */\nlibrary Address {\n    /**\n     * @dev Returns true if `account` is a contract.\n     *\n     * [IMPORTANT]\n     * ====\n     * It is uns",
+    "sampleOff": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts (last updated v4.9.0) (utils/Address.sol)\n\npragma solidity ^0.8.1;\n\n/**\n * @dev Collection of functions related to the address type\n */\nlibrary Address {\n    /**\n     * @dev Returns true if `account` is a contract.\n     *\n     * [IMPORTANT]\n     * ====\n     * It is unsafe to assume that an address for which this function returns\n     * fals"
+  }
+]

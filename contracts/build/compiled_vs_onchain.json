@@ -1,0 +1,9 @@
+{
+  "contractAddress": "0x3eaa38e66e4097262f75ba735a82740e64afb308",
+  "foundKey": "contracts/MferMintGalleryCompatible.sol",
+  "firstDiff": 1003,
+  "compiledLen": 17596,
+  "onchainLen": 18756,
+  "compiledSlice": "101e957600080fd5b506101fd6101f8366004611c94565b6105ef565b60405190151581526020015",
+  "onchainSlice": "101e957600080fd5b506101fd6101f8366004611e0e565b6105ef565b60405190151581526020015"
+}

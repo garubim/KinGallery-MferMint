@@ -1,0 +1,1 @@
+[ { "inputs": [ { "internalType": "string", "name": "name_", "type": "string" }, { "internalType": "string", "name": "symbol_", "type": "string" }, { "internalType": "string", "name": "baseURI_", "type": "string" }, { "internalType": "address", "name": "initialOwner_", "type": "address" } ], "stateMutability": "nonpayable", "type": "constructor" } ]

@@ -9,9 +9,28 @@
     "start": "next start"
   },
   "dependencies": {
+    "@coinbase/coinbase-sdk": "^0.25.0",
     "@coinbase/onchainkit": "^1.1.2",
-    "@tanstack/react-query": "^5.90.14",
-    "viem": "^2.43.3",
+    "@farcaster/miniapp-sdk": "^0.2.1",
+    "@openzeppelin/contracts": "^4.9.6",
+    "@tanstack/react-query": "^5.90.16",
+    "@walletconnect/ethereum-provider": "^2.23.3",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "viem": "^2.44.1",
     "wagmi": "^2.19.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.3",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "hardhat": "^3.1.2",
+    "typescript": "^5.9.3"
   }
 }

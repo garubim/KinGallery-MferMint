@@ -1,0 +1,906 @@
+{
+  "total": 144,
+  "onchainLen": 18756,
+  "results": [
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17596,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16146,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17110,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15892,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16972,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15698,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18774,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17238,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35272,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35176,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=paris,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17596,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16146,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17110,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15892,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16972,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15698,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18774,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17238,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35272,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35176,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=london,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17596,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16146,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17110,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15892,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16972,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15698,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18774,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17238,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35272,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35176,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35400,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=ipfs,evm=berlin,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17514,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16064,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17028,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15810,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15616,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18692,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17156,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35190,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35094,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=paris,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17514,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16064,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17028,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15810,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15616,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18692,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17156,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35190,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35094,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=london,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17514,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16064,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17028,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15810,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15616,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18692,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17156,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35190,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35094,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35318,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=none,evm=berlin,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17594,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16144,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17108,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16970,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15696,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18772,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17236,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35270,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35174,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=paris,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17594,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16144,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17108,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16970,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15696,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18772,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17236,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35270,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35174,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=london,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=200,viaIR=false",
+      "firstDiff": 1003,
+      "matchPrefix": 1003,
+      "compiledLen": 17594,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=200,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 16144,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 17108,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=100,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15890,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 16970,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=1,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 15696,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=1000,viaIR=false",
+      "firstDiff": 122,
+      "matchPrefix": 122,
+      "compiledLen": 18772,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=true,runs=1000,viaIR=true",
+      "firstDiff": 18,
+      "matchPrefix": 18,
+      "compiledLen": 17236,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=200,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=200,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=100,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35270,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=100,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=1,viaIR=false",
+      "firstDiff": 22,
+      "matchPrefix": 22,
+      "compiledLen": 35174,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=1,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=1000,viaIR=false",
+      "firstDiff": 121,
+      "matchPrefix": 121,
+      "compiledLen": 35398,
+      "onchainLen": 18756
+    },
+    {
+      "label": "meta=bzzr1,evm=berlin,opt=false,runs=1000,viaIR=true",
+      "error": "Cannot read properties of undefined (reading 'object')"
+    }
+  ]
+}

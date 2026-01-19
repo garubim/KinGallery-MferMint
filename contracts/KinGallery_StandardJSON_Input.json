@@ -1,0 +1,33 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/KinGallery_flattened.sol": {
+      "content": "// Content will be inserted here - see below for full file"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "evmVersion": "paris",
+    "viaIR": false,
+    "metadata": {
+      "useLiteralContent": true,
+      "bytecodeHash": "ipfs"
+    }
+  }
+}

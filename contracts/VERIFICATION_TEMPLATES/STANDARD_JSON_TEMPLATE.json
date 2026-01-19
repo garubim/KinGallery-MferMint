@@ -1,0 +1,18 @@
+{
+  "language": "Solidity",
+  "settings": {
+    "optimizer": { "enabled": true, "runs": 200 },
+    "evmVersion": "paris",
+    "metadata": { "bytecodeHash": "ipfs" }
+  },
+  "sources": {
+    "contracts/MferMintGalleryCompatible_Flattened.sol": {
+      "content": "/* Cole aqui o conteúdo do arquivo flattened ou substitua pelo path do arquivo real */"
+    }
+  },
+  "outputSelection": {
+    "*": {
+      "*": ["abi", "evm.bytecode.object", "evm.deployedBytecode.object", "metadata"]
+    }
+  }
+}

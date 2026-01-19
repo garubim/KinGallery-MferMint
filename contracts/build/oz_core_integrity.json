@@ -1,0 +1,38 @@
+[
+  {
+    "file": "ERC721.sol",
+    "coreMatch": false,
+    "coreFlatHash": "6b37d2a3759b7bb8588133551e23dbd037fa18fc0a115faadd83a5b3c2fd68cc",
+    "coreOffHash": "190620e5c4e8b78b63dede1231eae9206bc2f74ad5ce1cc22862f76a51927032"
+  },
+  {
+    "file": "ERC2981.sol",
+    "coreMatch": false,
+    "coreFlatHash": "45d08c2e55f37c2d1aab086633509d78f901d46d3a4df354f16faf3c2533b3d2",
+    "coreOffHash": "7b4d29bfb94e7d1a4abb8bc74bbddc65497676f9dbff20cb20ee6c663c4a535b"
+  },
+  {
+    "file": "Strings.sol",
+    "coreMatch": false,
+    "coreFlatHash": "e51499bc5c8a1085a8c167ce1052881dbc40057232f9a2a8a9efff147ae010bc",
+    "coreOffHash": "ac5a0af493cf9f91fddd05ee3362f85d8f5867ce3d92e375204de5601ca4d6ca"
+  },
+  {
+    "file": "Context.sol",
+    "coreMatch": true,
+    "coreFlatHash": "f84908a4dcfd977bbe519538db48b87ef620dc6d0de11a7746779f6af87913b9",
+    "coreOffHash": "f84908a4dcfd977bbe519538db48b87ef620dc6d0de11a7746779f6af87913b9"
+  },
+  {
+    "file": "IERC165.sol",
+    "coreMatch": true,
+    "coreFlatHash": "7dc2ad918bbf69351c35e74610c061c1784eeca1afc13f19c375d435aff448e3",
+    "coreOffHash": "7dc2ad918bbf69351c35e74610c061c1784eeca1afc13f19c375d435aff448e3"
+  },
+  {
+    "file": "Address.sol",
+    "coreMatch": true,
+    "coreFlatHash": "6a9c887a41b8f1b25ba174170c0d6c1279b9321bba8edf58f11ef7f30337fea0",
+    "coreOffHash": "6a9c887a41b8f1b25ba174170c0d6c1279b9321bba8edf58f11ef7f30337fea0"
+  }
+]
