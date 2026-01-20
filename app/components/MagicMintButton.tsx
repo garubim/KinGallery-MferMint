@@ -620,7 +620,8 @@ export default function MagicMintButton() {
         {/* Camada de reflexo de vidro */}
         <div className="glass-reflex">
           <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
-          <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-2" />
+            <img src="/KinGall-MagicButton-opliq-cutout+retouch-" alt="" className="reflex-layer reflex-2" 
+          <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-3" />
         </div>
 
         {/* Overlay de Loading - aparece quando carteira está carregando */}

@@ -1,0 +1,19 @@
+{
+  "name": "Mfer 5",
+  "description": "Whaaaaa! - Exclusive NFT Collection on Base",
+  "image": "https://orange-eager-slug-339.mypinata.cloud/ipfs/bafybeiaevaflz35fjr4qhrrcaejbxqiie5v3itvgqmabtstwbpfe7vlodq",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "Mfer-bk-0'-base"
+    },
+    {
+      "trait_type": "Chain",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Token ID",
+      "value": "5"
+    }
+  ]
+}
