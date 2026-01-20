@@ -2,12 +2,14 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
 import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
 import ArtworkMetadata from '../components/ArtworkMetadata';
 
 export default function GalleryPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isConnected } = useAccount();
   const [mounted, setMounted] = useState(false);
   const [txHash, setTxHash] = useState<string | null>(null);
   const [tokenId, setTokenId] = useState<number | null>(null);
@@ -21,6 +23,14 @@ export default function GalleryPage() {
   const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
   const [loadingMints, setLoadingMints] = useState(true);
+
+  // ✅ Auto-redirect se desconectar
+  useEffect(() => {
+    if (mounted && !isConnected) {
+      console.log('🚪 Wallet desconectada. Redirecionando pra page 1...');
+      router.push('/');
+    }
+  }, [isConnected, mounted, router]);
 
   useEffect(() => {
     setMounted(true);
@@ -51,7 +61,7 @@ export default function GalleryPage() {
 
     // 🚀 BUSCA COMPLETA: tokenId + blockNumber + timestamp da transação
     if (tx) {
-      fetch('https://mainnet.base.org', {
+      fetch('https://base.llamarpc.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -92,7 +102,7 @@ export default function GalleryPage() {
       // Busca timestamp do bloco
       setTimeout(() => {
         if (tx) {
-          fetch('https://mainnet.base.org', {
+          fetch('https://base.llamarpc.com', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -107,7 +117,7 @@ export default function GalleryPage() {
             if (data.result?.blockNumber) {
               // Com o blockNumber, busca o timestamp do bloco
               const blockNumHex = data.result.blockNumber;
-              return fetch('https://mainnet.base.org', {
+              return fetch('https://base.llamarpc.com', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
