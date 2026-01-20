@@ -19,6 +19,8 @@ export default function GalleryPage() {
   const [showConfetti, setShowConfetti] = useState(true);
   const [revealEntangled, setRevealEntangled] = useState(false);
   const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
+  const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
+  const [loadingMints, setLoadingMints] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -156,6 +158,102 @@ export default function GalleryPage() {
     setTimeout(() => setRevealEntangled(true), 4000);
   }, [searchParams]);
 
+  // 🎨 Carregar NFTs mintados do contrato MferBk0Base
+  useEffect(() => {
+    const fetchMintedNFTs = async () => {
+      setLoadingMints(true);
+      try {
+        const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
+        
+        // Query para pegar todos os Transfer events (mints)
+        const response = await fetch('https://mainnet.base.org', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_getLogs',
+            params: [{
+              address: mferContractAddress,
+              topics: [
+                '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
+                '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
+              ],
+              fromBlock: '0x0'
+            }]
+          })
+        });
+
+        const data = await response.json();
+        const transfers = data.result || [];
+        
+        // Processa cada transfer para extrair tokenId e owner
+        const nfts = transfers.map((log: any) => {
+          const tokenIdHex = log.topics[3];
+          const tokenId = parseInt(tokenIdHex, 16);
+          const ownerAddress = '0x' + log.topics[2].slice(-40);
+          
+          return {
+            tokenId,
+            owner: ownerAddress,
+            blockNumber: parseInt(log.blockNumber, 16),
+            txHash: log.transactionHash
+          };
+        });
+
+        // Busca dados adicionais (data do mint, entangled info)
+        const enrichedNFTs = await Promise.all(
+          nfts.map(async (nft: any) => {
+            try {
+              // Busca timestamp do bloco
+              const blockResponse = await fetch('https://mainnet.base.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'eth_getBlockByNumber',
+                  params: ['0x' + nft.blockNumber.toString(16), false]
+                })
+              });
+
+              const blockData = await blockResponse.json();
+              const timestamp = blockData.result?.timestamp ? parseInt(blockData.result.timestamp, 16) * 1000 : null;
+              
+              let mintDate = '';
+              if (timestamp) {
+                const date = new Date(timestamp);
+                mintDate = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: '2-digit',
+                  year: 'numeric'
+                });
+              }
+
+              return {
+                ...nft,
+                mintDate,
+                title: `Mfer-0-#${nft.tokenId}/1000`
+              };
+            } catch (err) {
+              console.error('Erro ao buscar dados do NFT:', err);
+              return nft;
+            }
+          })
+        );
+
+        setMintedNFTs(enrichedNFTs.sort((a, b) => b.tokenId - a.tokenId));
+        console.log('✅ NFTs Mintados:', enrichedNFTs);
+      } catch (err) {
+        console.error('❌ Erro ao buscar NFTs:', err);
+      } finally {
+        setLoadingMints(false);
+      }
+    };
+
+    fetchMintedNFTs();
+  }, []);
+
   if (!mounted) return null;
 
   return (
@@ -177,6 +275,15 @@ export default function GalleryPage() {
           ))}
         </div>
       )}
+
+      {/* Header com titulo e conceito */}
+      <div className="gallery-header">
+        <h1 className="gallery-title">KinGallery</h1>
+        <p className="gallery-concept">
+          The art isn't in the spin;<br />
+          it's in that precise <span className="gallery-bold-moment">moment of recognition</span>
+        </p>
+      </div>
 
       <div className="main-container">
         <div className="nft-wrapper">
@@ -226,47 +333,111 @@ export default function GalleryPage() {
         <div className="mosaic-section">
 
           <div className="mosaic-grid">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="mosaic-item">
-                <img 
-                  src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
-                  alt={`Mfer #${i + 1}`}
-                  className="mosaic-img"
-                />
-                <div className="mosaic-overlay">
-                  <span className="mosaic-id">#{i + 1}</span>
-                </div>
+            {loadingMints ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.6)' }}>
+                Loading collection...
               </div>
-            ))}
+            ) : mintedNFTs.length > 0 ? (
+              mintedNFTs.map((nft) => (
+                <div key={nft.tokenId} className="mosaic-item" title={`${nft.title} • Minted: ${nft.mintDate} • Owner: ${nft.owner.slice(0, 6)}...`}>
+                  <img 
+                    src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                    alt={nft.title}
+                    className="mosaic-img"
+                  />
+                  <div className="mosaic-overlay">
+                    <span className="mosaic-id">#{nft.tokenId}</span>
+                  </div>
+                  <div className="mosaic-info">
+                    <div className="mosaic-title">{nft.title}</div>
+                    <div className="mosaic-date">{nft.mintDate}</div>
+                    <div className="mosaic-owner">{nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.6)' }}>
+                No mints yet
+              </div>
+            )}
           </div>
         </div>
       )}
 
       <style jsx>{`
+        /* GALLERY HEADER */
+        .gallery-header {
+          text-align: center;
+          padding: 30px 20px 15px 20px;
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 360px;
+          margin: 0 auto;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 16px;
+          margin-top: 20px;
+        }
+
+        .gallery-title {
+          font-size: 1.5rem;
+          margin: 0;
+          margin-bottom: 8px;
+          color: rgba(60, 60, 60, 0.95);
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.2),
+            0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-concept {
+          color: rgba(80, 80, 80, 0.75);
+          font-size: 0.95rem;
+          margin: 0;
+          letter-spacing: 0.02em;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-weight: 400;
+          line-height: 1.6;
+          font-style: italic;
+        }
+
+        .gallery-bold-moment {
+          font-weight: 600;
+          color: rgba(80, 80, 80, 0.85);
+        }
+
         .gallery-page {
           min-height: 100vh;
-          background: url('/walls/disc-wall-brightgold.webp');
-          background-size: cover;
-          background-position: center;
-          color: white;
-          padding: 40px 20px;
+          width: 100%;
+          max-width: 100vw;
+          background: #000000;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          padding: 0;
           position: relative;
-          overflow: hidden;
+          overflow-x: hidden;
         }
 
         .gallery-page::before {
           content: '';
           position: fixed;
-          top: 50%;
+          top: 0;
           left: 50%;
-          transform: translate(-50%, -50%);
-          width: min(640px, 98vw);
-          height: min(98vh, 1100px);
-          background: url('/walls/disc-wall-brightgold.webp') center/cover no-repeat;
-          opacity: 0.4;
-          z-index: -1;
-          border-radius: 20px;
+          transform: translateX(-50%);
+          width: 490px;
+          max-width: 100%;
+          height: 100%;
+          background: url('/walls/disc-wall-brightgold.webp');
+          background-size: cover;
+          background-position: center;
           pointer-events: none;
+          z-index: 0;
         }
 
         .confetti-overlay {
@@ -292,24 +463,31 @@ export default function GalleryPage() {
         }
 
         .main-container {
-          max-width: 360px;
-          margin: 0 auto;
+          width: 100%;
+          max-width: 450px;
+          min-width: 320px;
+          margin: 40px auto;
           display: flex;
           flex-direction: column;
+          gap: 32px;
           align-items: center;
-          gap: 24px;
-          padding: 20px;
+          justify-content: flex-start;
+          position: relative;
+          z-index: 2;
+          padding: 0 20px;
         }
 
         .nft-wrapper {
           position: relative;
           width: 100%;
+          max-width: 450px;
+          margin: 0 auto;
         }
 
         .glass-shell {
           position: relative;
           width: 100%;
-          max-width: 360px;
+          max-width: 375px;
           aspect-ratio: 3/4;
           margin: 0 auto;
           border-radius: 12px;
@@ -484,6 +662,15 @@ export default function GalleryPage() {
           display: flex;
           flex-direction: column;
           gap: 24px;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(12px);
+          border-radius: 24px;
+          padding: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+          margin: 0 auto;
+          position: relative;
+          z-index: 2;
         }
 
         .actions-box {
@@ -514,10 +701,13 @@ export default function GalleryPage() {
         }
 
         .mosaic-section {
-          max-width: 360px;
+          width: 100%;
+          max-width: 450px;
           margin: 40px auto 0;
-          padding-top: 40px;
+          padding: 40px 20px;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
+          position: relative;
+          z-index: 2;
         }
 
         .mosaic-grid {
@@ -526,6 +716,7 @@ export default function GalleryPage() {
           gap: 8px;
           justify-content: center;
           margin: 0 auto;
+          width: 100%;
           max-width: 360px;
         }
 
@@ -567,6 +758,42 @@ export default function GalleryPage() {
           font-size: 14px;
           font-weight: 600;
           color: white;
+        }
+
+        .mosaic-info {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+          color: white;
+          padding: 12px 8px 8px 8px;
+          font-size: 9px;
+          opacity: 0;
+          transition: opacity 0.3s;
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .mosaic-item:hover .mosaic-info {
+          opacity: 1;
+        }
+
+        .mosaic-title {
+          font-weight: 600;
+          font-size: 10px;
+        }
+
+        .mosaic-date {
+          color: rgba(255, 200, 100, 0.9);
+          font-size: 8px;
+        }
+
+        .mosaic-owner {
+          color: rgba(0, 150, 255, 0.9);
+          font-size: 8px;
+          font-family: 'Monaco', monospace;
         }
       `}</style>
     </div>

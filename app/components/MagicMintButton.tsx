@@ -58,6 +58,43 @@ export default function MagicMintButton() {
   }, [isConnected, chain, address, switchChain]);
 
 
+  const handleRightSideClick = () => {
+    if (!showSuccessOverlay || !hash) return;
+    
+    console.log('🎬 Click no lado direito! Navegando pra página 2...');
+    const lastSixHash = hash.slice(-6);
+    const lastSixNum = parseInt(lastSixHash, 16);
+    let ethMferId = (lastSixNum % 9999) + 1;
+    
+    const existingMints = JSON.parse(localStorage.getItem('mferMints') || '[]');
+    const hasCollision = existingMints.some((mint: any) => mint.ethMferId === ethMferId);
+    
+    let collisionInfo = null;
+    if (hasCollision) {
+      const firstSixHash = hash.slice(2, 8);
+      const firstSixNum = parseInt(firstSixHash, 16);
+      const collisionEthMferId = (firstSixNum % 9999) + 1;
+      const originalMferNumber = (ethMferId + collisionEthMferId) % 10000;
+      
+      collisionInfo = {
+        type: 'collision',
+        lastSixEthMferId: ethMferId,
+        firstSixEthMferId: collisionEthMferId,
+        originalMferNumber: originalMferNumber || 1,
+        message: `🌠 Colisão de Hash! Seu mint subiu no ranking e conecta ao Mfers Original #${originalMferNumber || 1} na ETH`
+      };
+      ethMferId = collisionEthMferId;
+    }
+    
+    const params = new URLSearchParams({
+      tx: hash,
+      ethMferId: ethMferId.toString(),
+      ...(collisionInfo && { collision: JSON.stringify(collisionInfo) })
+    });
+    
+    window.location.href = `/gallery?${params.toString()}`;
+  };
+
   const handleMint = async () => {
     if (!address) return;
     
@@ -268,7 +305,10 @@ export default function MagicMintButton() {
   if (!mounted) {
     return (
       <div className="magic-button-container">
-        <div className="glass-shell">
+        <div 
+          className={`glass-shell ${showSuccessOverlay ? 'success-ready' : ''}`}
+          onClick={handleRightSideClick}
+        >
           <img 
             src="/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
             alt=""
@@ -814,6 +854,51 @@ export default function MagicMintButton() {
           transition: all 0.1s ease;
         }
 
+        .glass-shell.success-ready {
+          background: linear-gradient(90deg, rgba(0, 0, 0, 0.1), rgba(10, 140, 80, 0.3));
+        }
+
+        .glass-shell.success-ready::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          top: 0;
+          bottom: 0;
+          width: 40%;
+          background: linear-gradient(90deg, rgba(0, 200, 100, 0) 0%, rgba(0, 255, 150, 0.5) 100%);
+          border-radius: 0 24px 24px 0;
+          opacity: 1;
+          animation: greenGlowPulse 2s ease-in-out infinite;
+          z-index: 4;
+          pointer-events: none;
+        }
+
+        @keyframes greenGlowPulse {
+          0%, 100% {
+            opacity: 0.3;
+            filter: blur(2px);
+          }
+          50% {
+            opacity: 0.6;
+            filter: blur(4px);
+          }
+        }
+
+        .glass-shell.success-ready:hover::after {
+          animation: greenGlowIntense 1.5s ease-in-out infinite;
+        }
+
+        @keyframes greenGlowIntense {
+          0%, 100% {
+            opacity: 0.6;
+            filter: blur(3px);
+          }
+          50% {
+            opacity: 0.9;
+            filter: blur(6px);
+          }
+        }
+
         .magic-animation {
           position: absolute;
           top: 50%;
@@ -1067,35 +1152,32 @@ export default function MagicMintButton() {
           animation: fadeIn 0.4s ease;
         }
 
-        /* Success Overlay Expandido */
+        /* Success Badge - Reduzido e Semi-Transparente */
         .success-overlay-expanded {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          bottom: 60px;
+          left: 50%;
+          transform: translateX(-50%);
           z-index: 9999;
-          animation: fadeIn 0.4s ease;
+          animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           pointer-events: none;
         }
 
         .success-content-expanded {
           position: relative;
-          background: linear-gradient(135deg, rgba(10, 140, 80, 0.95), rgba(20, 180, 120, 0.95));
-          border-radius: 32px;
-          padding: 60px 48px;
+          background: linear-gradient(135deg, rgba(10, 140, 80, 0.85), rgba(20, 180, 120, 0.85));
+          border-radius: 24px;
+          padding: 20px 32px;
           box-shadow: 
-            0 30px 80px rgba(0, 255, 150, 0.4),
+            0 12px 40px rgba(0, 255, 150, 0.25),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          border: 2px solid rgba(0, 255, 150, 0.6);
-          min-width: 350px;
-          max-width: 600px;
+          border: 1px solid rgba(0, 255, 150, 0.5);
+          min-width: 280px;
+          max-width: 400px;
           text-align: center;
-          animation: slideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
           pointer-events: auto;
+          backdrop-filter: blur(10px);
         }
 
         /* Checkmark Grande e Animado */

@@ -359,7 +359,7 @@ export default function Page() {
           position: relative;
           width: 100%;
           aspect-ratio: 3/4;
-          max-width: 420px;
+          max-width: 375px;
           margin-top: 45px;
           border-radius: 12px;
           overflow: hidden;

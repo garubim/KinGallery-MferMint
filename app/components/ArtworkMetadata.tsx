@@ -43,22 +43,23 @@ export default function ArtworkMetadata({
 
   return (
     <div className={containerClass}>
-      {/* Grid com 3 colunas: labels | foto | values */}
-      <div className="metadata-grid-with-photo">
-        <div className="metadata-label">Collection</div>
-        {entangledMferId && ethMferImageUrl && (
-          <div className="eth-mfer-photo">
-            <img src={ethMferImageUrl} alt={`Ethereum Mfer #${entangledMferId}`} />
+      {/* 3 linhas de metadata básica */}
+      <div className="metadata-basic-info">
+        <div className="metadata-row">
+          <div className="metadata-label">Collection</div>
+          <div className="metadata-value">Mfer-0'-base</div>
+        </div>
+
+        <div className="metadata-row">
+          <div className="metadata-label">Artist</div>
+          <div className="metadata-value">Kinwiz.base.eth</div>
+        </div>
+
+        <div className="metadata-row">
+          <div className="metadata-label">Title</div>
+          <div className="metadata-value">
+            {tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}
           </div>
-        )}
-        <div className="metadata-value">Mfer-0'-base</div>
-
-        <div className="metadata-label">Artist</div>
-        <div className="metadata-value">Kinwiz.base.eth</div>
-
-        <div className="metadata-label">Title</div>
-        <div className="metadata-value">
-          {tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}
         </div>
       </div>
 
@@ -116,28 +117,38 @@ export default function ArtworkMetadata({
         </div>
       )}
 
-      {/* 📜 CERTIDÃO - Informações da transação */}
+      {/* 📜 CERTIDÃO - Informações da transação COM IMAGEM NO LADO ESQUERDO */}
       {transactionHash && (
         <div className="metadata-section certification">
-          <h3 className="certification-title">📜 Certidão (Attestation)</h3>
+          <h3 className="certification-title">📜 Attestation</h3>
           
-          <div className="certification-grid">
+          {/* Layout: Imagem esquerda + Texto direita */}
+          <div className="certification-content">
+            {/* Imagem no lado esquerdo com espaço */}
+            {entangledMferId && ethMferImageUrl && (
+              <div className="attestation-image">
+                <img src={ethMferImageUrl} alt={`Ethereum Mfer #${entangledMferId}`} />
+              </div>
+            )}
+            
+            {/* Grid de informações no lado direito */}
+            <div className="certification-grid">
             {mintDate && (
               <div className="cert-item">
-                <div className="cert-label">Nascimento</div>
+                <div className="cert-label">Birth</div>
                 <div className="cert-value">{mintDate}</div>
               </div>
             )}
             
             {blockNumber && (
               <div className="cert-item">
-                <div className="cert-label">Bloco</div>
+                <div className="cert-label">Block</div>
                 <div className="cert-value">#{blockNumber}</div>
               </div>
             )}
             
             <div className="cert-item">
-              <div className="cert-label">Hash da Transação</div>
+              <div className="cert-label">Transaction Hash</div>
               <div className="cert-value cert-hash">
                 <a 
                   href={`https://basescan.org/tx/${transactionHash}`} 
@@ -152,13 +163,16 @@ export default function ArtworkMetadata({
 
             {entangledMferId && (
               <div className="cert-item">
-                <div className="cert-label">Gêmeo Legacy</div>
+                <div className="cert-label">Legacy Twin</div>
                 <div className="cert-value">
                   Ethereum Mfer #{entangledMferId} (Mainnet)
                 </div>
               </div>
             )}
           </div>
+          {/* Fim certification-grid */}
+          </div>
+          {/* Fim certification-content */}
         </div>
       )}
 
@@ -173,13 +187,15 @@ export default function ArtworkMetadata({
           display: flex;
           flex-direction: column;
           gap: 16px;
-          padding: 24px;
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.02) 100%);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 32px 28px;
+          background: rgba(0, 0, 0, 0.35);
+          backdrop-filter: blur(15px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
           border-radius: 20px;
           margin-bottom: 20px;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .artwork-metadata.compact {
@@ -188,17 +204,15 @@ export default function ArtworkMetadata({
           margin-bottom: 16px;
         }
 
-        /* Grid com foto no centro */
-        .metadata-grid-with-photo {
-          display: grid;
-          grid-template-columns: auto 120px auto;
-          gap: 12px 16px;
-          align-items: center;
+        /* Info básica - 3 linhas em coluna */
+        .metadata-basic-info {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          width: 100%;
         }
 
         .eth-mfer-photo {
-          grid-row: 1 / span 3;
-          grid-column: 2;
           width: 120px;
           height: 120px;
           border-radius: 12px;
@@ -208,12 +222,56 @@ export default function ArtworkMetadata({
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
 
         .eth-mfer-photo img {
           width: 100%;
           height: 100%;
           object-fit: cover;
+        }
+
+        /* Layout attestation: imagem esquerda, texto direita - COMPACTO */
+        .certification-content {
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+          width: 100%;
+          margin-top: 4px;
+        }
+
+        .attestation-image {
+          width: 110px;
+          height: 110px;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          background: rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+          margin-top: 4px;
+        }
+
+        .attestation-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .metadata-items {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+          width: 100%;
+        }
+
+        .metadata-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
         }
 
         /* Linha "chão" - Entangled with */
@@ -230,6 +288,8 @@ export default function ArtworkMetadata({
           justify-content: space-between;
           align-items: center;
           gap: 16px;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .metadata-label {
@@ -246,6 +306,9 @@ export default function ArtworkMetadata({
           font-weight: 500;
           color: rgba(255, 255, 255, 0.95);
           text-align: right;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          word-break: break-word;
         }
 
         .entangled-mfer {
@@ -414,31 +477,37 @@ export default function ArtworkMetadata({
           padding: 16px !important;
           gap: 12px !important;
           margin-top: 12px !important;
+          flex-direction: column !important;
+          align-items: flex-start !important;
         }
 
         .certification-title {
-          margin: 0;
+          margin: 0 0 2px 0;
           font-size: 13px;
           font-weight: 700;
           color: rgba(255, 215, 0, 0.9);
           letter-spacing: 0.3px;
           text-transform: uppercase;
+          width: 100%;
         }
 
         .certification-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          flex: 1;
+          width: 100%;
+          margin-top: 2px;
         }
 
         .cert-item {
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 3px;
         }
 
         .cert-label {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 600;
           color: rgba(255, 255, 255, 0.5);
           letter-spacing: 0.3px;
@@ -446,10 +515,11 @@ export default function ArtworkMetadata({
         }
 
         .cert-value {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 500;
           color: rgba(255, 255, 255, 0.9);
           word-break: break-all;
+          line-height: 1.3;
         }
 
         .cert-hash a {
