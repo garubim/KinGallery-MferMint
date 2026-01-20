@@ -164,9 +164,10 @@ export default function GalleryPage() {
       setLoadingMints(true);
       try {
         const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
+        const RPC_URL = 'https://base.llamarpc.com';
         
         // Query para pegar todos os Transfer events (mints)
-        const response = await fetch('https://mainnet.base.org', {
+        const response = await fetch(RPC_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -187,6 +188,9 @@ export default function GalleryPage() {
         const data = await response.json();
         const transfers = data.result || [];
         
+        console.log('📡 RPC Response:', data);
+        console.log('🔍 Transfers found:', transfers.length);
+        
         // Processa cada transfer para extrair tokenId e owner
         const nfts = transfers.map((log: any) => {
           const tokenIdHex = log.topics[3];
@@ -206,7 +210,7 @@ export default function GalleryPage() {
           nfts.map(async (nft: any) => {
             try {
               // Busca timestamp do bloco
-              const blockResponse = await fetch('https://mainnet.base.org', {
+              const blockResponse = await fetch(RPC_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

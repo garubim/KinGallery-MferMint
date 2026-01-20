@@ -4,6 +4,8 @@ import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useSwitch
 import { useState, useEffect } from 'react';
 import { encodeFunctionData } from 'viem';
 import { base } from 'viem/chains';
+import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
+import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
 
 export default function MagicMintButton() {
   const { address, isConnected, chain } = useAccount();
@@ -12,6 +14,10 @@ export default function MagicMintButton() {
   const { switchChain } = useSwitchChain();
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
+  
+  // Hooks de segurança pré-deployment
+  const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
+  
   const [mounted, setMounted] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [showMinting, setShowMinting] = useState(false);
@@ -21,6 +27,7 @@ export default function MagicMintButton() {
   const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
   const [countdown, setCountdown] = useState(8);
   const [confetti, setConfetti] = useState<Array<{id: number, left: number, delay: number}>>([]);
+  const [transactionState, setTransactionState] = useState<TransactionState>({ status: 'idle' });
 
   // Evita hydration error
   useEffect(() => {
@@ -98,6 +105,17 @@ export default function MagicMintButton() {
   const handleMint = async () => {
     if (!address) return;
     
+    // ✅ PRÉ-DEPLOYMENT: Valida RPC health ANTES de mintar
+    const rpcIsHealthy = await checkRPCHealth();
+    if (!rpcIsHealthy) {
+      const errorInfo = mapTransactionError({ message: 'RPC endpoint is not responding' });
+      setErrorMessage('⚠️ RPC está com problemas. Aguarde alguns segundos e tente novamente.');
+      setShowError(true);
+      setShowMinting(false);
+      console.warn('🚨 RPC não está saudável. Abortando mint.');
+      return;
+    }
+    
     // CRÍTICO: Verifica se está na Base antes de mintar
     if (chain?.id !== base.id) {
       alert(`⚠️ REDE INCORRETA!\n\nVocê está conectado na ${chain?.name || 'rede desconhecida'}.\nPor favor, troque para BASE na sua wallet antes de mintar.\n\n(Gas na Ethereum custa ~100x mais!)`);
@@ -110,7 +128,7 @@ export default function MagicMintButton() {
       return;
     }
     
-    console.log('🎯 Iniciando mint...', { chain: chain?.name, chainId: chain?.id });
+    console.log('🎯 Iniciando mint...', { chain: chain?.name, chainId: chain?.id, rpcHealthy });
     
     try {
       // Gera paymentId único como string (KinGallery e MferBk0Base agora usam string)
@@ -138,6 +156,21 @@ export default function MagicMintButton() {
         ],
       });
 
+      // ✅ PRÉ-DEPLOYMENT: Valida inputs críticos ANTES de enviar
+      const validation = validateTransactionInput({
+        to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS as `0x${string}` || '0x0',
+        value: BigInt('300000000000000'),
+        data,
+        chainId: base.id,
+      });
+
+      if (!validation.valid) {
+        setErrorMessage(`❌ Erro de validação: ${validation.error}`);
+        setShowError(true);
+        console.error('❌ Validação falhou:', validation.error);
+        return;
+      }
+
       console.log('📤 Enviando transação...', {
         to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS,
         value: '0.0003 ETH',
@@ -145,6 +178,7 @@ export default function MagicMintButton() {
       });
 
       setShowMinting(true);
+      setTransactionState({ status: 'pending', hash: 'pending...' });
       
       sendTransaction({
         to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS as `0x${string}`,
@@ -154,40 +188,57 @@ export default function MagicMintButton() {
       });
     } catch (error: any) {
       console.error('❌ Erro no mint:', error);
-      alert('Erro: ' + error.message);
+      const errorInfo = mapTransactionError(error);
+      setErrorMessage(errorInfo.message);
+      setShowError(true);
       setShowMinting(false);
+      setTransactionState({
+        status: 'error',
+        error: error,
+        errorCode: errorInfo.code,
+        isRetryable: errorInfo.isRetryable,
+      });
     }
   };
 
-  // Detecta e trata erros de transação
+  // Detecta e trata erros de transação com mapeamento inteligente
   useEffect(() => {
     if (txError || receiptError) {
       const error = txError || receiptError;
-      const errorMsg = error?.message || 'Erro desconhecido na transação';
+      
+      // ✅ Usa função de mapeamento inteligente de erros
+      const errorInfo = mapTransactionError(error);
       
       console.error('🚨 ERRO NA TRANSAÇÃO:', {
         type: txError ? 'sendTransaction' : 'receipt',
-        error: errorMsg,
+        error: errorInfo.message,
+        code: errorInfo.code,
+        isRetryable: errorInfo.isRetryable,
         details: error
       });
       
-      // Mapeia erros comuns para mensagens amigáveis
-      let friendlyMessage = errorMsg;
-      if (errorMsg.includes('User rejected') || errorMsg.includes('user rejected')) {
-        friendlyMessage = '❌ Você rejeitou a transação na wallet. Tente novamente!';
-      } else if (errorMsg.includes('insufficient funds')) {
-        friendlyMessage = '❌ Saldo insuficiente para pagar o gas. Adicione mais ETH na Base!';
-      } else if (errorMsg.includes('execution reverted')) {
-        friendlyMessage = '❌ Transação reverteu no contrato. Verifique se está tudo certo e tente novamente.';
-      } else if (errorMsg.includes('Only gallery')) {
-        friendlyMessage = '❌ Erro: Contrato não está configurado corretamente. Contate o suporte.';
-      }
-      
-      setErrorMessage(friendlyMessage);
+      setErrorMessage(errorInfo.message);
       setShowError(true);
       setShowMinting(false);
+      setTransactionState({
+        status: 'error',
+        error: error,
+        errorCode: errorInfo.code,
+        isRetryable: errorInfo.isRetryable,
+      });
     }
   }, [txError, receiptError]);
+
+  // ✅ PRÉ-DEPLOYMENT: Rastreia mudanças de estado da transação
+  useEffect(() => {
+    if (hash && isPending) {
+      setTransactionState({ status: 'pending', hash });
+      console.log('📡 Transação enviada:', hash);
+    } else if (isSuccess && hash) {
+      setTransactionState({ status: 'success', hash });
+      console.log('✅ Transação confirmada:', hash);
+    }
+  }, [hash, isPending, isSuccess]);
 
   // Aguarda 8 segundos (até "Legacy Mfer Entangled!") antes de fazer slide para página 2
   // O blockNumber carrega depois, assincronamente - não bloqueia o fluxo do usuário
