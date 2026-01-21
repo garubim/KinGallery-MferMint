@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 
 interface MagicButtonProps {
   onClick?: () => void;
@@ -42,24 +41,13 @@ export default function MagicButton({
   // Versão 1: Simples
   if (variant === 'simple') {
     return (
-      <motion.button
+      <button
         onClick={onClick}
         disabled={isLoading}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        className={`${dims.main} rounded-full bg-gradient-to-br ${gradient} shadow-2xl flex items-center justify-center text-white font-bold transition-all duration-300 disabled:opacity-50 relative overflow-hidden`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`${dims.main} rounded-full bg-gradient-to-br ${gradient} shadow-2xl flex items-center justify-center text-white font-bold transition-all duration-300 hover:scale-110 active:scale-95 disabled:opacity-50 relative overflow-hidden`}
       >
-        {/* Background shimmer effect */}
-        {showAnimation && (
-          <motion.div
-            className="absolute inset-0 bg-white opacity-0 rounded-full"
-            animate={isHovered ? { opacity: [0, 0.1, 0] } : {}}
-            transition={{ duration: 0.6 }}
-          />
-        )}
-
         <div className="flex flex-col items-center gap-1 relative z-10">
           <div className={`${dims.icon} ${isLoading ? 'animate-spin' : ''}`}>
             {isLoading ? '⏳' : '✨'}
@@ -68,7 +56,7 @@ export default function MagicButton({
             {isLoading ? 'MINTING...' : 'MINT NOW'}
           </div>
         </div>
-      </motion.button>
+      </button>
     );
   }
 
@@ -77,13 +65,11 @@ export default function MagicButton({
     return (
       <div className="relative w-56 h-56 flex items-center justify-center">
         {/* Main Button */}
-        <motion.button
+        <button
           onClick={onClick}
           disabled={isLoading}
-          onHoverStart={() => setIsHovered(true)}
-          onHoverEnd={() => setIsHovered(false)}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           className={`
             absolute w-40 h-40
             rounded-full
@@ -92,33 +78,25 @@ export default function MagicButton({
             flex items-center justify-center
             text-white font-bold
             transition-all duration-300
+            hover:scale-110
+            active:scale-95
             disabled:opacity-50
             z-10
             overflow-hidden
           `}
         >
-          {showAnimation && (
-            <motion.div
-              className="absolute inset-0 bg-white opacity-0 rounded-full"
-              animate={isHovered ? { opacity: [0, 0.1, 0] } : {}}
-              transition={{ duration: 0.6 }}
-            />
-          )}
-
           <div className="flex flex-col items-center gap-1 relative z-10">
             <div className="text-3xl">{isLoading ? '⏳' : '✨'}</div>
             <div className="text-xs font-semibold">MINT</div>
           </div>
-        </motion.button>
+        </button>
 
         {/* ETH Droplet - Left */}
-        <motion.button
+        <button
           onClick={() => {
             setSelectedCurrency('eth');
             onClick?.();
           }}
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
           className={`
             absolute left-0 top-1/2 transform -translate-y-1/2
             w-14 h-14
@@ -129,6 +107,8 @@ export default function MagicButton({
             transition-all
             font-bold text-lg
             z-20
+            hover:scale-115
+            active:scale-90
             ${
               selectedCurrency === 'eth'
                 ? 'bg-blue-400 text-white ring-4 ring-white'
@@ -137,16 +117,14 @@ export default function MagicButton({
           `}
         >
           Ξ
-        </motion.button>
+        </button>
 
         {/* USDC Droplet - Right */}
-        <motion.button
+        <button
           onClick={() => {
             setSelectedCurrency('usdc');
             onClick?.();
           }}
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
           className={`
             absolute right-0 top-1/2 transform -translate-y-1/2
             w-14 h-14
@@ -157,6 +135,8 @@ export default function MagicButton({
             transition-all
             font-bold text-lg
             z-20
+            hover:scale-115
+            active:scale-90
             ${
               selectedCurrency === 'usdc'
                 ? 'bg-blue-600 text-white ring-4 ring-white'
@@ -165,7 +145,7 @@ export default function MagicButton({
           `}
         >
           $
-        </motion.button>
+        </button>
 
         {/* Selected currency label */}
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-semibold text-gray-700 whitespace-nowrap">
@@ -186,6 +166,12 @@ export default function MagicButton({
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         className={`
+       button
+        onClick={onClick}
+        disabled={isLoading}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`
           px-12 py-6
           rounded-full
           bg-gradient-to-r ${gradient}
@@ -193,19 +179,13 @@ export default function MagicButton({
           flex items-center justify-center gap-4
           text-white font-bold text-lg
           transition-all duration-300
+          hover:scale-105
+          active:scale-95
           disabled:opacity-50
           relative
           overflow-hidden
         `}
       >
-        {showAnimation && (
-          <motion.div
-            className="absolute inset-0 bg-white opacity-0"
-            animate={isHovered ? { opacity: [0, 0.1, 0] } : {}}
-            transition={{ duration: 0.6 }}
-          />
-        )}
-
         <span className="text-2xl relative z-10">
           {isLoading ? '⏳' : '✨'}
         </span>
@@ -215,9 +195,4 @@ export default function MagicButton({
         <span className="text-2xl relative z-10">
           {isLoading ? '⏳' : '✨'}
         </span>
-      </motion.button>
-    );
-  }
-
-  return null;
-}
+      </
