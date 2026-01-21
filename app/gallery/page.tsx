@@ -24,13 +24,45 @@ export default function GalleryPage() {
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
   const [loadingMints, setLoadingMints] = useState(true);
 
-  // ✅ Auto-redirect se desconectar
+  // ✅ Auto-redirect se desconectar (exceto em debug mode)
   useEffect(() => {
-    if (mounted && !isConnected) {
+    const isDebug = searchParams.get('debug') === 'true';
+    if (mounted && !isConnected && !isDebug) {
       console.log('🚪 Wallet desconectada. Redirecionando pra page 1...');
       router.push('/');
     }
-  }, [isConnected, mounted, router]);
+  }, [isConnected, mounted, router, searchParams]);
+
+  // ✨ Magic Button - Clique esquerda/direita
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleMagicButtonClick = (e: MouseEvent) => {
+      const magicButton = document.querySelector('.magic-button-container') as HTMLElement;
+      if (!magicButton) return;
+
+      const rect = magicButton.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const midpoint = rect.width / 2;
+
+      if (clickX < midpoint) {
+        // ⬅️ Clique na metade ESQUERDA → volta pra página 1
+        console.log('⬅️ Magic Button esquerda clicado - voltando pra página 1');
+        router.push('/');
+      } else {
+        // ➡️ Clique na metade DIREITA → mint novo (redireciona pra home com wallet conectada)
+        console.log('➡️ Magic Button direita clicado - nova transação');
+        router.push('/');
+      }
+    };
+
+    // Listener pra botão invisível do Magic Button
+    const invisibleButton = document.querySelector('.magic-button-container button') as HTMLButtonElement;
+    if (invisibleButton && txHash) {
+      invisibleButton.addEventListener('click', handleMagicButtonClick);
+      return () => invisibleButton.removeEventListener('click', handleMagicButtonClick);
+    }
+  }, [mounted, txHash, router]);
 
   useEffect(() => {
     setMounted(true);

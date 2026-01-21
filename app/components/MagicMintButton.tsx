@@ -2,12 +2,15 @@
 
 import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useSwitchChain, useConnect, useDisconnect } from 'wagmi';
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { encodeFunctionData } from 'viem';
 import { base } from 'viem/chains';
 import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
 import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
 
 export default function MagicMintButton() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { address, isConnected, chain } = useAccount();
   const { sendTransaction, data: hash, isPending, error: txError } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess, error: receiptError } = useWaitForTransactionReceipt({ hash });
@@ -17,6 +20,19 @@ export default function MagicMintButton() {
   
   // Hooks de segurança pré-deployment
   const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
+  
+  // Debug: Atalho para pular direto pra success screen
+  useEffect(() => {
+    const debugMint = searchParams.get('debugMint');
+    if (debugMint === 'success') {
+      setShowSuccessOverlay(true);
+      // Auto-redirect após 3.5s
+      const timer = setTimeout(() => {
+        router.push('/gallery?debug=true&tx=debug');
+      }, 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, router]);
   
   const [mounted, setMounted] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
@@ -28,6 +44,8 @@ export default function MagicMintButton() {
   const [countdown, setCountdown] = useState(8);
   const [confetti, setConfetti] = useState<Array<{id: number, left: number, delay: number}>>([]);
   const [transactionState, setTransactionState] = useState<TransactionState>({ status: 'idle' });
+  const [touchStart, setTouchStart] = useState(0);
+  const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
 
   // Evita hydration error
   useEffect(() => {
@@ -326,8 +344,23 @@ export default function MagicMintButton() {
         
         console.log('📦 Mint registrado em localStorage');
         
-        // Esconde success overlay e inicia slide
-        setShowSuccessOverlay(false);
+        // ✨ RITUAL COMPLETE - Magic Button fica visível com "Ritual Complete"
+        // Após Mfers animation (aprox 3-4s), redireciona pra página 2
+        console.log('✨ RITUAL COMPLETE - Iniciando transição pra página 2...');
+        
+        const mfersAnimationDone = setTimeout(() => {
+          console.log('🎬 Mfers animation completada. Redirecionando...');
+          const params = new URLSearchParams({
+            tx: hash,
+            ethMferId: ethMferId.toString()
+          });
+          if (collisionInfo) {
+            params.set('collision', JSON.stringify(collisionInfo));
+          }
+          window.location.href = `/gallery?${params.toString()}`;
+        }, 3500); // Aguarda 3.5s pra Mfers animation completar
+        
+        return () => clearTimeout(mfersAnimationDone);
         setShowMinting(false);
         setIsSliding(true);
         
@@ -372,12 +405,12 @@ export default function MagicMintButton() {
 
   return (
     <div className={`magic-button-container ${isSliding ? 'slide-out' : ''} ${showError ? 'error-active' : ''}`}>
-      {/* Success Overlay - ÓBVIO E IMPOSSÍVEL DE IGNORAR */}
+      {/* Success Overlay - Confetti + Automático pra Página 2 */}
       {showSuccessOverlay && isSuccess && hash && (
         <>
           {/* Confetti Background */}
           <div className="confetti-container">
-            {confetti.map(piece => (
+            {confetti.map((piece) => (
               <div
                 key={piece.id}
                 className="confetti-piece"
@@ -392,81 +425,43 @@ export default function MagicMintButton() {
             ))}
           </div>
 
-          {/* Overlay Escuro */}
+          {/* Overlay Escuro - Não Remove Magic Button */}
           <div className="success-overlay-backdrop"></div>
 
-          {/* Conteúdo Principal */}
-          <div className="success-overlay-expanded">
-            <div className="success-content-expanded">
-              {/* Checkmark Animado Grande */}
-              <div className="success-checkmark">✅</div>
+          {/* ✨ RITUAL COMPLETE - Animação de sucesso */}
+          <img 
+            src="/MagicButton-OfficialAnimatedTitles/ritual_Complete=2xNfer-1L1+L2Cn8453.+ Alpha+30FPSMAXQ-1280x720p-WEBPMAX.webp"
+            alt="Ritual Complete"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              maxWidth: '90%',
+              maxHeight: '90%',
+              zIndex: 10,
+              pointerEvents: 'none'
+            }}
+          />
 
-              {/* Título Grande */}
-              <h1>Mint Sucesso!</h1>
+          {/* ➡️ SETA VERDE - Indicando swipe/long-press (aparece após ~0.5s) */}
+          <img 
+            src="/MagicButton-OfficialAnimatedTitles/GO TO RIGHT-GOTOGALLERY-FOLLOW-THEARRO-1L1+L2Cn8453.+ Alpha-1280x720px-WEBP-HIGH_Q.webp"
+            alt="Swipe to Gallery"
+            style={{
+              position: 'absolute',
+              bottom: '20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              maxWidth: '80%',
+              maxHeight: '100px',
+              zIndex: 10,
+              pointerEvents: 'none',
+              animation: 'fadeInDown 0.6s ease-out 0.5s both'
+            }}
+          />
 
-              {/* Descrição */}
-              <p className="success-description">
-                Sua NFT foi mintada com sucesso na Base!
-              </p>
-
-              {/* Hash da Transação */}
-              <div className="success-hash-box">
-                <p className="hash-label">Transação:</p>
-                <p className="hash-value">{hash.slice(0, 10)}...{hash.slice(-8)}</p>
-                <a 
-                  href={`https://base.blockscout.com/tx/${hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hash-link"
-                >
-                  Ver no BlockScout ↗️
-                </a>
-              </div>
-
-              {/* Countdown Visual */}
-              <div className="countdown-container">
-                <div className="countdown-circle">
-                  <div className="countdown-inner">
-                    <span className="countdown-number">{countdown}</span>
-                    <span className="countdown-label">s</span>
-                  </div>
-                </div>
-                <p className="countdown-text">Redirecionando para sua galeria...</p>
-              </div>
-
-              {/* Progresso Bar */}
-              <div className="progress-bar">
-                <div 
-                  className="progress-fill"
-                  style={{
-                    width: `${(8 - countdown) * 12.5}%`,
-                    transition: 'width 1s linear'
-                  }}
-                ></div>
-              </div>
-
-              {/* Botão Fallback - Ir Agora */}
-              <button
-                onClick={() => {
-                  console.log('🚀 User clicou "Ver Minha NFT Agora"');
-                  const lastSixHash = hash.slice(-6);
-                  const lastSixNum = parseInt(lastSixHash, 16);
-                  const ethMferId = (lastSixNum % 9999) + 1;
-                  const params = new URLSearchParams({
-                    tx: hash,
-                    ethMferId: ethMferId.toString()
-                  });
-                  window.location.href = `/gallery?${params.toString()}`;
-                }}
-                className="see-nft-button"
-              >
-                👁️ Ver Minha NFT Agora
-              </button>
-
-              {/* Animação de Pulse */}
-              <div className="pulse-ring"></div>
-            </div>
-          </div>
+          {/* Magic Button agora mostra animações e é clicável pra ir pra página 2 */}
         </>
       )}
 
@@ -620,7 +615,14 @@ export default function MagicMintButton() {
         {/* Camada de reflexo de vidro */}
         <div className="glass-reflex">
           <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
-            <img src="/KinGall-MagicButton-opliq-cutout+retouch-" alt="" className="reflex-layer reflex-2" 
+          <video 
+            src="/MagicButton-OfficialAnimatedTitles/Magic-button-Shaderemovement,-veryhighQT-ProRes4444+Alpha-HQ.webm" 
+            className="reflex-layer reflex-2"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
           <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-3" />
         </div>
 
@@ -645,22 +647,82 @@ export default function MagicMintButton() {
                   alert(`⚠️ REDE INCORRETA!\n\nVocê está na ${chain?.name || 'rede desconhecida'}.\n\nPor favor, troque para BASE na sua wallet.`);
                   switchChain?.({ chainId: base.id });
                 }
+              : showSuccessOverlay
+              ? () => {
+                  // ✨ RITUAL COMPLETE - Redireciona pra página 2
+                  const lastSixHash = hash.slice(-6);
+                  const lastSixNum = parseInt(lastSixHash, 16);
+                  const ethMferId = (lastSixNum % 9999) + 1;
+                  const params = new URLSearchParams({
+                    tx: hash,
+                    ethMferId: ethMferId.toString()
+                  });
+                  window.location.href = `/gallery?${params.toString()}`;
+                }
               : handleMint
             }
-            disabled={isPending || isConfirming || showSuccessOverlay || (isConnected && chain?.id !== base.id)}
+            onTouchStart={(e) => {
+              if (!showSuccessOverlay) return;
+              setTouchStart(e.touches[0].clientX);
+            }}
+            onTouchEnd={(e) => {
+              if (!showSuccessOverlay || touchStart === 0) return;
+              const touchEnd = e.changedTouches[0].clientX;
+              const swipeDistance = touchEnd - touchStart;
+              
+              // Swipe direita > 50px
+              if (swipeDistance > 50) {
+                console.log('➡️ SWIPE DIREITA DETECTADO!');
+                const lastSixHash = hash.slice(-6);
+                const lastSixNum = parseInt(lastSixHash, 16);
+                const ethMferId = (lastSixNum % 9999) + 1;
+                const params = new URLSearchParams({
+                  tx: hash,
+                  ethMferId: ethMferId.toString()
+                });
+                window.location.href = `/gallery?${params.toString()}`;
+              }
+              setTouchStart(0);
+            }}
+            onMouseDown={() => {
+              if (!showSuccessOverlay) return;
+              
+              // Long press detection - 0.7s
+              const timer = setTimeout(() => {
+                console.log('🖱️ LONG PRESS DETECTADO!');
+                const lastSixHash = hash.slice(-6);
+                const lastSixNum = parseInt(lastSixHash, 16);
+                const ethMferId = (lastSixNum % 9999) + 1;
+                const params = new URLSearchParams({
+                  tx: hash,
+                  ethMferId: ethMferId.toString()
+                });
+                window.location.href = `/gallery?${params.toString()}`;
+              }, 700);
+              
+              setLongPressTimer(timer);
+            }}
+            onMouseUp={() => {
+              if (longPressTimer) clearTimeout(longPressTimer);
+            }}
+            onMouseLeave={() => {
+              if (longPressTimer) clearTimeout(longPressTimer);
+            }}
+            disabled={isPending || isConfirming || (isConnected && chain?.id !== base.id)}
             style={{
               width: '100%',
               height: '100%',
               background: 'transparent',
               border: 'none',
-              cursor: (isPending || isConfirming || showSuccessOverlay || (isConnected && chain?.id !== base.id)) 
+              cursor: (isPending || isConfirming || (isConnected && chain?.id !== base.id)) 
                 ? (isConnected && chain?.id !== base.id ? 'not-allowed' : 'wait') 
+                : showSuccessOverlay ? 'grab'
                 : 'pointer',
               fontSize: 0,
               lineHeight: 0,
               color: 'transparent',
             }}
-            aria-label={!isConnected ? 'Connect Wallet' : chain?.id !== base.id ? 'Switch to Base' : 'Mint NFT'}
+            aria-label={!isConnected ? 'Connect Wallet' : chain?.id !== base.id ? 'Switch to Base' : showSuccessOverlay ? 'Go to Gallery' : 'Mint NFT'}
           />
         </div>
       </div>
@@ -876,8 +938,8 @@ export default function MagicMintButton() {
 
         .glass-shell {
           position: relative;
-          width: min(480px, 90vw);
-          height: min(210px, 22vh);
+          width: 480px;
+          height: 190px;
           border-radius: 120px;
           background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(30px);
@@ -971,8 +1033,8 @@ export default function MagicMintButton() {
           inset: 0;
           pointer-events: none;
           z-index: 5;
-          mix-blend-mode: hard-light;
-          opacity: 0.35;
+          mix-blend-mode: lighten;
+          opacity: 0.7;
         }
 
         .reflex-layer {
@@ -988,8 +1050,8 @@ export default function MagicMintButton() {
         }
 
         .reflex-2 {
-          opacity: 0.4;
-          transform: scaleX(-1);
+          opacity: 0.8;
+          filter: brightness(0.7);
         }
 
         /* Loading Overlay - carteira carregando */
@@ -1171,6 +1233,17 @@ export default function MagicMintButton() {
           to {
             transform: translateY(100vh) rotateZ(360deg);
             opacity: 0;
+          }
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
         }
 
