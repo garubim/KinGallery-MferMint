@@ -23,11 +23,7 @@ const wagmiConfig = createConfig({
   connectors: [
     coinbaseWallet({
       appName: 'KinGallery',
-      preference: 'all', // Permite EOA e Smart Wallet
-    }),
-    coinbaseWallet({
-      appName: 'KinGallery',
-      preference: 'smartWalletOnly', // Força apenas Smart Wallet
+      preference: 'smartWalletOnly', // Força apenas Smart Wallet com biometria obrigatória
     }),
     injected({
       shimDisconnect: true,
