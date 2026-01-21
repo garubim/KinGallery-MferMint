@@ -195,4 +195,6 @@ export default function MagicButton({
         <span className="text-2xl relative z-10">
           {isLoading ? '⏳' : '✨'}
         </span>
-      </
+      </button>
+    );
+  }
