@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useState, useRef, ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import AnimatedTextComposer, { StateAnimationMap, ButtonState } from './AnimatedTextComposer';
 import BlockchainWriteOverlay, { BlockchainWriteOverlayProps } from '../BlockchainWriteOverlay';
 
 export interface MagicButtonProps {

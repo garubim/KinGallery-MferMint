@@ -6,12 +6,8 @@
 
 export { default as MagicButton } from './MagicButton';
 export { default as MagicButtonNew } from './MagicButtonNew';
-export { default as AnimatedTextLayer } from './AnimatedTextLayer';
-export { default as AnimatedTextComposer } from './AnimatedTextComposer';
 
 export type { MagicButtonProps } from './MagicButton';
-export type { AnimatedTextConfig } from './AnimatedTextLayer';
-export type { StateAnimationMap, ButtonState, AnimatedTextComposerProps } from './AnimatedTextComposer';
 
 /**
  * Quick Import Guide
