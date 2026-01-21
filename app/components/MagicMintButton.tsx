@@ -175,8 +175,10 @@ export default function MagicMintButton() {
       });
 
       // ✅ PRÉ-DEPLOYMENT: Valida inputs críticos ANTES de enviar
+      const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6') as `0x${string}`;
+      
       const validation = validateTransactionInput({
-        to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS as `0x${string}` || '0x0',
+        to: kingalleryAddress,
         value: BigInt('300000000000000'),
         data,
         chainId: base.id,
@@ -190,7 +192,7 @@ export default function MagicMintButton() {
       }
 
       console.log('📤 Enviando transação...', {
-        to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS,
+        to: kingalleryAddress,
         value: '0.0003 ETH',
         chainId: base.id,
       });
@@ -199,7 +201,7 @@ export default function MagicMintButton() {
       setTransactionState({ status: 'pending', hash: 'pending...' });
       
       sendTransaction({
-        to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS as `0x${string}`,
+        to: kingalleryAddress,
         value: BigInt('300000000000000'),
         data,
         chainId: base.id,
