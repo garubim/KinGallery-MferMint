@@ -18,6 +18,14 @@ const queryClient = new QueryClient({
   },
 });
 
+// Debug: Log wallet connection events
+if (typeof window !== 'undefined') {
+  console.log('🔐 RootProvider: Wallet configuration initialized');
+  console.log('✓ Connector: coinbaseWallet with smartWalletOnly preference');
+  console.log('ℹ️ Environment:', process.env.NODE_ENV);
+  console.log('ℹ️ OnchainKit API Key configured:', !!process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY);
+}
+
 const wagmiConfig = createConfig({
   chains: [base],
   connectors: [
