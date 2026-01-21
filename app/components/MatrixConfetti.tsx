@@ -1,13 +1,12 @@
 "use client";
 
-import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
 /**
  * Matrix Confetti Effect
  * 
  * Animação de celebração durante o sucesso do mint
- * - Caracteres Matrix caindo como confete
+ * - Caracteres Matrix caindo como confete (CSS animations)
  * - Efeito de "celebração" visual
  * - Desaparece após 3-4 segundos
  */
@@ -61,43 +60,59 @@ export default function MatrixConfetti() {
         overflow: 'hidden',
       }}
     >
+      <style jsx>{`
+        @keyframes matrixFall {
+          0% {
+            opacity: 1;
+            transform: translateY(-20px) translateX(0px) rotate(0deg);
+          }
+          100% {
+            opacity: 0;
+            transform: translateY(${typeof window !== 'undefined' ? window.innerHeight + 100 : 1000}px) translateX(${(Math.random() - 0.5) * 200}px) rotate(${Math.random() * 360}deg);
+          }
+        }
+        @keyframes glowPulse {
+          0% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+          }
+          50% {
+            opacity: 1;
+          }
+          100% {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1);
+          }
+        }
+        @keyframes backdropBlur {
+          0% {
+            opacity: 0;
+            background: rgba(0, 255, 136, 0);
+          }
+          100% {
+            opacity: 1;
+            background: rgba(0, 255, 136, 0.05);
+          }
+        }
+      `}</style>
+
       {/* Backdrop blur effect */}
-      <motion.div
-        initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-        animate={{ opacity: 1, backdropFilter: 'blur(4px)' }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.4 }}
+      <div
         style={{
           position: 'absolute',
           top: 0,
           left: 0,
           width: '100%',
           height: '100%',
-          background: 'rgba(0, 255, 136, 0.05)',
+          animation: 'backdropBlur 0.4s ease-out forwards',
+          backdropFilter: 'blur(4px)',
         }}
       />
 
       {/* Matrix particles */}
       {particles.map((particle) => (
-        <motion.div
+        <div
           key={particle.id}
-          initial={{
-            opacity: 1,
-            y: -20,
-            x: 0,
-            rotate: 0,
-          }}
-          animate={{
-            opacity: 0,
-            y: window.innerHeight + 100,
-            x: (Math.random() - 0.5) * 200,
-            rotate: Math.random() * 360,
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            ease: 'easeIn',
-          }}
           style={{
             position: 'fixed',
             left: `${particle.left}%`,
@@ -108,28 +123,26 @@ export default function MatrixConfetti() {
             textShadow: '0 0 10px #00ff88',
             fontFamily: 'monospace',
             lineHeight: 1,
+            animation: `matrixFall ${particle.duration}s ease-in forwards`,
+            animationDelay: `${particle.delay}s`,
           }}
         >
           {particle.char}
-        </motion.div>
+        </div>
       ))}
 
       {/* Glow effect center */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.6 }}
+      <div
         style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
           width: '200px',
           height: '200px',
           background: 'radial-gradient(circle, rgba(0,255,136,0.2) 0%, rgba(0,255,136,0) 70%)',
           borderRadius: '50%',
           pointerEvents: 'none',
+          animation: 'glowPulse 0.6s ease-out forwards',
         }}
       />
     </div>

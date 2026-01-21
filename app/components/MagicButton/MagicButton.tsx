@@ -7,8 +7,8 @@ export interface MagicButtonProps {
   /** Conteúdo do botão ou usar textAnimationMap para frases animadas */
   children?: ReactNode;
 
-  /** Mapa de animações de texto para cada estado */
-  textAnimationMap?: StateAnimationMap;
+  /** Mapa de animações de texto para cada estado (DEPRECATED - use MagicMintButton.tsx) */
+  textAnimationMap?: Record<string, any>;
 
   /** Callback para click */
   onClick?: () => void | Promise<void>;
@@ -35,7 +35,7 @@ export interface MagicButtonProps {
   className?: string;
 
   /** Callback quando estado muda */
-  onStateChange?: (state: ButtonState) => void;
+  onStateChange?: (state: string) => void;
 
   /** Debug logging */
   debug?: boolean;
@@ -130,7 +130,7 @@ export default function MagicButton({
   const isSuccess = success || internalSuccess;
   const isError = error || internalError;
 
-  const getState = useCallback((): ButtonState => {
+  const getState = useCallback((): string => {
     if (isSuccess) return 'success';
     if (isError) return 'error';
     if (isLoading) return 'loading';
@@ -143,7 +143,7 @@ export default function MagicButton({
 
   // Notificar mudança de estado
   const notifyStateChange = useCallback(
-    (state: ButtonState) => {
+    (state: string) => {
       if (debug) console.log(`🎯 Button state: ${state}`);
       onStateChange?.(state);
     },
@@ -211,7 +211,7 @@ export default function MagicButton({
           {...blockchainOverlayProps}
         />
       )}
-      <motion.button
+      <button
         ref={buttonRef}
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
@@ -224,111 +224,86 @@ export default function MagicButton({
           ${!disabled ? `bg-gradient-to-r ${variantStyles[variant]}` : 'bg-gray-400 opacity-50'}
           text-white
           ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}
+          hover:scale-105 active:scale-98
           ${className}
         `}
-        whileHover={!disabled && !isLoading ? { scale: 1.05 } : {}}
-        whileTap={!disabled && !isLoading ? { scale: 0.98 } : {}}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
         style={{
           position: 'relative',
           zIndex: 1,
+          animation: currentState === 'idle' ? 'breathing 3s infinite' : 'none',
         }}
       >
-        {/* Background breathing animation para IDLE */}
-        {currentState === 'idle' && (
-          <motion.div
-            className="absolute inset-0 -z-10"
-            animate={{
-              opacity: [1, 0.7, 1],
-              boxShadow: [
-                '0 0 20px rgba(0,255,150,0.3)',
-                '0 0 40px rgba(0,255,150,0.5)',
-                '0 0 20px rgba(0,255,150,0.3)',
-              ],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-            style={{ borderRadius: 'inherit' }}
-          />
-        )}
+        <style jsx>{`
+          @keyframes breathing {
+            0%, 100% {
+              opacity: 1;
+              box-shadow: 0 0 20px rgba(0, 255, 150, 0.3);
+            }
+            50% {
+              opacity: 0.7;
+              box-shadow: 0 0 40px rgba(0, 255, 150, 0.5);
+            }
+          }
+          @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
 
         {/* Spinner para LOADING */}
-        <AnimatePresence>
-          {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                className="w-5 h-5 border-2 border-transparent border-t-white rounded-full"
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isLoading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              opacity: 1,
+              animation: 'spin 2s linear infinite',
+            }}
+          >
+            <div
+              className="w-5 h-5 border-2 border-transparent border-t-white rounded-full"
+              style={{
+                animation: 'spin 2s linear infinite',
+              }}
+            />
+          </div>
+        )}
 
         {/* Success checkmark */}
-        <AnimatePresence>
-          {isSuccess && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              ✓
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isSuccess && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              opacity: 1,
+              animation: 'scaleIn 0.3s ease-out',
+            }}
+          >
+            ✓
+          </div>
+        )}
 
         {/* Error X */}
-        <AnimatePresence>
-          {isError && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              ✕
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {isError && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              opacity: 1,
+              animation: 'scaleIn 0.3s ease-out',
+            }}
+          >
+            ✕
+          </div>
+        )}
 
         {/* Conteúdo do botão */}
-        <motion.div
-          animate={{
-            opacity: isLoading || isSuccess || isError ? 0 : 1,
-          }}
-          transition={{ duration: 0.2 }}
-        >
-          {children}
-        </motion.div>
-      </motion.button>
-
-      {/* Camada de animação de texto */}
-      {textAnimationMap && (
         <div
           style={{
-            position: 'absolute',
-            inset: 0,
-            pointerEvents: 'none',
-            zIndex: 0,
+            opacity: isLoading || isSuccess || isError ? 0 : 1,
+            transition: 'opacity 0.2s',
           }}
         >
-          <AnimatedTextComposer
-            stateMap={textAnimationMap}
-            currentState={currentState}
-            onAnimationComplete={(state) => {
-              if (debug) console.log(`✨ Text animation done: ${state}`);
-            }}
-            debug={debug}
-          />
+          {children}
         </div>
-      )}
+      </button>
     </div>
   );
 }

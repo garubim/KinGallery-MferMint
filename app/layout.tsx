@@ -1,5 +1,7 @@
 import RootProvider from './rootProvider';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'KinGallery - The Smile at 9h',
   description: 'This is not animation; it\'s a ritual. Mint art on Base with gas sponsorship.',

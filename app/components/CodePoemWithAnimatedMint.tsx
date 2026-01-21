@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import CodePoemMintButton from './CodePoemMintButton';
-import { ButtonState } from './MagicButton/AnimatedTextComposer';
 
 /**
  * CodePoemWithAnimatedMint
@@ -27,7 +26,7 @@ export default function CodePoemWithAnimatedMint({
   const chars = Array.from(text);
   const closeRef = useRef<HTMLDivElement | null>(null);
   const [mintMsg, setMintMsg] = useState<string | null>(null);
-  const [buttonState, setButtonState] = useState<ButtonState>('idle');
+  const [buttonState, setButtonState] = useState<string>('idle');
   const isWebm = /\.webm($|\?)/i.test(videoSrc);
 
   useEffect(() => {

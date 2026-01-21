@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { MagicButton } from '@/components/MagicButton';
+// import MagicButton from '@/components/MagicButton/MagicButton';
 
 /**
  * MintNFTButton Example
@@ -55,21 +55,12 @@ export default function MintNFTButton({
   };
 
   return (
-    <MagicButton
+    <button
       onClick={handleMint}
-      loading={isProcessing}
       disabled={disabled || isProcessing}
-      size="lg"
-      variant="glow"
-      showBlockchainOverlay={true}
-      blockchainOverlayProps={{
-        title: '✨ Writing NFT to blockchain...',
-        subtitle: 'Your artwork is being secured on Base',
-        backdropSrc: '/code_poem-Matrix/Matrix Codepoem 2 Layers Blue&Green Curto half ProRes 4444+Alpha .webp',
-      }}
-      debug={debug}
+      className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition-opacity"
     >
-      🎨 Mint Your NFT
-    </MagicButton>
+      {isProcessing ? '⏳ Processing...' : '🎨 Mint Your NFT'}
+    </button>
   );
 }

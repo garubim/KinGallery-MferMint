@@ -158,15 +158,7 @@ export default function MagicButton({
   // Versão 3: Pill Shape
   if (variant === 'pill') {
     return (
-      <motion.button
-        onClick={onClick}
-        disabled={isLoading}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className={`
-       button
+      <button
         onClick={onClick}
         disabled={isLoading}
         onMouseEnter={() => setIsHovered(true)}
@@ -198,3 +190,6 @@ export default function MagicButton({
       </button>
     );
   }
+
+  return null;
+}

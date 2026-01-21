@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from 'framer-motion';
 import NFTSuccessCard from './NFTSuccessCard';
 import MatrixConfetti from './MatrixConfetti';
 
@@ -37,10 +36,7 @@ export default function NFTMintedPage({
   showConfetti = true,
 }: NFTMintedPageProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+    <div
       style={{
         minHeight: '100vh',
         background: 'linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%)',
@@ -53,47 +49,68 @@ export default function NFTMintedPage({
         padding: '40px 20px',
         position: 'relative',
         overflow: 'hidden',
+        animation: 'fadeIn 0.6s ease-in',
       }}
     >
+      <style jsx>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.1);
+          }
+        }
+      `}</style>
+
       {/* Matrix Confetti Celebration */}
       {showConfetti && <MatrixConfetti />}
 
       {/* Content Container */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
+      <div
         style={{
           maxWidth: '600px',
           width: '100%',
           position: 'relative',
           zIndex: 10,
+          animation: 'slideUp 0.8s ease-out 0.2s both',
         }}
       >
         {/* Success Header */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
+        <div
           style={{
             textAlign: 'center',
             marginBottom: '40px',
+            animation: 'slideUp 0.8s ease-out 0.4s both',
           }}
         >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{
-              duration: 0.8,
-              repeat: Infinity,
-              repeatDelay: 2,
-            }}
+          <div
             style={{
               fontSize: '48px',
               marginBottom: '16px',
+              animation: 'pulse 0.8s infinite 2s',
             }}
           >
             ✨
-          </motion.div>
+          </div>
 
           <h1
             style={{
@@ -114,7 +131,7 @@ export default function NFTMintedPage({
           >
             Your NFT has been secured on Base blockchain
           </p>
-        </motion.div>
+        </div>
 
         {/* NFT Success Card */}
         <NFTSuccessCard
@@ -129,15 +146,13 @@ export default function NFTMintedPage({
         />
 
         {/* Secondary Actions */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.6 }}
+        <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1fr 1fr',
             gap: '12px',
             marginTop: '24px',
+            animation: 'slideUp 0.8s ease-out 1.6s both',
           }}
         >
           <button
@@ -192,24 +207,22 @@ export default function NFTMintedPage({
               Mint Another ✨
             </button>
           )}
-        </motion.div>
+        </div>
 
         {/* Footer Message */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 2.0 }}
+        <p
           style={{
             textAlign: 'center',
             marginTop: '32px',
             fontSize: '12px',
             color: 'rgba(255, 255, 255, 0.5)',
             fontStyle: 'italic',
+            animation: 'slideUp 0.8s ease-out 2.0s both',
           }}
         >
           Your NFT is now part of KinGallery. Welcome to the ritual. 🎭
-        </motion.p>
-      </motion.div>
-    </motion.div>
+        </p>
+      </div>
+    </div>
   );
 }

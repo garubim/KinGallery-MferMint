@@ -168,7 +168,7 @@ export default function MagicMintButton() {
         }],
         functionName: 'payAndMint',
         args: [
-          process.env.NEXT_PUBLIC_MFER_ADDRESS || '',
+          (process.env.NEXT_PUBLIC_MFER_ADDRESS || '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241') as `0x${string}`,
           address,
           paymentIdString,
         ],

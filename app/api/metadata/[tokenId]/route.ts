@@ -1,8 +1,10 @@
+import { NextRequest } from 'next/server';
+
 export async function GET(
-  request: Request,
-  { params }: { params: { tokenId: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ tokenId: string }> }
 ) {
-  const { tokenId } = params;
+  const { tokenId } = await params;
 
   // Validar que tokenId é um número válido
   if (!tokenId || isNaN(Number(tokenId))) {
