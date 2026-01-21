@@ -28,12 +28,12 @@ export default function GalleryPage() {
   useEffect(() => {
     const isDebug = searchParams.get('debug') === 'true';
     if (mounted && !isConnected && !isDebug) {
-      console.log('🚪 Wallet desconectada. Redirecionando pra page 1...');
+      console.log('🚪 Wallet disconnected. Redirecting to page 1...');
       router.push('/');
     }
   }, [isConnected, mounted, router, searchParams]);
 
-  // ✨ Magic Button - Clique esquerda/direita
+  // ✨ Magic Button - Click left/right
   useEffect(() => {
     if (!mounted) return;
 
@@ -46,17 +46,17 @@ export default function GalleryPage() {
       const midpoint = rect.width / 2;
 
       if (clickX < midpoint) {
-        // ⬅️ Clique na metade ESQUERDA → volta pra página 1
-        console.log('⬅️ Magic Button esquerda clicado - voltando pra página 1');
+        // ⬅️ Click on LEFT half → go back to page 1
+        console.log('⬅️ Magic Button left clicked - going back to page 1');
         router.push('/');
       } else {
-        // ➡️ Clique na metade DIREITA → mint novo (redireciona pra home com wallet conectada)
-        console.log('➡️ Magic Button direita clicado - nova transação');
+        // ➡️ Click on RIGHT half → mint new (redirect to home with wallet connected)
+        console.log('➡️ Magic Button right clicked - new transaction');
         router.push('/');
       }
     };
 
-    // Listener pra botão invisível do Magic Button
+    // Listener for invisible Magic Button
     const invisibleButton = document.querySelector('.magic-button-container button') as HTMLButtonElement;
     if (invisibleButton && txHash) {
       invisibleButton.addEventListener('click', handleMagicButtonClick);
@@ -70,28 +70,28 @@ export default function GalleryPage() {
     const ethMfer = searchParams.get('ethMferId');
     const collision = searchParams.get('collision');
     
-    // Armazena a tx para exibir como "certidão"
+    // Save the tx to display as "certificate"
     if (tx) {
       setTxHash(tx);
     }
     
-    // Parse collision info se existir
+    // Parse collision info if exists
     if (collision) {
       try {
         const collisionData = JSON.parse(decodeURIComponent(collision));
         setCollisionInfo(collisionData);
-        console.log('🌠 COLISÃO ESPECIAL DETECTADA:', collisionData);
+        console.log('🌠 SPECIAL COLLISION DETECTED:', collisionData);
       } catch (e) {
-        console.error('Erro ao parsear collision:', e);
+        console.error('Error parsing collision:', e);
       }
     }
     
-    // Armazena ethMferId (Legacy Mfer entangled)
+    // Store ethMferId (Legacy Mfer entangled)
     if (ethMfer) {
       setEthMferId(parseInt(ethMfer));
     }
 
-    // 🚀 BUSCA COMPLETA: tokenId + blockNumber + timestamp da transação
+    // 🚀 FULL FETCH: tokenId + blockNumber + transaction timestamp
     if (tx) {
       fetch('https://base.llamarpc.com', {
         method: 'POST',
@@ -129,9 +129,9 @@ export default function GalleryPage() {
           }
         }
       })
-      .catch(err => console.error('❌ Erro ao buscar receipt:', err));
+      .catch(err => console.error('❌ Error fetching receipt:', err));
 
-      // Busca timestamp do bloco
+      // Fetch block timestamp
       setTimeout(() => {
         if (tx) {
           fetch('https://base.llamarpc.com', {
@@ -147,7 +147,7 @@ export default function GalleryPage() {
           .then(res => res.json())
           .then(data => {
             if (data.result?.blockNumber) {
-              // Com o blockNumber, busca o timestamp do bloco
+              // Using blockNumber, fetch the block timestamp
               const blockNumHex = data.result.blockNumber;
               return fetch('https://base.llamarpc.com', {
                 method: 'POST',
@@ -176,12 +176,12 @@ export default function GalleryPage() {
               setMintDate(date);
             }
           })
-          .catch(err => console.error('❌ Erro ao buscar timestamp:', err));
+          .catch(err => console.error('❌ Error fetching timestamp:', err));
         }
       }, 1000);
     }
 
-    // 🎨 Busca imagem do Legacy Mfer entangled no IPFS
+    // 🎨 Fetch Legacy Mfer image entangled in IPFS
     if (ethMfer) {
       const mferId = parseInt(ethMfer);
       fetch(`https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo/${mferId}`)
@@ -193,14 +193,14 @@ export default function GalleryPage() {
             setEthMferImageUrl(imageUrl);
           }
         })
-        .catch(err => console.error('Erro ao buscar Mfer image:', err));
+        .catch(err => console.error('Error fetching Mfer image:', err));
     }
 
     setTimeout(() => setShowConfetti(false), 3000);
     setTimeout(() => setRevealEntangled(true), 4000);
   }, [searchParams]);
 
-  // 🎨 Carregar NFTs mintados do contrato MferBk0Base
+  // 🎨 Load minted NFTs from MferBk0Base contract
   useEffect(() => {
     const fetchMintedNFTs = async () => {
       setLoadingMints(true);
@@ -208,7 +208,7 @@ export default function GalleryPage() {
         const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
         const RPC_URL = 'https://base.llamarpc.com';
         
-        // Query para pegar todos os Transfer events (mints)
+        // Query to get all Transfer events (mints)
         const response = await fetch(RPC_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -233,7 +233,7 @@ export default function GalleryPage() {
         console.log('📡 RPC Response:', data);
         console.log('🔍 Transfers found:', transfers.length);
         
-        // Processa cada transfer para extrair tokenId e owner
+        // Process each transfer to extract tokenId and owner
         const nfts = transfers.map((log: any) => {
           const tokenIdHex = log.topics[3];
           const tokenId = parseInt(tokenIdHex, 16);
@@ -247,11 +247,11 @@ export default function GalleryPage() {
           };
         });
 
-        // Busca dados adicionais (data do mint, entangled info)
+        // Fetch additional data (mint date, entangled info)
         const enrichedNFTs = await Promise.all(
           nfts.map(async (nft: any) => {
             try {
-              // Busca timestamp do bloco
+              // Fetch block timestamp
               const blockResponse = await fetch(RPC_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -282,7 +282,7 @@ export default function GalleryPage() {
                 title: `Mfer-0-#${nft.tokenId}/1000`
               };
             } catch (err) {
-              console.error('Erro ao buscar dados do NFT:', err);
+              console.error('Error fetching NFT data:', err);
               return nft;
             }
           })

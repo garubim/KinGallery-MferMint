@@ -1,5 +1,21 @@
 # KinGallery + MferMint AI Agent Instructions
 
+## 🌍 LANGUAGE REQUIREMENT
+
+**⚠️ ALL PUBLIC-FACING DOCUMENTATION MUST BE IN ENGLISH**
+
+This includes:
+- ✅ Code comments (if visible to community)
+- ✅ README files
+- ✅ API documentation
+- ✅ Deployment guides
+- ✅ Smart contract verification docs
+- ✅ This copilot instructions file
+
+**Exception**: Internal/private documents can be in Portuguese (pt-br), but mark them clearly as `[PT-BR]` in filename.
+
+---
+
 ## ⚠️ IMPLEMENTATION STATUS - READ FIRST
 
 **This section is the single source of information for project completion status. All copilots must check here before making changes.**

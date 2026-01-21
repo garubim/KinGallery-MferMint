@@ -24,13 +24,9 @@
     "wagmi": "^2.19.5"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-ethers": "^4.0.3",
-    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
     "@types/node": "^25.0.3",
     "@types/react": "^19.2.7",
     "dotenv": "^17.2.3",
-    "ethers": "^6.16.0",
-    "hardhat": "^3.1.2",
     "typescript": "^5.9.3"
   }
 }
