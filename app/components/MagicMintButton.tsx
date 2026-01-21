@@ -436,30 +436,6 @@ export default function MagicMintButton() {
 
   return (
     <div className={`magic-button-container ${isSliding ? 'slide-out' : ''} ${showError ? 'error-active' : ''}`}>
-      {/* Status Badge - Mostra wallet conectada */}
-      {isConnected && address && (
-        <div style={{
-          position: 'absolute',
-          top: '16px',
-          right: '16px',
-          background: 'rgba(0, 255, 136, 0.15)',
-          border: '1px solid rgba(0, 255, 136, 0.4)',
-          borderRadius: '8px',
-          padding: '8px 12px',
-          fontSize: '12px',
-          color: '#00ff88',
-          fontFamily: 'monospace',
-          zIndex: 1000,
-          cursor: 'pointer',
-          backdropFilter: 'blur(10px)',
-        }}
-        onClick={() => setShowWalletModal(true)}
-        title="Click to view wallet details"
-        >
-          ✓ {address.slice(0, 6)}...{address.slice(-4)}
-        </div>
-      )}
-      
       {/* Success Overlay - Confetti + Automático pra Página 2 */}
       {showSuccessOverlay && isSuccess && hash && (
         <>
