@@ -70,7 +70,7 @@ export default function MagicMintButton() {
         chainId: chain?.id,
         timestamp: new Date().toLocaleTimeString(),
       });
-      console.log('🔍 Debugging passkey: Se você viu este log SEM ter digitado biometria, a passkey foi pulada!');
+      console.log('🔍 Debugging passkey: If you saw this log WITHOUT typing biometrics, the passkey was skipped!');
     } else {
       console.log('❌ Wallet DISCONNECTED');
     }
@@ -86,21 +86,21 @@ export default function MagicMintButton() {
   // Troca automaticamente para Base quando conecta em rede errada
   useEffect(() => {
     if (isConnected && chain && chain.id !== base.id) {
-      console.log('🚨 REDE INCORRETA!', { currentChain: chain?.id, chainName: chain?.name, targetChain: base.id });
+      console.log('🚨 WRONG NETWORK!', { currentChain: chain?.id, chainName: chain?.name, targetChain: base.id });
       
-      // Aviso visual imediato
-      alert(`⚠️ REDE INCORRETA!\n\nVocê está na ${chain?.name || 'rede desconhecida'} (chain ${chain?.id}).\n\nEncontando Base (chain 8453)...\n\n💡 Sua wallet pedirá permissão para trocar de rede.`);
+      // Immediate visual warning
+      alert(`⚠️ WRONG NETWORK!\n\nYou are on ${chain?.name || 'an unknown network'} (chain ${chain?.id}).\n\nSwitching to Base (chain 8453)...\n\n💡 Your wallet will ask for permission to switch networks.`);
       
-      // Tenta trocar para Base com retry
+      // Tries to switch to Base with retry
       const attemptSwitch = async () => {
         try {
           await switchChain?.({ chainId: base.id });
-          console.log('✅ Rede trocada para Base com sucesso!');
+          console.log('✅ Successfully switched to Base network!');
         } catch (error: any) {
-          console.error('❌ Erro ao trocar rede:', error);
-          // Retry automático após 1 segundo
+          console.error('❌ Error switching network:', error);
+          // Auto Retry after 1 second
           setTimeout(() => {
-            console.log('🔄 Tentando novamente...');
+            console.log('🔄 Trying again...');
             switchChain?.({ chainId: base.id });
           }, 1000);
         }
@@ -109,11 +109,12 @@ export default function MagicMintButton() {
       attemptSwitch();
     }
     if (isConnected && address && chain?.id === base.id) {
-      console.log('✅ Wallet conectada em BASE:', { address, chain: chain?.name });
+      console.log('✅ Wallet connected to BASE:', { address, chain: chain?.name });
     }
   }, [isConnected, chain, address, switchChain]);
 
-  // Reset connectingWalletType quando a conexão terminar ou modal fechar
+
+  // Reset connectingWalletType when connection ends or modal closes
   useEffect(() => {
     if (isConnected || !showWalletModal) {
       setConnectingWalletType(null);
@@ -124,7 +125,7 @@ export default function MagicMintButton() {
   const handleRightSideClick = () => {
     if (!showSuccessOverlay || !hash) return;
     
-    console.log('🎬 Click no lado direito! Navegando pra página 2...');
+    console.log('🎬 Right click! Navigating to page 2...');
     const lastSixHash = hash.slice(-6);
     const lastSixNum = parseInt(lastSixHash, 16);
     let ethMferId = (lastSixNum % 9999) + 1;
@@ -144,7 +145,7 @@ export default function MagicMintButton() {
         lastSixEthMferId: ethMferId,
         firstSixEthMferId: collisionEthMferId,
         originalMferNumber: originalMferNumber || 1,
-        message: `🌠 Colisão de Hash! Seu mint subiu no ranking e conecta ao Mfers Original #${originalMferNumber || 1} na ETH`
+        message: `🌠 Hash Collision! Your mint moved up the ranking and connects to the Original Mfers #${originalMferNumber || 1} on ETH`
       };
       ethMferId = collisionEthMferId;
     }
@@ -161,33 +162,33 @@ export default function MagicMintButton() {
   const handleMint = async () => {
     if (!address) return;
     
-    // ✅ PRÉ-DEPLOYMENT: Valida RPC health ANTES de mintar
+    // ✅ PRE-DEPLOYMENT: Validates RPC health BEFORE minting
     const rpcIsHealthy = await checkRPCHealth();
     if (!rpcIsHealthy) {
       const errorInfo = mapTransactionError({ message: 'RPC endpoint is not responding' });
-      setErrorMessage('⚠️ RPC está com problemas. Aguarde alguns segundos e tente novamente.');
+      setErrorMessage('⚠️ RPC is having issues. Please wait a few seconds and try again.');
       setShowError(true);
       setShowMinting(false);
-      console.warn('🚨 RPC não está saudável. Abortando mint.');
+      console.warn('🚨 RPC is not healthy. Aborting mint.');
       return;
     }
     
-    // CRÍTICO: Verifica se está na Base antes de mintar
+    // CRITIC: Verifies if connected to Base before minting
     if (chain?.id !== base.id) {
-      alert(`⚠️ REDE INCORRETA!\n\nVocê está conectado na ${chain?.name || 'rede desconhecida'}.\nPor favor, troque para BASE na sua wallet antes de mintar.\n\n(Gas na Ethereum custa ~100x mais!)`);
-      // Tenta trocar automaticamente
+      alert(`⚠️ WRONG NETWORK!\n\nYou are connected to ${chain?.name || 'an unknown network'}.\nPlease switch to BASE in your wallet before minting.\n\n(Ethereum gas costs ~100x more!)`);
+      // Tries to switch automatically
       try {
         await switchChain?.({ chainId: base.id });
       } catch (error) {
-        console.error('Erro ao trocar rede:', error);
+        console.error('Error switching network:', error);
       }
       return;
     }
     
-    console.log('🎯 Iniciando mint...', { chain: chain?.name, chainId: chain?.id, rpcHealthy });
+    console.log('🎯 Starting mint...', { chain: chain?.name, chainId: chain?.id, rpcHealthy });
     
     try {
-      // Gera paymentId único como string (KinGallery e MferBk0Base agora usam string)
+      // Generates unique paymentId as string (KinGallery and MferBk0Base now use string)
       const paymentIdString = `magic-${Date.now()}`;
       
       console.log('🔑 PaymentId:', { string: paymentIdString });
@@ -212,7 +213,7 @@ export default function MagicMintButton() {
         ],
       });
 
-      // ✅ PRÉ-DEPLOYMENT: Valida inputs críticos ANTES de enviar
+      // ✅ PRE-DEPLOYMENT: Validates critical inputs BEFORE sending
       const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6') as `0x${string}`;
       
       const validation = validateTransactionInput({
@@ -223,13 +224,13 @@ export default function MagicMintButton() {
       });
 
       if (!validation.valid) {
-        setErrorMessage(`❌ Erro de validação: ${validation.error}`);
+        setErrorMessage(`❌ Validation error: ${validation.error}`);
         setShowError(true);
-        console.error('❌ Validação falhou:', validation.error);
+        console.error('❌ Validation failed:', validation.error);
         return;
       }
 
-      console.log('📤 Enviando transação...', {
+      console.log('📤 Sending transaction...', {
         to: kingalleryAddress,
         value: '0.0003 ETH',
         chainId: base.id,
@@ -259,15 +260,15 @@ export default function MagicMintButton() {
     }
   };
 
-  // Detecta e trata erros de transação com mapeamento inteligente
+  // Detects and handles transaction errors with smart mapping
   useEffect(() => {
     if (txError || receiptError) {
       const error = txError || receiptError;
       
-      // ✅ Usa função de mapeamento inteligente de erros
+      // ✅ Uses smart error mapping function
       const errorInfo = mapTransactionError(error);
       
-      console.error('🚨 ERRO NA TRANSAÇÃO:', {
+      console.error('🚨 TRANSACTION ERROR:', {
         type: txError ? 'sendTransaction' : 'receipt',
         error: errorInfo.message,
         code: errorInfo.code,
@@ -287,24 +288,24 @@ export default function MagicMintButton() {
     }
   }, [txError, receiptError]);
 
-  // ✅ PRÉ-DEPLOYMENT: Rastreia mudanças de estado da transação
+  // ✅ PRE-DEPLOYMENT: Tracks transaction state changes
   useEffect(() => {
     if (hash && isPending) {
       setTransactionState({ status: 'pending', hash });
-      console.log('📡 Transação enviada:', hash);
+      console.log('📡 Transaction sent:', hash);
     } else if (isSuccess && hash) {
       setTransactionState({ status: 'success', hash });
-      console.log('✅ Transação confirmada:', hash);
+      console.log('✅ Transaction confirmed:', hash);
     }
   }, [hash, isPending, isSuccess]);
 
-  // Aguarda transação ser confirmada, depois faz redirect IMEDIATAMENTE
-  // A animação da página 2 começa com delay de 1s para não chocar com entrada
+  // Waits for transaction to be confirmed, then redirects IMMEDIATELY
+  // Page 2 animation starts with a 1s delay to avoid clashing with entry
   useEffect(() => {
     if (showMinting && isSuccess && hash && !hasRedirected) {
-      console.log('✅ MINT CONFIRMADO! Redirecionando IMEDIATAMENTE para página 2...', { hash, isSuccess });
+      console.log('✅ MINT Success! Redirecting IMMEDIATELY to page 2...', { hash, isSuccess });
       
-      // 🚀 OPÇÃO B: Redirect IMEDIATAMENTE (não espera animação completar)
+      // 🚀 OPTION B: Redirect IMMEDIATELY (does not wait for animation to complete)
       const lastSixHash = hash.slice(-6);
       const lastSixNum = parseInt(lastSixHash, 16);
       const ethMferId = (lastSixNum % 9999) + 1;
@@ -321,11 +322,11 @@ export default function MagicMintButton() {
         window.location.href = `/gallery?${params.toString()}`;
       }, 50);
       
-      // Mostra success overlay enquanto navega (não vai ser visto, mas fica pronto)
+      // Shows success overlay while navigating (won't be seen, but gets ready)
       setShowSuccessOverlay(true);
-      setCountdown(10); // Countdown de 10 segundos (duração da animação)
+      setCountdown(10); // Countdown of 10 seconds (animation duration)
       
-      // Gera confetti (vai ser renderizado na página 2 com delay de 1s)
+      // Generates confetti (will be rendered on page 2 with a 1s delay)
       const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
@@ -335,7 +336,7 @@ export default function MagicMintButton() {
     }
   }, [showMinting, isSuccess, hash, hasRedirected]);
 
-  // Renderiza vazio até montar no cliente
+  // Renders empty until mounted on client
   if (!mounted) {
     return (
       <div className="magic-button-container">
@@ -355,7 +356,7 @@ export default function MagicMintButton() {
 
   return (
     <div className={`magic-button-container ${isSliding ? 'slide-out' : ''} ${showError ? 'error-active' : ''}`}>
-      {/* Success Overlay - Confetti + Automático pra Página 2 */}
+      {/* Success Overlay - Confetti + Automatic for Page 2 */}
       {showSuccessOverlay && isSuccess && hash && (
         <>
           {/* Confetti Background */}
@@ -375,10 +376,10 @@ export default function MagicMintButton() {
             ))}
           </div>
 
-          {/* Overlay Escuro - Não Remove Magic Button */}
+          {/* Dark Overlay - Does not remove Magic Button */}
           <div className="success-overlay-backdrop"></div>
 
-          {/* ✨ RITUAL COMPLETE - Animação de sucesso */}
+          {/* ✨ RITUAL COMPLETE - Success animation */}
           <img 
             src="/MagicButton-OfficialAnimatedTitles/ritual_Complete=2xNfer-1L1+L2Cn8453.+ Alpha+30FPSMAXQ-1280x720p-WEBPMAX.webp"
             alt="Ritual Complete"
@@ -687,7 +688,7 @@ export default function MagicMintButton() {
           className="magic-animation"
         />
 
-        {/* Camada de reflexo de vidro */}
+        {/* Glass reflex layer */}
         <div className="glass-reflex">
           <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
           <video 
@@ -698,10 +699,17 @@ export default function MagicMintButton() {
             muted
             playsInline
           />
-          <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-3" />
+          <video 
+            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm"
+            className="reflex-layer reflex-3"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
         </div>
 
-        {/* Overlay de Loading - aparece quando carteira está carregando */}
+        {/* Loading overlay - appears when wallet is connecting */}
         {isPending && (
           <div className="loading-overlay">
             <img 
@@ -1129,7 +1137,7 @@ export default function MagicMintButton() {
           filter: brightness(0.7);
         }
 
-        /* Loading Overlay - carteira carregando */
+        /* Loading overlay - wallet connecting */
         .loading-overlay {
           position: absolute;
           inset: 0;
