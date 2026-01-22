@@ -16,7 +16,7 @@ export default function GalleryPage() {
   const [mounted, setMounted] = useState(false);
   const [tokenId, setTokenId] = useState<number | null>(null);
   const [ethMferId, setEthMferId] = useState<number | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false); // Começa FALSE, ativa com delay de 1s
+  const [showConfetti, setShowConfetti] = useState(false); // Starts FALSE, activates with 1s delay
   const [revealEntangled, setRevealEntangled] = useState(false);
   const [allMints, setAllMints] = useState<MintCard[]>([]);
   const [loadingMints, setLoadingMints] = useState(false);
@@ -33,27 +33,27 @@ export default function GalleryPage() {
       setEthMferId(parseInt(ethMfer));
     }
 
-    // Usa token ID do mint (sempre começa em 0, incrementa com cada mint)
-    // Busca do localStorage quantos mints já foram feitos
+    // Uses token ID from mint (always starts at 0, increments with each mint)
+    // Retrieves from localStorage how many mints have been made
     try {
       const existingMints = JSON.parse(localStorage.getItem('mferMints') || '[]');
-      const currentTokenId = existingMints.length - 1; // Último mint é o atual
+      const currentTokenId = existingMints.length - 1; // Last mint is current
       setTokenId(currentTokenId >= 0 ? currentTokenId : 0);
     } catch {
       setTokenId(0); // Fallback
     }
 
-    // 🚀 OPÇÃO B TIMING: Delay confetti by 1s for smooth page entry
-    // Timeline de revelação:
-    // 0-1s: Página entra sem animação (confetti desligado)
-    // 1-4s: Confeti animado por 3s
-    // 4-10.5s: Reveal + countdown completo
-    setTimeout(() => setShowConfetti(true), 1000); // Confete COMEÇA após 1s (não imediatamente)
-    setTimeout(() => setShowConfetti(false), 4000); // Confete para após 3s de animação
-    setTimeout(() => setRevealEntangled(true), 5000); // Reveal após 5s total
+    // 🚀 OPTION B TIMING: Delay confetti by 1s for smooth page entry
+    // Reveal timeline:
+    // 0-1s: Page enters without animation (confetti disabled)
+    // 1-4s: Confetti animated for 3s
+    // 4-10.5s: Reveal + full countdown
+    setTimeout(() => setShowConfetti(true), 1000); // Confetti STARTS after 1s (not immediately)
+    setTimeout(() => setShowConfetti(false), 4000); // Confetti stops after 3s animation
+    setTimeout(() => setRevealEntangled(true), 5000); // Reveal after 5s total
   }, [searchParams]);
 
-  // Carrega mints do localStorage (simulando rede)
+  // Loads mints from localStorage (simulating network)
   useEffect(() => {
     if (!mounted || !revealEntangled) return;
     
@@ -68,22 +68,22 @@ export default function GalleryPage() {
         }));
         setAllMints(mintCards);
       } catch (error) {
-        console.error('Erro ao carregar mints:', error);
+        console.error('Error loading mints:', error);
       }
       setLoadingMints(false);
-    }, 500); // Simula latência de rede
+    }, 500); // Simulates network latency
   }, [mounted, revealEntangled]);
 
   if (!mounted) return null;
 
   return (
     <div className="gallery-page">
-      {/* Botão voltar para home */}
+      {/* Back to home button */}
       <a href="/" className="back-to-home">
         ← Back to Home
       </a>
 
-      {/* Confete Matrix */}
+      {/* Confetti Matrix */}
       {showConfetti && (
         <div className="confetti-overlay">
           {Array.from({ length: 50 }).map((_, i) => (
@@ -102,7 +102,7 @@ export default function GalleryPage() {
         </div>
       )}
 
-      {/* Hero Section - NFT Mintado */}
+      {/* Hero section - NFT minted */}
       <section className="hero-section">
         <div className="hero-title">
           <h1>Your Mark is Recorded</h1>
@@ -121,7 +121,7 @@ export default function GalleryPage() {
         </div>
       </section>
 
-      {/* Entanglement Reveal */}
+      {/* Entanglement reveal */}
       <section className={`entanglement-section ${revealEntangled ? 'revealed' : ''}`}>
         {!revealEntangled ? (
           <div className="mystery-state">
@@ -152,7 +152,7 @@ export default function GalleryPage() {
         )}
       </section>
 
-      {/* Metadata Info */}
+      {/* Metadata info */}
       {revealEntangled && (
         <section className="metadata-section">
           <div className="metadata-info">
@@ -170,7 +170,7 @@ export default function GalleryPage() {
         </section>
       )}
 
-      {/* Mosaico de Mints - Carregado após Reveal */}
+      {/* Mosaic of mints - Loaded after reveal */}
       {revealEntangled && (
         <section className="mosaic-section">
           <h3 className="mosaic-title">All Your Mints</h3>
@@ -204,7 +204,7 @@ export default function GalleryPage() {
         </section>
       )}
 
-      {/* Magic Button - Mint Another */}
+      {/* Magic button - Mint another */}
       {mounted && revealEntangled && (
         <section className="mint-another-section">
           <MagicMintButton />
@@ -256,7 +256,7 @@ export default function GalleryPage() {
           }
         }
 
-        /* Confete */
+        /* Confetti */
         .confetti-overlay {
           position: fixed;
           inset: 0;
@@ -279,7 +279,7 @@ export default function GalleryPage() {
           }
         }
 
-        /* Hero Section */
+        /* Hero section */
         .hero-section {
           max-width: 600px;
           margin: 0 auto 60px;
@@ -301,12 +301,12 @@ export default function GalleryPage() {
         }
 
         .nft-display {
-          margin-top: 40px;
+          margin-top:00px;
         }
 
         .nft-frame {
           position: relative;
-          width: 100%;
+          width: 120%;
           max-width: 400px;
           margin: 0 auto;
           border-radius: 24px;
@@ -333,7 +333,7 @@ export default function GalleryPage() {
           50% { opacity: 1; transform: scale(1.05); }
         }
 
-        /* Entanglement Section */
+        /* Entanglement section */
         .entanglement-section {
           max-width: 600px;
           margin: 0 auto;
@@ -372,7 +372,7 @@ export default function GalleryPage() {
           animation: spin 1s linear infinite;
         }
 
-        /* Reveal State */
+        /* Reveal state */
         .reveal-state {
           animation: fadeInUp 0.8s ease;
         }
@@ -489,7 +489,7 @@ export default function GalleryPage() {
           text-decoration: underline;
         }
 
-        /* Mosaic Section */
+        /* Mosaic section */
         .mosaic-section {
           max-width: 800px;
           margin: 80px auto 0;
@@ -603,7 +603,7 @@ export default function GalleryPage() {
           font-size: 16px;
         }
 
-        /* Magic Button Section */
+        /* Magic button section */
         .mint-another-section {
           margin-top: 80px;
           padding-top: 40px;
