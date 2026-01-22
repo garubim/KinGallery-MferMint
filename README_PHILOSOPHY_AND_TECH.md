@@ -151,10 +151,13 @@ Connected: 0xbcd9...4d
 Confetti animation (3s) + Mystery "🌀 Discovering entangled Mfer..."
   ↓ After 4s reveal
 [Your artwork (Mfer)]
-[Metadata panel with entanglement info]
-[Mosaic grid of other Mfers]
+[Entanglement info: "Ethereum Mfer #N from original lineage (2021)"]
+[Destiny message: "The soul spins at a base —"]
 [Certidão section - hash, date, block, legacy Mfer]
-[Collision event (if applicable)]
+[Collision event badge (if applicable)]
+
+NOTE: Only interactive element = "view on basescan" link (small text under tx hash)
+No action buttons - pure information display per Magic Button philosophy
 ```
 
 ## 🔐 Environment Setup

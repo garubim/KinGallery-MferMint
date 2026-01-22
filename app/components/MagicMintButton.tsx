@@ -46,6 +46,7 @@ export default function MagicMintButton() {
   const [transactionState, setTransactionState] = useState<TransactionState>({ status: 'idle' });
   const [touchStart, setTouchStart] = useState(0);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
+  const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
 
   // Evita hydration error
   useEffect(() => {
@@ -110,6 +111,13 @@ export default function MagicMintButton() {
       console.log('✅ Wallet conectada em BASE:', { address, chain: chain?.name });
     }
   }, [isConnected, chain, address, switchChain]);
+
+  // Reset connectingWalletType quando a conexão terminar ou modal fechar
+  useEffect(() => {
+    if (isConnected || !showWalletModal) {
+      setConnectingWalletType(null);
+    }
+  }, [isConnected, showWalletModal]);
 
 
   const handleRightSideClick = () => {
@@ -297,7 +305,7 @@ export default function MagicMintButton() {
       
       // Mostra success overlay imediatamente
       setShowSuccessOverlay(true);
-      setCountdown(8);
+      setCountdown(10); // Countdown de 10 segundos (duração da animação)
       
       // Gera confetti
       const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
@@ -318,9 +326,9 @@ export default function MagicMintButton() {
         });
       }, 1000);
       
-      // Timer principal de 8 segundos
+      // Timer principal - Deixa animação rodar até o fim (~10 segundos)
       const slideTimer = setTimeout(() => {
-        console.log('⏰ 8 SEGUNDOS COMPLETADOS! Processando entanglement...');
+        console.log('⏰ ANIMAÇÃO COMPLETA! Processando entanglement...');
         
         // 🔗 LÓGICA DE ENTANGLEMENT COM COLISÃO
         // Calcula ethMferId usando últimos 6 dígitos do hash
@@ -375,29 +383,12 @@ export default function MagicMintButton() {
         
         console.log('📦 Mint registrado em localStorage');
         
-        // ✨ RITUAL COMPLETE - Magic Button fica visível com "Ritual Complete"
-        // Após Mfers animation (aprox 3-4s), redireciona pra página 2
-        console.log('✨ RITUAL COMPLETE - Iniciando transição pra página 2...');
-        
-        const mfersAnimationDone = setTimeout(() => {
-          console.log('🎬 Mfers animation completada. Redirecionando...');
-          const params = new URLSearchParams({
-            tx: hash,
-            ethMferId: ethMferId.toString()
-          });
-          if (collisionInfo) {
-            params.set('collision', JSON.stringify(collisionInfo));
-          }
-          window.location.href = `/gallery?${params.toString()}`;
-        }, 3500); // Aguarda 3.5s pra Mfers animation completar
-        
-        return () => clearTimeout(mfersAnimationDone);
+        // ✨ Redireciona para página 2 após animação completar
+        console.log('✨ Redirecionando para galeria...');
         setShowMinting(false);
         setIsSliding(true);
         
-        console.log('🎬 Iniciando slide animation...');
-        
-        // Redireciona após a animação de slide completar (0.8s)
+        // Aguarda a animação de slide (0.8s) antes de fazer a mudança de página
         setTimeout(() => {
           const params = new URLSearchParams({
             tx: hash,
@@ -407,7 +398,7 @@ export default function MagicMintButton() {
           console.log('🌍 REDIRECIONANDO PARA GALERIA:', { hash: hash.slice(0, 10), ethMferId, collisionInfo });
           window.location.href = `/gallery?${params.toString()}`;
         }, 900); // 0.8s do slide + margem
-      }, 8000); // Aguarda 8 segundos para conclusão da animação "Legacy Mfer Entangled!"
+      }, 10500); // 10.5 segundos - deixa animação rodar completamente (~10s) + margem
       
       return () => {
         clearTimeout(slideTimer);
@@ -503,16 +494,63 @@ export default function MagicMintButton() {
             <button className="wallet-modal-close" onClick={() => setShowWalletModal(false)}>×</button>
             <h2 style={{ color: 'white', marginBottom: '24px', fontSize: '24px', fontWeight: 'bold' }}>Connect Wallet</h2>
             
+            {/* Mensagem de status amigável durante conexão */}
+            {isConnecting && connectingWalletType && (
+              <div style={{
+                backgroundColor: 'rgba(74, 158, 255, 0.15)',
+                border: '1px solid #4a9eff',
+                borderRadius: '8px',
+                padding: '12px 16px',
+                marginBottom: '16px',
+                fontSize: '14px',
+                color: '#b0d4ff',
+                textAlign: 'center'
+              }}>
+                {connectingWalletType === 'eoa' && (
+                  <>
+                    <div>🔐 Assinando sua identidade...</div>
+                    <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
+                      Sua wallet vai pedir uma assinatura para confirmar que você é o dono desta carteira.
+                    </div>
+                  </>
+                )}
+                {connectingWalletType === 'smart' && (
+                  <>
+                    <div>🔐 Abrindo sua Passkey...</div>
+                    <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
+                      Use biometria ou PIN para verificar sua identidade.
+                    </div>
+                  </>
+                )}
+                {connectingWalletType === 'extension' && (
+                  <>
+                    <div>🔐 Conectando extensão...</div>
+                    <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
+                      Verifique a janela da sua wallet.
+                    </div>
+                  </>
+                )}
+                {connectingWalletType === 'wc' && (
+                  <>
+                    <div>🔐 Escaneie o QR Code...</div>
+                    <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
+                      Use sua wallet mobile para aprovar a conexão.
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            
             {!isConnected ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {/* Base Smart Account - Prioridade */}
+                {/* 🔷 Base Smart Account - Passkey apenas */}
                 <button
                   onClick={() => {
-                    // Pega o segundo conector coinbaseWallet (smartWalletOnly)
                     const smartWalletConnector = connectors.find(
                       (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 1
                     );
                     if (smartWalletConnector) {
+                      setConnectingWalletType('smart');
                       connect({ connector: smartWalletConnector, chainId: base.id });
                       setShowWalletModal(false);
                     }
@@ -520,25 +558,103 @@ export default function MagicMintButton() {
                   disabled={isConnecting}
                   className="wallet-connect-btn wallet-connect-btn-primary"
                 >
-                  🔷 Base Smart Account
+                  🔷 Base Smart Account (Passkey)
+                  {isConnecting && ' (Connecting...)'}
+                </button>
+
+                {/* 💳 Coinbase Wallet - EOA não-custodial */}
+                <button
+                  onClick={() => {
+                    const eaoConnector = connectors.find(
+                      (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 0
+                    );
+                    if (eaoConnector) {
+                      setConnectingWalletType('eoa');
+                      connect({ connector: eaoConnector, chainId: base.id });
+                      setShowWalletModal(false);
+                    }
+                  }}
+                  disabled={isConnecting}
+                  className="wallet-connect-btn"
+                >
+                  💳 Coinbase Wallet (EOA)
                   {isConnecting && ' (Connecting...)'}
                 </button>
                 
-                {/* Outras wallets */}
-                {connectors.filter((c, idx) => !(c.id === 'coinbaseWalletSDK' && idx === 1)).map((connector) => (
-                  <button
-                    key={connector.id}
-                    onClick={() => {
-                      connect({ connector, chainId: base.id });
+                {/* 🔗 WalletConnect - Para extensões e mobile */}
+                <button
+                  onClick={() => {
+                    const wcConnector = connectors.find(c => c.id === 'walletConnect');
+                    if (wcConnector) {
+                      setConnectingWalletType('wc');
+                      connect({ connector: wcConnector, chainId: base.id });
                       setShowWalletModal(false);
+                    }
+                  }}
+                  disabled={isConnecting}
+                  className="wallet-connect-btn"
+                >
+                  🔗 WalletConnect (QR Code)
+                  {isConnecting && ' (Connecting...)'}
+                </button>
+
+                {/* Detectar todas as extensões instaladas */}
+                {connectors
+                  .filter(c => 
+                    c.id !== 'coinbaseWalletSDK' && 
+                    c.id !== 'walletConnect' &&
+                    c.id !== 'injected' // Remove o 'injected' genérico, vamos mostrar os específicos
+                  )
+                  .map((connector, idx) => {
+                    let icon = '🦊'; // Padrão
+                    if (connector.name?.toLowerCase().includes('zerion')) {
+                      icon = '🟣'; // Zerion
+                    } else if (connector.name?.toLowerCase().includes('metamask')) {
+                      icon = '🦊'; // MetaMask
+                    } else if (connector.name?.toLowerCase().includes('brave')) {
+                      icon = '🦁'; // Brave
+                    } else if (connector.name?.toLowerCase().includes('coinbase')) {
+                      icon = '🔷'; // Coinbase injected
+                    } else if (connector.name?.toLowerCase().includes('trust')) {
+                      icon = '🛡️'; // Trust Wallet
+                    } else if (connector.name?.toLowerCase().includes('exodus')) {
+                      icon = '📤'; // Exodus
+                    }
+                    
+                    return (
+                      <button
+                        key={`${connector.id}-${idx}`}
+                        onClick={() => {
+                          setConnectingWalletType('extension');
+                          connect({ connector, chainId: base.id });
+                          setShowWalletModal(false);
+                        }}
+                        disabled={isConnecting}
+                        className="wallet-connect-btn"
+                      >
+                        {icon} {connector.name}
+                        {isConnecting && ' (Connecting...)'}
+                      </button>
+                    );
+                  })}
+
+                {/* Fallback: mostrar 'injected' genérico se nenhuma extensão foi detectada */}
+                {connectors.filter(c => c.id !== 'coinbaseWalletSDK' && c.id !== 'walletConnect').length === 1 && (
+                  <button
+                    onClick={() => {
+                      const injectedConnector = connectors.find(c => c.id === 'injected');
+                      if (injectedConnector) {
+                        connect({ connector: injectedConnector, chainId: base.id });
+                        setShowWalletModal(false);
+                      }
                     }}
                     disabled={isConnecting}
                     className="wallet-connect-btn"
                   >
-                    {connector.name}
+                    🦊 {connectors.find(c => c.id === 'injected')?.name || 'Browser Wallet'}
                     {isConnecting && ' (Connecting...)'}
                   </button>
-                ))}
+                )}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

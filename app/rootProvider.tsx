@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { base } from 'viem/chains';
 import { WagmiProvider, createConfig, http } from 'wagmi';
-import { injected, coinbaseWallet } from 'wagmi/connectors';
+import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +31,15 @@ const wagmiConfig = createConfig({
   connectors: [
     coinbaseWallet({
       appName: 'KinGallery',
-      preference: 'smartWalletOnly', // Força apenas Smart Wallet com biometria obrigatória
+      // EOA: oferece opção de carteiras non-custodial
+    }),
+    coinbaseWallet({
+      appName: 'KinGallery',
+      preference: 'smartWalletOnly', // Smart Account ONLY via Passkey/Biometria
+    }),
+    walletConnect({
+      projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '44788a3961a4e5fa217c4ddb6ae62da8',
+      showQrModal: true,
     }),
     injected({
       shimDisconnect: true,

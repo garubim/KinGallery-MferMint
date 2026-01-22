@@ -1,4 +1,6 @@
-# 🎭 UI + MAGIC BUTTON - HANDOFF COMPLETO
+OLD, NOT UPDATE.
+
+# 🎭 UI + MAGIC BUTTON - HANDOFF OUT-OF-DAY (DEPRECATED)
 
 ## ✨ O QUE FOI ENTREGUE HOJE
 
@@ -29,7 +31,17 @@
 
 ### ✅ Todas as 6 Fases Documentadas
 
-```
+
+
+FASE ??: Maybe at the very first, with the splash - opening app.
+└─ "The soul spins at a base - where the smile comes home."
+
+FASE 2: Welcome Sequence (5-6 segundos)
+└─ 11 frases: "Welcome," → "Welcome to Kinmutable art" → ... → "Click to Connect"
+
+FASE 3: Magic Button Intro (6 segundos)
+└─ 10 frases: "The eyes, see 9/11 !" → ... → "Click to Mint"
+
 FASE 0: Metadata (Smart Contract)
 ├─ "This is not animation; it's a ritual"
 └─ "The soul spins at a base - This base is where that smile comes home."
@@ -37,19 +49,10 @@ FASE 0: Metadata (Smart Contract)
 FASE 1: Splash (4 segundos)
 └─ "Save the ritual on your profile"
 
-FASE 2: Welcome Sequence (5-6 segundos)
-└─ 11 frases: "Welcome," → "Welcome to Kin" → ... → "Click to Connect"
-
-FASE 3: Magic Button Intro (6 segundos)
-└─ 10 frases: "Great eyes!" → ... → "Click to Mint"
-
 FASE 4: During Mint (3-5 segundos)
 └─ "it's a ritual" (crawl infinito da direita pra esquerda)
 
-FASE 5: Success Page (2-3 segundos)
-└─ "The soul spins at a base - where the smile comes home."
-
-FASE 6: Meta/Social (Anytime)
+FASE 6: KinGallery Page top - all people math..
 └─ "The art isn't in the spin; it's in that precise moment of *recognition*."
 ```
 
@@ -203,25 +206,13 @@ npm run dev
 
 ### Documentação Existente
 - ✅ QUICK_START.md
-- ✅ ANIMATED_TEXT_LAYER_GUIDE.md
 - ✅ BLOCKCHAIN_WRITE_OVERLAY.md
 - ✅ CODEPOEM_STRATEGY_ROADMAP.md
 - ✅ CODEPOEM_DISCRETE_PRESENCE.md
 
 ---
 
-## 🚀 PRÓXIMOS PASSOS
 
-### Imediato (Today)
-- [ ] Read: FRASES_ROTEIRO_COMPLETO.md
-- [ ] Review: UI_MAGIC_BUTTON_COMPLETE_GUIDE.md
-- [ ] Testar: npm run dev + click button
-
-### Curto Prazo (This Week)
-- [ ] Criar componentes Welcome sequence
-- [ ] Criar componentes Magic button intro
-- [ ] Conectar smart contract real
-- [ ] Testar timing (adjust se necessário)
 
 ### Médio Prazo (Next 2 weeks)
 - [ ] Adicionar frases aos componentes

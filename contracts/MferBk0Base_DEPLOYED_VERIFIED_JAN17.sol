@@ -155,6 +155,13 @@ contract MferBk0Base is ERC721, ERC2981, Ownable {
     function setBaseURI(string memory newURI) external onlyOwner {
         _baseTokenURI = newURI;
     }
+
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
+        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        string memory baseURI = _baseURI();
+        // Adiciona .json automaticamente no final da URI
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
+    }
     
     function setGallery(address newGallery) external onlyOwner {
         require(newGallery != address(0), "Invalid gallery");

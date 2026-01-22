@@ -114,7 +114,29 @@ Se precisar dos constructor args já encoded para BaseScan:
 | **Interface do frontend** | Igual | Igual ✅ |
 
 ---
+## 🖼️ METADATA & IPFS (Nova Seção)
 
+### ⏳ PLANEJADO PARA REDEPLOY (Quando MferBk0Base for redeployado)
+
+**Status**: 📋 Documentado em [METADATA_TOKENURI_FIX.md](./METADATA_TOKENURI_FIX.md)
+
+**Mudanças no contrato:**
+- ✅ `tokenURI()` agora retorna `.json` automaticamente
+- ✅ Pode apontar para IPFS ou backend
+
+**Próximos passos para Metadata:**
+1. ☐ **Gerar 1000 JSONs** (automático via script)
+2. ☐ **Subir em IPFS + Pinata** (batch automático)
+3. ☐ **Configurar baseURI** para apontar ao IPFS
+4. ☐ **Validar no OpenSea** que metadados carregam
+
+**Abordagem escolhida**: IPFS + Script Automático
+- Razão: Máxima durabilidade (sem risco de servidor cair)
+- Quando: Após UI estar testada e pronta
+
+**Referência**: Ver [METADATA_TOKENURI_FIX.md](./METADATA_TOKENURI_FIX.md) para detalhes técnicos.
+
+---
 ## ✅ CHECKLIST FINAL
 
 - [ ] Código compilou no Remix SEM erros
