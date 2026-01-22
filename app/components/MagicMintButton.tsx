@@ -47,6 +47,7 @@ export default function MagicMintButton() {
   const [touchStart, setTouchStart] = useState(0);
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
+  const [hasRedirected, setHasRedirected] = useState(false);
 
   // Evita hydration error
   useEffect(() => {
@@ -297,115 +298,42 @@ export default function MagicMintButton() {
     }
   }, [hash, isPending, isSuccess]);
 
-  // Aguarda 8 segundos (até "Legacy Mfer Entangled!") antes de fazer slide para página 2
-  // O blockNumber carrega depois, assincronamente - não bloqueia o fluxo do usuário
+  // Aguarda transação ser confirmada, depois faz redirect IMEDIATAMENTE
+  // A animação da página 2 começa com delay de 1s para não chocar com entrada
   useEffect(() => {
-    if (showMinting && isSuccess && hash) {
-      console.log('✅ MINT CONFIRMADO! Mostrando success overlay com countdown...', { hash, isSuccess });
+    if (showMinting && isSuccess && hash && !hasRedirected) {
+      console.log('✅ MINT CONFIRMADO! Redirecionando IMEDIATAMENTE para página 2...', { hash, isSuccess });
       
-      // Mostra success overlay imediatamente
+      // 🚀 OPÇÃO B: Redirect IMEDIATAMENTE (não espera animação completar)
+      const lastSixHash = hash.slice(-6);
+      const lastSixNum = parseInt(lastSixHash, 16);
+      const ethMferId = (lastSixNum % 9999) + 1;
+      const params = new URLSearchParams({
+        tx: hash,
+        ethMferId: ethMferId.toString()
+      });
+      
+      // Mark como redirected para não fazer duplo redirect
+      setHasRedirected(true);
+      
+      // Delay mínimo (50ms) para UI atualizar antes de navegar
+      setTimeout(() => {
+        window.location.href = `/gallery?${params.toString()}`;
+      }, 50);
+      
+      // Mostra success overlay enquanto navega (não vai ser visto, mas fica pronto)
       setShowSuccessOverlay(true);
       setCountdown(10); // Countdown de 10 segundos (duração da animação)
       
-      // Gera confetti
+      // Gera confetti (vai ser renderizado na página 2 com delay de 1s)
       const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
         id: i,
         left: Math.random() * 100,
         delay: Math.random() * 0.3
       }));
       setConfetti(confettiPieces);
-      
-      // Timer que roda a cada segundo para o countdown
-      const countdownInterval = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(countdownInterval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      
-      // Timer principal - Deixa animação rodar até o fim (~10 segundos)
-      const slideTimer = setTimeout(() => {
-        console.log('⏰ ANIMAÇÃO COMPLETA! Processando entanglement...');
-        
-        // 🔗 LÓGICA DE ENTANGLEMENT COM COLISÃO
-        // Calcula ethMferId usando últimos 6 dígitos do hash
-        const lastSixHash = hash.slice(-6);
-        const lastSixNum = parseInt(lastSixHash, 16);
-        let ethMferId = (lastSixNum % 9999) + 1;
-        
-        console.log('🔗 ENTANGLEMENT CALC:', { 
-          hash: hash.slice(0, 10) + '...' + hash.slice(-8),
-          lastSixHash,
-          lastSixNum,
-          ethMferId
-        });
-        
-        // Verifica se já existe esse ethMferId em localStorage (colisão)
-        const existingMints = JSON.parse(localStorage.getItem('mferMints') || '[]');
-        const hasCollision = existingMints.some((mint: any) => mint.ethMferId === ethMferId);
-        
-        let collisionInfo = null;
-        if (hasCollision) {
-          console.log('⚡ COLISÃO DETECTADA! Usando primeiros 6 dígitos do hash...');
-          
-          // Se houver colisão, usa primeiros 6 dígitos
-          const firstSixHash = hash.slice(2, 8); // Remove '0x'
-          const firstSixNum = parseInt(firstSixHash, 16);
-          const collisionEthMferId = (firstSixNum % 9999) + 1;
-          
-          // Soma ambos para chegar ao número original Mfers ETH #1
-          const originalMferNumber = (ethMferId + collisionEthMferId) % 10000;
-          
-          collisionInfo = {
-            type: 'collision',
-            lastSixEthMferId: ethMferId,
-            firstSixEthMferId: collisionEthMferId,
-            originalMferNumber: originalMferNumber || 1,
-            message: `🌠 Colisão de Hash! Seu mint subiu no ranking e conecta ao Mfers Original #${originalMferNumber || 1} na ETH`
-          };
-          
-          ethMferId = collisionEthMferId; // Usa o primeiro 6 para exibição
-          
-          console.log('🌠 COLISÃO ESPECIAL:', collisionInfo);
-        }
-        
-        // Registra novo mint em localStorage para futuras colisões
-        existingMints.push({
-          hash,
-          ethMferId,
-          timestamp: new Date().toISOString(),
-          collisionInfo
-        });
-        localStorage.setItem('mferMints', JSON.stringify(existingMints));
-        
-        console.log('📦 Mint registrado em localStorage');
-        
-        // ✨ Redireciona para página 2 após animação completar
-        console.log('✨ Redirecionando para galeria...');
-        setShowMinting(false);
-        setIsSliding(true);
-        
-        // Aguarda a animação de slide (0.8s) antes de fazer a mudança de página
-        setTimeout(() => {
-          const params = new URLSearchParams({
-            tx: hash,
-            ethMferId: ethMferId.toString(),
-            ...(collisionInfo && { collision: JSON.stringify(collisionInfo) })
-          });
-          console.log('🌍 REDIRECIONANDO PARA GALERIA:', { hash: hash.slice(0, 10), ethMferId, collisionInfo });
-          window.location.href = `/gallery?${params.toString()}`;
-        }, 900); // 0.8s do slide + margem
-      }, 10500); // 10.5 segundos - deixa animação rodar completamente (~10s) + margem
-      
-      return () => {
-        clearTimeout(slideTimer);
-        clearInterval(countdownInterval);
-      };
     }
-  }, [showMinting, isSuccess, hash]);
+  }, [showMinting, isSuccess, hash, hasRedirected]);
 
   // Renderiza vazio até montar no cliente
   if (!mounted) {

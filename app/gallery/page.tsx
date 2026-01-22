@@ -16,7 +16,7 @@ export default function GalleryPage() {
   const [mounted, setMounted] = useState(false);
   const [tokenId, setTokenId] = useState<number | null>(null);
   const [ethMferId, setEthMferId] = useState<number | null>(null);
-  const [showConfetti, setShowConfetti] = useState(true);
+  const [showConfetti, setShowConfetti] = useState(false); // Começa FALSE, ativa com delay de 1s
   const [revealEntangled, setRevealEntangled] = useState(false);
   const [allMints, setAllMints] = useState<MintCard[]>([]);
   const [loadingMints, setLoadingMints] = useState(false);
@@ -43,9 +43,14 @@ export default function GalleryPage() {
       setTokenId(0); // Fallback
     }
 
-    // Timeline de revelação
-    setTimeout(() => setShowConfetti(false), 3000); // Confete por 3s
-    setTimeout(() => setRevealEntangled(true), 4000); // Reveal após 4s
+    // 🚀 OPÇÃO B TIMING: Delay confetti by 1s for smooth page entry
+    // Timeline de revelação:
+    // 0-1s: Página entra sem animação (confetti desligado)
+    // 1-4s: Confeti animado por 3s
+    // 4-10.5s: Reveal + countdown completo
+    setTimeout(() => setShowConfetti(true), 1000); // Confete COMEÇA após 1s (não imediatamente)
+    setTimeout(() => setShowConfetti(false), 4000); // Confete para após 3s de animação
+    setTimeout(() => setRevealEntangled(true), 5000); // Reveal após 5s total
   }, [searchParams]);
 
   // Carrega mints do localStorage (simulando rede)
