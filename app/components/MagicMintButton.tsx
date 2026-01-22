@@ -18,7 +18,7 @@ export default function MagicMintButton() {
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
   
-  // Hooks de segurança pré-deployment
+  // Pre-deployment security hooks
   const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
   
   // Debug: Atalho para pular direto pra success screen
@@ -26,7 +26,7 @@ export default function MagicMintButton() {
     const debugMint = searchParams.get('debugMint');
     if (debugMint === 'success') {
       setShowSuccessOverlay(true);
-      // Auto-redirect após 3.5s
+      // Auto-redirect after 3.5s
       const timer = setTimeout(() => {
         router.push('/gallery?debug=true&tx=debug');
       }, 3500);
@@ -52,7 +52,7 @@ export default function MagicMintButton() {
   // Evita hydration error
   useEffect(() => {
     setMounted(true);
-    // Debug: Log estado inicial de conexão
+    // Debug: Log initial connection state
     console.log('🎯 MagicMintButton mounted', {
       isConnected,
       address,
@@ -314,10 +314,10 @@ export default function MagicMintButton() {
         ethMferId: ethMferId.toString()
       });
       
-      // Mark como redirected para não fazer duplo redirect
+      // Mark as redirected to prevent double redirect
       setHasRedirected(true);
       
-      // Delay mínimo (50ms) para UI atualizar antes de navegar
+      // Minimum delay (50ms) for UI to update before navigation
       setTimeout(() => {
         window.location.href = `/gallery?${params.toString()}`;
       }, 50);
@@ -395,7 +395,7 @@ export default function MagicMintButton() {
             }}
           />
 
-          {/* ➡️ SETA VERDE - Indicando swipe/long-press (aparece após ~0.5s) */}
+          {/* ➡️ GREEN ARROW - Indicates swipe/long-press (appears after ~0.5s) */}
           <img 
             src="/MagicButton-OfficialAnimatedTitles/GO TO RIGHT-GOTOGALLERY-FOLLOW-THEARRO-1L1+L2Cn8453.+ Alpha-1280x720px-WEBP-HIGH_Q.webp"
             alt="Swipe to Gallery"
@@ -412,18 +412,18 @@ export default function MagicMintButton() {
             }}
           />
 
-          {/* Magic Button agora mostra animações e é clicável pra ir pra página 2 */}
+          {/* Magic button now shows animations and is clickable to go to page 2 */}
         </>
       )}
 
-      {/* Magic Button - Animação Principal */}
+      {/* Magic button - Main animation */}
       {showWalletModal && (
         <div className="wallet-modal-overlay" onClick={() => setShowWalletModal(false)}>
           <div className="wallet-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="wallet-modal-close" onClick={() => setShowWalletModal(false)}>×</button>
             <h2 style={{ color: 'white', marginBottom: '24px', fontSize: '24px', fontWeight: 'bold' }}>Connect Wallet</h2>
             
-            {/* Mensagem de status amigável durante conexão */}
+            {/* Friendly status message during wallet connection */}
             {isConnecting && connectingWalletType && (
               <div style={{
                 backgroundColor: 'rgba(74, 158, 255, 0.15)',
@@ -491,7 +491,7 @@ export default function MagicMintButton() {
                   {isConnecting && ' (Connecting...)'}
                 </button>
 
-                {/* 💳 Coinbase Wallet - EOA não-custodial */}
+                {/* 💳 Coinbase Wallet - Non-custodial EOA */}
                 <button
                   onClick={() => {
                     const eaoConnector = connectors.find(
@@ -510,7 +510,7 @@ export default function MagicMintButton() {
                   {isConnecting && ' (Connecting...)'}
                 </button>
                 
-                {/* 🔗 WalletConnect - Para extensões e mobile */}
+                {/* 🔗 WalletConnect - For extensions and mobile */}
                 <button
                   onClick={() => {
                     const wcConnector = connectors.find(c => c.id === 'walletConnect');
@@ -527,15 +527,15 @@ export default function MagicMintButton() {
                   {isConnecting && ' (Connecting...)'}
                 </button>
 
-                {/* Detectar todas as extensões instaladas */}
+                {/* Detect all installed extensions */}
                 {connectors
                   .filter(c => 
                     c.id !== 'coinbaseWalletSDK' && 
                     c.id !== 'walletConnect' &&
-                    c.id !== 'injected' // Remove o 'injected' genérico, vamos mostrar os específicos
+                    c.id !== 'injected' // Remove generic 'injected', show specific ones
                   )
                   .map((connector, idx) => {
-                    let icon = '🦊'; // Padrão
+                    let icon = '🦊'; // Default
                     if (connector.name?.toLowerCase().includes('zerion')) {
                       icon = '🟣'; // Zerion
                     } else if (connector.name?.toLowerCase().includes('metamask')) {
@@ -567,7 +567,7 @@ export default function MagicMintButton() {
                     );
                   })}
 
-                {/* Fallback: mostrar 'injected' genérico se nenhuma extensão foi detectada */}
+                {/* Fallback: show generic 'injected' if no extensions detected */}
                 {connectors.filter(c => c.id !== 'coinbaseWalletSDK' && c.id !== 'walletConnect').length === 1 && (
                   <button
                     onClick={() => {
@@ -674,9 +674,9 @@ export default function MagicMintButton() {
         </div>
       )}
 
-      {/* Casulo de vidro - contém a animação WebP */}
+      {/* Glass cocoon - contains WebP animation */}
       <div className="glass-shell">
-        {/* Animação WebP de fundo */}
+        {/* Background WebP animation */}
         <img 
           src={showMinting
             ? "/MagicButton-OfficialAnimatedTitles/Multichain-Mfer-Legacy-Entanglement-1280X1080px-WebPAnim-High.webp"
@@ -688,11 +688,18 @@ export default function MagicMintButton() {
           className="magic-animation"
         />
 
-        {/* Glass reflex layer */}
+        {/* Glass reflex layer - all three layers now use animated WebM for full-button effect */}
         <div className="glass-reflex">
-          <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
           <video 
-            src="/MagicButton-OfficialAnimatedTitles/Magic-button-Shaderemovement,-veryhighQT-ProRes4444+Alpha-HQ.webm" 
+            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm"
+            className="reflex-layer reflex-1"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <video 
+            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm" 
             className="reflex-layer reflex-2"
             autoPlay
             loop
@@ -720,7 +727,7 @@ export default function MagicMintButton() {
           </div>
         )}
 
-        {/* Botão invisível mas funcional */}
+        {/* Invisible but functional button */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <button 
             onClick={!isConnected 
@@ -1000,12 +1007,12 @@ export default function MagicMintButton() {
           pointer-events: none;
         }
 
-        /* Pausa todas as animações quando modal de erro está ativo */
+        /* Pause all animations when error modal is active */
         .magic-button-container.error-active {
           pointer-events: none;
         }
 
-        /* Permite interação com o modal de erro mesmo com pointer-events: none no pai */
+        /* Allow interaction with error modal even with pointer-events: none on parent */
         .magic-button-container.error-active .error-modal-overlay {
           pointer-events: auto;
         }
@@ -1410,7 +1417,7 @@ export default function MagicMintButton() {
           }
         }
 
-        /* Título */
+        /* Title */
         .success-content-expanded h1 {
           font-size: 48px;
           font-weight: 900;
@@ -1420,7 +1427,7 @@ export default function MagicMintButton() {
           animation: slideDown 0.6s ease 0.3s backwards;
         }
 
-        /* Descrição */
+        /* Description */
         .success-description {
           font-size: 18px;
           color: rgba(255, 255, 255, 0.95);
@@ -1542,7 +1549,7 @@ export default function MagicMintButton() {
           box-shadow: 0 0 10px rgba(0, 255, 150, 0.6);
         }
 
-        /* Botão "Ver NFT Agora" */
+        /* "View NFT Now" button */
         .see-nft-button {
           background: linear-gradient(135deg, rgba(0, 255, 150, 0.3), rgba(0, 200, 100, 0.3));
           border: 2px solid rgba(0, 255, 150, 0.7);

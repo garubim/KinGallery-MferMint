@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 17px;              // ← AJUSTÁVEL
+  margin-top: 13px;              // ← AJUSTÁVEL
   margin-bottom: 20px;           // ← AJUSTÁVEL
   transition: all 3s cubic-bezier(0.77, 0, 0.175, 1);
 }
@@ -39,7 +39,7 @@
 - `width: 480px` - Largura do botão
 - `height: 190px` - Altura do botão
 - `border-radius: 120px` - Curvatura (quanto maior, mais redondo)
-- `backdrop-filter: blur(30px)` - Intensidade do blur de vidro
+- `backdrop-filter: blur(10px)` - Intensidade do blur de vidro
 
 ---
 
@@ -53,7 +53,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 5;
+  z-index: 3;
   mix-blend-mode: lighten;        // ← MODO DE MISTURA (AJUSTÁVEL)
   opacity: 0.7;                    // ← OPACIDADE GERAL (0-1)
 }
@@ -61,7 +61,7 @@
 .reflex-layer {
   position: absolute;
   width: 100%;
-  height: 100%;
+  height: 90%;
   object-fit: cover;
   pointer-events: none;
 }
@@ -72,7 +72,7 @@
 
 .reflex-2 {
   opacity: 0.8;                    // ← Segundo reflexo (video shader)
-  filter: brightness(0.7);         // ← Luminosidade do reflexo
+  filter: brightness(1.7);         // ← Luminosidade do reflexo
 }
 ```
 
@@ -85,7 +85,7 @@
 **Linhas: 1103-1109**
 ```typescript
 .glass-shell:hover {
-  transform: scale(1.02);          // ← Ampliação ao hover (AJUSTÁVEL)
+  transform: scale(1.03);          // ← Ampliação ao hover (AJUSTÁVEL)
   box-shadow: 
     0 12px 48px rgba(0, 230, 255, 0.2),  // ← Glow (cor ciano)
     inset 0 1px 0 rgba(255, 255, 255, 0.15);

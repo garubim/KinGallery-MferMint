@@ -57,7 +57,7 @@ export default function Page() {
           </button>
 
           <div className="splash-logo">
-            <img src="/icon.png" alt="KinGallery" style={{ width: '80px', height: '80px', borderRadius: '20px' }} />
+            <img src="/icon.png" alt="KinGallery" style={{ width: '90px', height: '90px', borderRadius: '20px' }} />
           </div>
           
           <div className="loading-spinner"></div>
@@ -282,16 +282,16 @@ export default function Page() {
           width: min(640px, 98vw);
           height: min(98vh, 1100px);
           /* Petrogreen: */
-          background: url('/walls/disc-wall-petrogreen.webp') center/cover no-repeat;
+          background: url('/walls/disc-wall-gold.webp') center/cover no-repeat;
           /* Opções: brightgold | blue | dark-blue | blue-grey | gold | black */
-          opacity: 0.4;
+          opacity: 0.6;
           z-index: -1;
           border-radius: 20px;
         }
 
         .header {
           text-align: center;
-          padding-top: 36px;
+          padding-top: 20px;
           padding-bottom: 8px;
           position: relative;
           z-index: 10;
@@ -301,8 +301,8 @@ export default function Page() {
           font-size: 1.3rem;
           margin: 0;
           margin-bottom: 8px;
-          color: rgba(255, 255, 255, 0.85);
-          font-weight: 600;
+          color: rgba(255, 224, 192, 0.85);
+          font-weight: 700;
           letter-spacing: 0.05em;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
           text-shadow: 
@@ -313,19 +313,19 @@ export default function Page() {
         }
 
         .concept {
-          color: rgba(255,255,255,0.45);
-          font-size: 0.85rem;
+          color:  hsla(40, 100%, 92%, 0.50);
+          font-size: 0.95rem;
           margin: 0;
           letter-spacing: 0.02em;
           font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          font-weight: 400;
+          font-weight: 500;
           line-height: 1.5;
           font-style: italic;
         }
 
         .bold-moment {
-          font-weight: 600;
-          color: rgba(255,255,255,0.5);
+          font-weight: 700;
+          color: hsla(40, 100%, 92%, 0.50);
         }
 
         .main-content {
@@ -337,7 +337,7 @@ export default function Page() {
           gap: 0;
           width: 100%;
           padding: 0;
-          margin-top: -12mm;
+          margin-top: -10mm;
         }
 
         .artwork-section {
@@ -361,12 +361,12 @@ export default function Page() {
           position: relative;
           width: 100%;
           aspect-ratio: 3/4;
-          max-width: 375px;
-          margin-top: 45px;
+          max-width: 450px;
+          margin-top: 50px;
           border-radius: 12px;
           overflow: hidden;
           box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 20px 50px rgba(0,0,0,0.8);
-          border: 8px solid #0a0f1a;
+          border: 8px solid #554b1b;
           background: #000;
         }
 
@@ -385,12 +385,12 @@ export default function Page() {
           bottom: 12px;
           right: 12px;
           width: 32px;
-          height: 32px;
+          height: 30px;
           background: transparent;
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.3);
+          backdrop-filter: blur(06px);
+          border: 1px solid rgba(243, 232, 171, 0.3);
           border-radius: 8px;
-          color: rgba(255, 255, 255, 0.7);
+          color: rgba(242, 226, 167, 0.7);
           font-size: 16px;
           display: flex;
           align-items: center;
@@ -412,7 +412,7 @@ export default function Page() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          color: rgba(255,255,255,0.5);
+          color: rgba(255, 229, 200, 0.5);
           font-size: 0.9rem;
           z-index: 0;
           display: flex;
@@ -428,7 +428,7 @@ export default function Page() {
         }
 
         .loading-slow {
-          color: rgba(255, 255, 255, 0.4);
+          color: rgba(251, 228, 209, 0.4);
           font-size: 0.75rem;
           margin-top: 8px;
         }
@@ -437,7 +437,7 @@ export default function Page() {
           width: 24px;
           height: 24px;
           border: 2px solid rgba(255, 255, 255, 0.1);
-          border-top-color: rgba(0, 255, 136, 0.6);
+          border-top-color: rgba(255, 204, 0, 0.6);
           border-radius: 50%;
           animation: spin 1s linear infinite;
         }
