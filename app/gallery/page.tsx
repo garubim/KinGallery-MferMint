@@ -163,6 +163,10 @@ export default function GalleryPage() {
   useEffect(() => {
     const fetchMintedNFTs = async () => {
       setLoadingMints(true);
+      
+      // 🔄 Pequeno delay pra deixar a blockchain indexar o mint
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
       try {
         const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
         const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
@@ -181,7 +185,7 @@ export default function GalleryPage() {
         
         const blockData = await blockResponse.json();
         const currentBlock = parseInt(blockData.result, 16);
-        const fromBlock = Math.max(0, currentBlock - 50000); // últimos ~50k blocos (~5 dias)
+        const fromBlock = Math.max(0, currentBlock - 5000); // últimos ~5k blocos (~12 horas, mais rápido)
         
         console.log(`📊 Buscando logs do bloco ${fromBlock} ao ${currentBlock}...`);
         
@@ -207,6 +211,8 @@ export default function GalleryPage() {
 
         const data = await response.json();
         
+        console.log('📡 RPC Response:', data);
+        
         if (data.error) {
           console.error('❌ RPC Error:', data.error);
           setMintedNFTs([]);
@@ -215,6 +221,37 @@ export default function GalleryPage() {
         
         const transfers = data.result || [];
         console.log(`📦 Encontrados ${transfers.length} Transfer events`);
+        if (transfers.length > 0) console.log('🔍 First transfer:', transfers[0]);
+        
+        // 🔧 Se não encontrou logs nos últimos 5k blocos, tenta buscar desde o bloco 0 do contrato
+        if (transfers.length === 0) {
+          console.warn('⚠️ Nenhum mint encontrado nos últimos 5k blocos, tentando desde início do contrato...');
+          const response2 = await fetch(rpcEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 2,
+              method: 'eth_getLogs',
+              params: [{
+                address: mferContractAddress,
+                topics: [
+                  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+                  '0x0000000000000000000000000000000000000000000000000000000000000000'
+                ],
+                fromBlock: '0x0',
+                toBlock: '0x' + currentBlock.toString(16)
+              }]
+            })
+          });
+          const data2 = await response2.json();
+          if (data2.result && data2.result.length > 0) {
+            console.log(`✅ Encontrados ${data2.result.length} mints desde o início!`);
+            transfers.push(...data2.result);
+          } else {
+            console.warn('❌ Ainda nenhum mint encontrado - RPC pode estar com problemas ou contrato não tem mints');
+          }
+        }
         
         // Processa cada transfer para extrair tokenId e owner
         const nfts = transfers.map((log: any) => {

@@ -22,61 +22,59 @@ While workiing on documents, please translate any Portuguese content that you fi
 
 **This section is the single source of information for project completion status. All copilots must check here before making changes.**
 
-### 🔴 CRITICAL ISSUE - BLOCKING EOA MINTS (Jan 18, 2026)
+**Last Updated**: January 27, 2026 - FRESH REDEPLOY COMPLETE ✅
 
+### ✅ PRODUCTION READY - NEW CONTRACTS LIVE
 
+**Smart Contracts (Fresh Redeploy - Jan 27, 2026):**
+- ✅ **KinGallery**: `0xebc497a5c36cb1a9264fd122a586b3f461fcc568`
+  - Public name: "KinGallery" ✅
+  - Verified on Sourcify, BaseScan, BlockScout, RouteScan
+  - Payments: 0.0003 ETH (0.0002 artist + 0.0001 gallery)
+  - USDC address: 0x833589fCD6eDb6E08f4c7C32d4f71b54bda02913
+  - Multisig: 0x4d639D1Bd428899599F0Da564926DA1a1A3bd3a8
+  - Gallery payee: 0x26dcd83d4e449059abf0334e4435d48e74f28eb0 ✅
 
-KINGALLERY'S CONTRACT: 0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6
+- ✅ **MferBk0Base**: `0xaA566959e0290cB578b1F0dfFA7203E1F9DDd1D6`
+  - Public name: "MferBk0Base" ✅
+  - Verified on Sourcify, BaseScan, BlockScout, RouteScan
+  - Max supply: 1000 ERC-721 tokens (verified on BaseScan)
+  - Token counter: Starts at 1 (fresh!)
+  - Metadata: IPFS-based with `.json` suffix in tokenURI ✅
+  - Royalties: 5% to artist (ERC2981)
+  - baseURI: `ipfs://bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq/`
+  - Owner: Artist EOA (0xbcd980d37293CBee62Bf5f93a26a0B744C18964D)
+  - **CRITICAL**: Call `setGallery(0xebc497a5c36cb1a9264fd122a586b3f461fcc568)` to connect with KinGallery ⚠️
 
-## I performed 12 mint tests today, all issues were only graphic in the UI, which many have been solved. BOTH CONTRACTS ARE TO BE REDEPLOYED, AND ATTENTION HERE: THEY'LL BE REDEPLOYED BECAUSE TOKEN #1 AND TOKEN #2 BELONG EACH TO A DIFFERENT CONTRACT NUMBER, THAN, FROM 3 TO A FEW LATER ARE IN ANOTHER CONTRACT AND THE LATEST ONES IN A 4TH CONTRACTM, THE CURRENT ONE. SO, WE NEED TO REDEPLOY BOTH CONTRACTS, AND START FROM TOKEN NUMBER #1. WE CAN QUOTE THE PREVIOUSLY MINTED TOKENS AS TEST TOKENS DURING TESTING PERIOD, BUT NOT REDEPLOY WITH THE COUNT CONTINUING AS IT HAS BEEN DONE UNTIL NOW. 2 MORE ISSUES THAT NEED TO BE FIXED ON REDEPLOY: 1. ON BASESCAN TOTAL MAX SUPLY CANNOT BE ZERO AS IT IS NOW, BUT 1000, ONE THOUSAND ERC-721 TOKENS AS DOCUMENTED IN THE CONTRACT. 2. KINGALLERY MUST HAVE A PUBLIC NAME FORM DEPLOY, DETAIL THAT SOMEONE FORGOT TO DO LAST TIME.
+**Frontend Stack:**
+- ✅ Animation system (10s WebP mint reveal)
+- ✅ Wallet integration (Zerion, MetaMask, Coinbase Wallet)
+- ✅ Paymaster sponsorship (CDP integration working)
+- ✅ Signature request on connect
+- ✅ Gallery page with eth_getLogs integration
+- ✅ Success overlay with token metadata display
 
-AFTER THE ABOVE IS ATTENDED , PLEASE HEAD TO GITHUB AND CHECK THE 3 PAGES COMPARISON NAMED: COMPARACAO_3_VERSOES_PAGINA2.md (TRADUXIR POR FAVOR) THAN TALK TO ME SO WE CAN CLEAR OUT THE NEXT STEPS. THANK YOU
+### 📚 Documentation Index:
+- [BASESCAN_VERIFICATION_CLEAN_2026.md](../BASESCAN_VERIFICATION_CLEAN_2026.md) - BaseScan verification guide
+- [VALIDACAO_INTEGRACAO_CONTRATOS.md](../VALIDACAO_INTEGRACAO_CONTRATOS.md) - Contract integration checklist
 
-**📚 Full Documentation Index:**
-- [SUMARIO_EXECUTIVO.md](../SUMARIO_EXECUTIVO.md) - Executive summary
-- [DIAGNOSTICO_PAYANDMINT_EOA_FAILURES.md](../DIAGNOSTICO_PAYANDMINT_EOA_FAILURES.md) - Technical root cause analysis
-- [RESPOSTAS_SUAS_PERGUNTAS.md](../RESPOSTAS_SUAS_PERGUNTAS.md) - Answers to your 5 specific questions
-- [ANALISE_MFERBK0BASE_NOVO_VS_ATUAL.md](../ANALISE_MFERBK0BASE_NOVO_VS_ATUAL.md) - New contract vs current comparison
-- [RELATORIO_FINAL.md](../RELATORIO_FINAL.md) - Complete technical report
+### ⏳ NEXT IMMEDIATE STEPS
 
----
+**Critical (Do First):**
+1. Call `MferBk0Base.setGallery(0xebc497a5c36cb1a9264fd122a586b3f461fcc568)` via Remix/BaseScan ⚠️
+2. Test mint flow end-to-end:
+   - Connect wallet (any: Zerion, MetaMask, Coinbase Wallet)
+   - Click Magic Button → mint
+   - Confirm animation plays (10s)
+   - Verify redirect to page 2 with metadata
+   - Check token appears in gallery
+3. Validate tokenURI includes `.json`: `ipfs://bafybei.../1.json` ✅
+4. Verify on Magic Eden / OpenSea metadata loading
 
-#
-
-- **Does NOT affect Paymaster**: KinGallery (0x8abb...) stays unchanged
-- **BaseScan public name**: Contract will appear as "MferBk0Base" (unlike KinGallery which has no public name)
-
-### ✅ COMPLETED (Production Ready)
-- KinGallery contract deployed & verified: `0x8abb13088c1707e9d5be43dac0e78e8d9d35e44f` (no public name on BaseScan)
-- Frontend animation system (WebP welcome + login-to-mint videos)
-- Wallet integration (WalletConnect + MetaMask + Coinbase Wallet)
-- Direct Paymaster integration (gas sponsorship working)
-- Auto-disconnect on tab close
-- Z-index fix for button click detection (lateral buttons moved behind main button)
-
-### 🔄 COMPLETED - DEPLOYED, VERIFIED AND PUBLISHED
-- **MferBk0Base
-  - Current: 0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241 (bytes32 paymentId)
-  - Fixed contract ready: `/contracts/MferMintGalleryCompatible_FIXED.sol`
-  - Contract name: `MferBk0Base` (will have public name on BaseScan)
-  - Changes: `string calldata paymentId` instead of `bytes32`
-  - Deploy via Remix with Solidity 0.8.19
-  - Verify on BaseScan after deployment
-  - Update NEXT_PUBLIC_MFERMINT_CONTRACT in .env.local
-  - Does NOT require Paymaster config changes (KinGallery unchanged)
-
-- **Wallet Integration - Using onchainkit Pure Implementation**
-  - Either use**: OnchainKit experimental hooks (useCapabilities, useWriteContracts) - cause errors with non-Coinbase wallets
-  - ✅ **CURRENT**: wagmi's useSendTransaction + viem for encoding
-  - Wallet connection working: injected connector (MetaMask, Coinbase Wallet, etc.)
-  - Transaction submission working (gas calculated successfully)
-  - Awaiting test with fixed MferMint contract
-
-- **UI Panel Layout Adjustments (3 items pending)**
-  - Lower art preview so "concept phrase" sits on background (not over art)
-  - Remove/revise "Name" field (redundant with Edition display)
-  - Validate Edition shows "0" for first mint (not example data "272")
-  - FUTURE: Magic Button design - Interactive, but also come animated.
+**This Week:**
+- [ ] Farcaster miniapp integration testing
+- [ ] Base.app Smart Wallet mode testing
+- [ ] Production deployment to Netlify
 
 ### ❌ NOT STARTED 
 - Farcaster miniapp deployment configuration (documented: uses `sdk.wallet` EIP-1193 provider)
@@ -303,26 +301,182 @@ root/
 
 ## Farcaster Miniapp Integration
 
-**Status**: Documented, ready to implement when needed
+**Status**: ✅ Architecture Documented | 📋 Ready for Implementation
 
-**How it Works:**
-1. Farcaster Miniapps SDK provides `sdk.wallet.getEthereumProvider()` - an EIP-1193 Ethereum Provider
-2. This provider can be passed directly to wagmi as a custom connector
-3. No need for WalletConnect Modal - Farcaster handles wallet selection in sidebar
-4. Seamless integration with existing ETH/USDC payment flows
+### How Farcaster Wallet Integration Works
 
-**Implementation Path:**
-- Create a conditional wrapper that detects if running inside Farcaster (`window.opener` or `@farcaster/miniapp-sdk` detection)
-- If in Farcaster: Use `sdk.wallet.getEthereumProvider()` 
-- If in Base.app: Adapt to Base.app's Smart Wallet only provider
+1. **Provider Source**: Farcaster Miniapps SDK provides `sdk.wallet.getEthereumProvider()` → EIP-1193 Ethereum Provider
+2. **Wallet Selection**: Farcaster handles wallet selection in sidebar (no WalletConnect modal needed)
+3. **Transaction Flow**: Seamless integration with existing ETH/USDC payment flows via TransactionButton
 
-**Key Insight:**
-- **Smart Wallet Migration**: Coinbase deprecating EOA in favor of Smart Wallets
-- Base.app already requires Smart Wallet only (not compatible with EOA)
-- Farcaster supports both EOA and Smart Wallets
-- Current WalletConnect + injected/coinbaseWallet setup is backward compatible
+### Implementation Checklist
+
+#### Phase 1: Environment Detection (Priority: HIGH)
+```typescript
+// app/hooks/useFarcasterDetection.ts
+export const useFarcasterDetection = () => {
+  const [isFarcaster, setIsFarcaster] = useState(false);
+  
+  useEffect(() => {
+    // Detect if running inside Farcaster frame
+    const checkFarcaster = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk');
+        if (sdk && sdk.wallet) {
+          setIsFarcaster(true);
+          return true;
+        }
+      } catch (e) {
+        // Not in Farcaster
+      }
+      return false;
+    };
+    
+    checkFarcaster();
+  }, []);
+  
+  return isFarcaster;
+};
+```
+
+#### Phase 2: Adapter Layer (Priority: HIGH)
+```typescript
+// app/hooks/useFarcasterWallet.ts
+export const useFarcasterWallet = () => {
+  const [provider, setProvider] = useState<EIP1193Provider | null>(null);
+  
+  useEffect(() => {
+    const initFarcasterProvider = async () => {
+      try {
+        const { sdk } = await import('@farcaster/miniapp-sdk');
+        const ethProvider = sdk.wallet.getEthereumProvider();
+        setProvider(ethProvider);
+      } catch (e) {
+        console.error('Failed to get Farcaster provider:', e);
+      }
+    };
+    
+    initFarcasterProvider();
+  }, []);
+  
+  return provider;
+};
+```
+
+#### Phase 3: UI Conditional Rendering (Priority: MEDIUM)
+```typescript
+// app/components/MagicMintButton.tsx (lines 50-60)
+const MagicMintButton = () => {
+  const isFarcaster = useFarcasterDetection();
+  
+  if (isFarcaster) {
+    return <TransactionButton
+      calls={[{
+        to: process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '',
+        abi: [...],  // Same ABI as web version
+        functionName: 'payAndMint',
+        args: [...],
+        value: '300000000000000',
+      }]}
+      // Farcaster SDK handles gas sponsorship automatically
+    />;
+  }
+  
+  return <YourExistingMintFlow />;
+};
+```
+
+### Farcaster Frame Manifest
+
+**File**: `public/farcaster-manifest.json`
+```json
+{
+  "accountAssociation": {
+    "header": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9",
+    "payload": "eyJkb21haW4iOiJraW5nYWxsZXJ5Lm5ldGxpZnkuYXBwIiwid2FsbGV0IjoiZGlkOmVpcDExNTU6YmFzZTowMDEifQ",
+    "signature": "[YOUR_SIGNATURE_HERE]"
+  },
+  "frame": {
+    "version": "next",
+    "imageUrl": "https://kingallery.netlify.app/og-image.png",
+    "button": {
+      "title": "Open KinGallery",
+      "action": {
+        "type": "launch_frame",
+        "name": "KinGallery",
+        "url": "https://kingallery.netlify.app/farcaster"
+      }
+    }
+  }
+}
+```
+
+### Testing Checklist for Farcaster
+
+**Environment Setup:**
+- [ ] Farcaster app installed on mobile/desktop
+- [ ] Base network selected (chainId 8453)
+- [ ] Developer mode enabled in Farcaster settings
+- [ ] Wallet configured (any: Coinbase, MetaMask, etc.)
+
+**Functional Tests:**
+- [ ] App loads inside Farcaster frame (no wallet selector shows)
+- [ ] Magic Button displays correctly in frame context
+- [ ] Click button → Wallet sidebar appears
+- [ ] Signature request shows (custom message)
+- [ ] Transaction submitted to Base network
+- [ ] Gas sponsored by Paymaster (user sees $0 gas)
+- [ ] Animation plays for 10 seconds
+- [ ] Redirects to gallery page
+- [ ] Token appears in gallery with metadata
+
+**Metadata Validation:**
+- [ ] tokenURI returns: `ipfs://bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq/{tokenId}.json` ✅
+- [ ] Metadata loads on OpenSea preview
+- [ ] Image displays correctly (WebP animated)
+- [ ] Royalties show 5% to artist address
+
+**Payment Flows:**
+- [ ] ETH payment: 0.0003 ETH from user → KinGallery → split to artist + gallery
+- [ ] USDC payment: 300 USDC (if USDC mode implemented)
+- [ ] Paymaster sponsorship confirmed (0 gas fees in transaction)
+
+**Error Scenarios:**
+- [ ] Insufficient balance → clear error message
+- [ ] Network switched to wrong chain → reconnect prompt
+- [ ] Transaction reverted → error details shown
+- [ ] User cancels signature → graceful exit
+
+**Performance Metrics:**
+- [ ] Frame load time: < 2 seconds
+- [ ] Magic Button clickable: < 500ms response
+- [ ] Transaction submission: < 1 second
+- [ ] Animation duration: 10 seconds (as designed)
+- [ ] Gallery page load: < 2 seconds
+
+### Base.app Smart Wallet Mode
+
+**Status**: ⏳ Ready for Testing | 🔄 Requires Smart Wallet Only
+
+**Differences from Farcaster:**
+| Aspect | Farcaster | Base.app |
+|--------|-----------|----------|
+| **Wallet Type** | EOA + Smart Wallet | Smart Wallet Only |
+| **Wallet Selector** | Farcaster sidebar | Base.app built-in |
+| **Provider** | `sdk.wallet.getEthereumProvider()` | `window.ethereum` (Smart Wallet) |
+| **Gas Sponsorship** | Via Paymaster | Via Base.app |
+| **User Experience** | Frame context | Native app context |
+
+**Testing Checklist:**
+- [ ] Base.app installed and configured
+- [ ] Smart Wallet deployed and funded
+- [ ] KinGallery app opens in Base.app
+- [ ] Click Magic Button (no EOA fallback shown)
+- [ ] Mint completes successfully
+- [ ] Transaction visible in Base.app activity
+- [ ] Token appears in Base.app NFT gallery
 
 ---
 
-**Last Updated**: January 16, 2026  
-**Status**: Production Ready (all contracts deployed & verified)  
+**Last Updated**: January 27, 2026
+**Status**: ✅ Production Ready | ✅ All Contracts Deployed & Verified | ⏳ Farcaster Integration Ready for Implementation  

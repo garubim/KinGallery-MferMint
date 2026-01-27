@@ -162,7 +162,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const handleMint = async () => {
     // 🔄 Se está na página 2 (galeria), redireciona pra home (página 1) em vez de mintar
     if (isOnGalleryPage) {
-      router.push('/');
+      // Usa location.replace em vez de router.push para preservar estado da wallet
+      if (typeof window !== 'undefined') {
+        window.location.href = '/';
+      }
       return;
     }
 
@@ -213,14 +216,14 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }],
         functionName: 'payAndMint',
         args: [
-          (process.env.NEXT_PUBLIC_MFER_ADDRESS || '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241') as `0x${string}`,
+          (process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xaA566959e0290cB578b1F0dfFA7203E1F9DDd1D6') as `0x${string}`,
           address,
           paymentIdString,
         ],
       });
 
       // ✅ PRE-DEPLOYMENT: Validates critical inputs BEFORE sending
-      const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6') as `0x${string}`;
+      const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0xebc497a5c36cb1a9264fd122a586b3f461fcc568') as `0x${string}`;
       
       const validation = validateTransactionInput({
         to: kingalleryAddress,
