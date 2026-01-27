@@ -8,7 +8,7 @@ import { base } from 'viem/chains';
 import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
 import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
 
-export default function MagicMintButton() {
+export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalleryPage?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { address, isConnected, chain } = useAccount();
@@ -160,6 +160,12 @@ export default function MagicMintButton() {
   };
 
   const handleMint = async () => {
+    // 🔄 Se está na página 2 (galeria), redireciona pra home (página 1) em vez de mintar
+    if (isOnGalleryPage) {
+      router.push('/');
+      return;
+    }
+
     if (!address) return;
     
     // ✅ PRE-DEPLOYMENT: Validates RPC health BEFORE minting
@@ -317,10 +323,11 @@ export default function MagicMintButton() {
       // Mark as redirected to prevent double redirect
       setHasRedirected(true);
       
-      // Minimum delay (50ms) for UI to update before navigation
+      // ⏱️ ESPERA MÍDIA DE 10s COMPLETAR antes de redirecionar (10.5s total)
+      // Isso permite que o usuário veja a animação de 10s completamente
       setTimeout(() => {
         window.location.href = `/gallery?${params.toString()}`;
-      }, 50);
+      }, 10500);
       
       // Shows success overlay while navigating (won't be seen, but gets ready)
       setShowSuccessOverlay(true);
@@ -356,65 +363,7 @@ export default function MagicMintButton() {
 
   return (
     <div className={`magic-button-container ${isSliding ? 'slide-out' : ''} ${showError ? 'error-active' : ''}`}>
-      {/* Success Overlay - Confetti + Automatic for Page 2 */}
-      {showSuccessOverlay && isSuccess && hash && (
-        <>
-          {/* Confetti Background */}
-          <div className="confetti-container">
-            {confetti.map((piece) => (
-              <div
-                key={piece.id}
-                className="confetti-piece"
-                style={{
-                  left: `${piece.left}%`,
-                  animation: `confetti-fall 3s ease-in forwards`,
-                  animationDelay: `${piece.delay}s`
-                }}
-              >
-                ✨
-              </div>
-            ))}
-          </div>
-
-          {/* Dark Overlay - Does not remove Magic Button */}
-          <div className="success-overlay-backdrop"></div>
-
-          {/* ✨ RITUAL COMPLETE - Success animation */}
-          <img 
-            src="/MagicButton-OfficialAnimatedTitles/ritual_Complete=2xNfer-1L1+L2Cn8453.+ Alpha+30FPSMAXQ-1280x720p-WEBPMAX.webp"
-            alt="Ritual Complete"
-            style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              maxWidth: '90%',
-              maxHeight: '90%',
-              zIndex: 10,
-              pointerEvents: 'none'
-            }}
-          />
-
-          {/* ➡️ GREEN ARROW - Indicates swipe/long-press (appears after ~0.5s) */}
-          <img 
-            src="/MagicButton-OfficialAnimatedTitles/GO TO RIGHT-GOTOGALLERY-FOLLOW-THEARRO-1L1+L2Cn8453.+ Alpha-1280x720px-WEBP-HIGH_Q.webp"
-            alt="Swipe to Gallery"
-            style={{
-              position: 'absolute',
-              bottom: '20px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              maxWidth: '80%',
-              maxHeight: '100px',
-              zIndex: 10,
-              pointerEvents: 'none',
-              animation: 'fadeInDown 0.6s ease-out 0.5s both'
-            }}
-          />
-
-          {/* Magic button now shows animations and is clickable to go to page 2 */}
-        </>
-      )}
+      {/* Success Overlay removido - animações vão rodar na página 2 */}
 
       {/* Magic button - Main animation */}
       {showWalletModal && (
@@ -679,7 +628,7 @@ export default function MagicMintButton() {
         {/* Background WebP animation */}
         <img 
           src={showMinting
-            ? "/MagicButton-OfficialAnimatedTitles/Multichain-Mfer-Legacy-Entanglement-1280X1080px-WebPAnim-High.webp"
+            ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
             : isConnected 
             ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
             : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
@@ -688,31 +637,22 @@ export default function MagicMintButton() {
           className="magic-animation"
         />
 
-        {/* Glass reflex layer - all three layers now use animated WebM for full-button effect */}
+        {/* Glass reflex layer - all three layers now use new reflections from Pack 02 WebP */}
         <div className="glass-reflex">
-          <video 
-            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm"
+          <img 
+            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp"
+            alt=""
             className="reflex-layer reflex-1"
-            autoPlay
-            loop
-            muted
-            playsInline
           />
-          <video 
-            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm" 
+          <img 
+            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp" 
+            alt=""
             className="reflex-layer reflex-2"
-            autoPlay
-            loop
-            muted
-            playsInline
           />
-          <video 
-            src="/MagicButton-OfficialAnimatedTitles/3D MAGIC_BUTTON+ Alpha+MBLUR-30-FPS-1920x1080px-.webm"
+          <img 
+            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp"
+            alt=""
             className="reflex-layer reflex-3"
-            autoPlay
-            loop
-            muted
-            playsInline
           />
         </div>
 
@@ -1031,7 +971,7 @@ export default function MagicMintButton() {
           width: 480px;
           height: 190px;
           border-radius: 120px;
-          background: rgba(255, 255, 255, 0.08);
+          background: rgba(54, 32, 3, 0.08);
           backdrop-filter: blur(30px);
           border: 1px solid rgba(255, 255, 255, 0.2);
           box-shadow: 
@@ -1130,18 +1070,22 @@ export default function MagicMintButton() {
         .reflex-layer {
           position: absolute;
           width: 100%;
-          height: 100%;
+          height: 200%;
           object-fit: cover;
+          object-position: center;
           pointer-events: none;
+          transform: translate(-50%, -50%);
+          left: 50%;
+          top: 50%;
         }
 
         .reflex-1 {
-          opacity: 0.6;
+          opacity: 0.7;
         }
 
         .reflex-2 {
-          opacity: 0.8;
-          filter: brightness(0.7);
+          opacity: 0.9;
+          filter: brightness(0.8);
         }
 
         /* Loading overlay - wallet connecting */

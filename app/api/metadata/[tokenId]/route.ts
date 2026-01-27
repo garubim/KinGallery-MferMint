@@ -14,23 +14,34 @@ export async function GET(
     );
   }
 
+  const id = parseInt(tokenId);
+
   const metadata = {
-    name: `MferBk0 #${tokenId}`,
+    name: `Mfer-0'-Base #${id}/1000`,
     description:
-      "This is not art; it's a ritual! A perpetual motion mood ring for the entire cryptosphere.",
-    image: 'ipfs://bafybeiaevaflz35fjr4qhrrcaejbxqiie5v3itvgqmabtstwbpfe7vlodq',
+      "Your mark is recorded. This NFT is entangled with a legacy Ethereum Mfer from the original 2021 collection. Part of the Mfer-0'-Base collection on Base chain.",
+    image: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kingallery.netlify.app'}/api/generate-image/${id}`,
+    external_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://kingallery.netlify.app'}/gallery?tokenId=${id}`,
     attributes: [
       {
         trait_type: 'Collection',
-        value: 'MferBk0-Base',
+        value: "Mfer-0'-Base",
       },
       {
         trait_type: 'Chain',
-        value: 'Base',
+        value: 'Base (8453)',
       },
       {
         trait_type: 'Edition',
-        value: tokenId,
+        value: `${id}/1000`,
+      },
+      {
+        trait_type: 'Type',
+        value: 'Entangled L1-L2',
+      },
+      {
+        trait_type: 'Artist',
+        value: 'Kinwiz.base.eth',
       },
     ],
   };

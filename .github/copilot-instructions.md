@@ -12,6 +12,8 @@ This includes:
 - ✅ Smart contract verification docs
 - ✅ This copilot instructions file
 
+While workiing on documents, please translate any Portuguese content that you find into clear, idiomatic English.
+
 **Exception**: Internal/private documents can be in Portuguese (pt-br), but mark them clearly as `[PT-BR]` in filename.
 
 ---
@@ -22,13 +24,13 @@ This includes:
 
 ### 🔴 CRITICAL ISSUE - BLOCKING EOA MINTS (Jan 18, 2026)
 
-**Status**: 🚨 **URGENT** - payAndMint fails with EOA wallets
-- **Root Cause**: `payee2` not configured in KinGallery (0x8abb...)
-- **Symptom**: EOA mints fail with "failed to call payAndMint", Smart Wallet works (via EIP-4337)
-- **Fix Time**: ~5 minutes (via Remix)
-- **START HERE**: [QUICK_REFERENCE.md](../QUICK_REFERENCE.md) (5 min copy-paste guide)
-- **Detailed Guide**: [REMIX_FIX_PAYEE2_GUIA.md](../REMIX_FIX_PAYEE2_GUIA.md) (step-by-step with screenshots)
-- **Action**: Call `setGalleryPayee("0x26dcd83d4e449059abf0334e4435d48e74f28eb0")` in KinGallery
+
+
+KINGALLERY'S CONTRACT: 0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6
+
+## I performed 12 mint tests today, all issues were only graphic in the UI, which many have been solved. BOTH CONTRACTS ARE TO BE REDEPLOYED, AND ATTENTION HERE: THEY'LL BE REDEPLOYED BECAUSE TOKEN #1 AND TOKEN #2 BELONG EACH TO A DIFFERENT CONTRACT NUMBER, THAN, FROM 3 TO A FEW LATER ARE IN ANOTHER CONTRACT AND THE LATEST ONES IN A 4TH CONTRACTM, THE CURRENT ONE. SO, WE NEED TO REDEPLOY BOTH CONTRACTS, AND START FROM TOKEN NUMBER #1. WE CAN QUOTE THE PREVIOUSLY MINTED TOKENS AS TEST TOKENS DURING TESTING PERIOD, BUT NOT REDEPLOY WITH THE COUNT CONTINUING AS IT HAS BEEN DONE UNTIL NOW. 2 MORE ISSUES THAT NEED TO BE FIXED ON REDEPLOY: 1. ON BASESCAN TOTAL MAX SUPLY CANNOT BE ZERO AS IT IS NOW, BUT 1000, ONE THOUSAND ERC-721 TOKENS AS DOCUMENTED IN THE CONTRACT. 2. KINGALLERY MUST HAVE A PUBLIC NAME FORM DEPLOY, DETAIL THAT SOMEONE FORGOT TO DO LAST TIME.
+
+AFTER THE ABOVE IS ATTENDED , PLEASE HEAD TO GITHUB AND CHECK THE 3 PAGES COMPARISON NAMED: COMPARACAO_3_VERSOES_PAGINA2.md (TRADUXIR POR FAVOR) THAN TALK TO ME SO WE CAN CLEAR OUT THE NEXT STEPS. THANK YOU
 
 **📚 Full Documentation Index:**
 - [SUMARIO_EXECUTIVO.md](../SUMARIO_EXECUTIVO.md) - Executive summary

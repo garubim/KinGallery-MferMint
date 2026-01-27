@@ -1,25 +1,27 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
-import MagicMintButton from '@/app/components/MagicMintButton';
-
-interface MintCard {
-  tokenId: number;
-  ethMferId: number;
-  txHash: string;
-}
+import ArtworkMetadata from '../components/ArtworkMetadata';
+import MagicMintButton from '../components/MagicMintButton';
 
 export default function GalleryPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [txHash, setTxHash] = useState<string | null>(null);
   const [tokenId, setTokenId] = useState<number | null>(null);
   const [ethMferId, setEthMferId] = useState<number | null>(null);
-  const [showConfetti, setShowConfetti] = useState(false); // Starts FALSE, activates with 1s delay
+  const [ethMferImageUrl, setEthMferImageUrl] = useState<string | null>(null);
+  const [mintDate, setMintDate] = useState<string | null>(null);
+  const [blockNumber, setBlockNumber] = useState<number | null>(null);
+  const [collisionInfo, setCollisionInfo] = useState<any | null>(null);
+  const [showConfetti, setShowConfetti] = useState(true);
   const [revealEntangled, setRevealEntangled] = useState(false);
-  const [allMints, setAllMints] = useState<MintCard[]>([]);
-  const [loadingMints, setLoadingMints] = useState(false);
+  const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
+  const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
+  const [loadingMints, setLoadingMints] = useState(true);
 
   useEffect(() => {
     setMounted(true);
@@ -27,63 +29,265 @@ export default function GalleryPage() {
     const ethMfer = searchParams.get('ethMferId');
     const collision = searchParams.get('collision');
     
-    console.log('📍 Gallery Page Mounted:', { tx, ethMfer, collision });
+    // Armazena a tx para exibir como "certidão"
+    if (tx) {
+      setTxHash(tx);
+    }
     
+    // Parse collision info se existir
+    if (collision) {
+      try {
+        const collisionData = JSON.parse(decodeURIComponent(collision));
+        setCollisionInfo(collisionData);
+        console.log('🌠 COLISÃO ESPECIAL DETECTADA:', collisionData);
+      } catch (e) {
+        console.error('Erro ao parsear collision:', e);
+      }
+    }
+    
+    // Armazena ethMferId (Legacy Mfer entangled)
     if (ethMfer) {
       setEthMferId(parseInt(ethMfer));
     }
 
-    // Uses token ID from mint (always starts at 0, increments with each mint)
-    // Retrieves from localStorage how many mints have been made
-    try {
-      const existingMints = JSON.parse(localStorage.getItem('mferMints') || '[]');
-      const currentTokenId = existingMints.length - 1; // Last mint is current
-      setTokenId(currentTokenId >= 0 ? currentTokenId : 0);
-    } catch {
-      setTokenId(0); // Fallback
+    // 🚀 BUSCA COMPLETA: tokenId + blockNumber + timestamp da transação
+    if (tx) {
+      fetch('https://mainnet.base.org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getTransactionReceipt',
+          params: [tx]
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('📦 Transaction Receipt:', data.result);
+        
+        if (data.result) {
+          // Extrai tokenId do log (Transfer event)
+          if (data.result?.logs) {
+            const transferLog = data.result.logs.find((log: any) => 
+              log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+            );
+            if (transferLog?.topics[3]) {
+              const tokenIdHex = transferLog.topics[3];
+              const tokenIdNum = parseInt(tokenIdHex, 16);
+              console.log('✨ Token ID:', tokenIdNum);
+              setTokenId(tokenIdNum);
+            }
+          }
+          
+          // Extrai blockNumber
+          if (data.result?.blockNumber) {
+            const blockNum = parseInt(data.result.blockNumber, 16);
+            console.log('📍 Block Number:', blockNum);
+            setBlockNumber(blockNum);
+          }
+        }
+      })
+      .catch(err => console.error('❌ Erro ao buscar receipt:', err));
+
+      // Busca timestamp do bloco
+      setTimeout(() => {
+        if (tx) {
+          fetch('https://mainnet.base.org', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jsonrpc: '2.0',
+              id: 2,
+              method: 'eth_getTransactionByHash',
+              params: [tx]
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.result?.blockNumber) {
+              // Com o blockNumber, busca o timestamp do bloco
+              const blockNumHex = data.result.blockNumber;
+              return fetch('https://mainnet.base.org', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 3,
+                  method: 'eth_getBlockByNumber',
+                  params: [blockNumHex, false]
+                })
+              });
+            }
+          })
+          .then(res => res?.json())
+          .then(data => {
+            if (data.result?.timestamp) {
+              const timestamp = parseInt(data.result.timestamp, 16) * 1000;
+              const date = new Date(timestamp).toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              });
+              console.log('📅 Mint Date:', date);
+              setMintDate(date);
+            }
+          })
+          .catch(err => console.error('❌ Erro ao buscar timestamp:', err));
+        }
+      }, 1000);
     }
 
-    // 🚀 OPTION B TIMING: Delay confetti by 1s for smooth page entry
-    // Reveal timeline:
-    // 0-1s: Page enters without animation (confetti disabled)
-    // 1-4s: Confetti animated for 3s
-    // 4-10.5s: Reveal + full countdown
-    setTimeout(() => setShowConfetti(true), 1000); // Confetti STARTS after 1s (not immediately)
-    setTimeout(() => setShowConfetti(false), 4000); // Confetti stops after 3s animation
-    setTimeout(() => setRevealEntangled(true), 5000); // Reveal after 5s total
+    // 🎨 Busca imagem do Legacy Mfer entangled no IPFS
+    if (ethMfer) {
+      const mferId = parseInt(ethMfer);
+      fetch(`https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo/${mferId}`)
+        .then(res => res.json())
+        .then(metadata => {
+          if (metadata.image) {
+
+            const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            setEthMferImageUrl(imageUrl);
+          }
+        })
+        .catch(err => console.error('Erro ao buscar Mfer image:', err));
+    }
+
+    setTimeout(() => setShowConfetti(false), 3000);
+    setTimeout(() => setRevealEntangled(true), 4000);
   }, [searchParams]);
 
-  // Loads mints from localStorage (simulating network)
+  // 🎨 Carregar NFTs mintados do contrato MferBk0Base
   useEffect(() => {
-    if (!mounted || !revealEntangled) return;
-    
-    setLoadingMints(true);
-    setTimeout(() => {
+    const fetchMintedNFTs = async () => {
+      setLoadingMints(true);
       try {
-        const mints = JSON.parse(localStorage.getItem('mferMints') || '[]');
-        const mintCards: MintCard[] = mints.map((mint: any) => ({
-          tokenId: mint.tokenId || 1,
-          ethMferId: mint.ethMferId || 1,
-          txHash: mint.hash || ''
-        }));
-        setAllMints(mintCards);
-      } catch (error) {
-        console.error('Error loading mints:', error);
+        const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
+        const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
+        
+        // Primeiro, pega o bloco atual
+        const blockResponse = await fetch(rpcEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_blockNumber',
+            params: []
+          })
+        });
+        
+        const blockData = await blockResponse.json();
+        const currentBlock = parseInt(blockData.result, 16);
+        const fromBlock = Math.max(0, currentBlock - 50000); // últimos ~50k blocos (~5 dias)
+        
+        console.log(`📊 Buscando logs do bloco ${fromBlock} ao ${currentBlock}...`);
+        
+        // Query para pegar todos os Transfer events (mints)
+        const response = await fetch(rpcEndpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'eth_getLogs',
+            params: [{
+              address: mferContractAddress,
+              topics: [
+                '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
+                '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
+              ],
+              fromBlock: '0x' + fromBlock.toString(16),
+              toBlock: '0x' + currentBlock.toString(16)
+            }]
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+          console.error('❌ RPC Error:', data.error);
+          setMintedNFTs([]);
+          return;
+        }
+        
+        const transfers = data.result || [];
+        console.log(`📦 Encontrados ${transfers.length} Transfer events`);
+        
+        // Processa cada transfer para extrair tokenId e owner
+        const nfts = transfers.map((log: any) => {
+          const tokenIdHex = log.topics[3];
+          const tokenId = parseInt(tokenIdHex, 16);
+          const ownerAddress = '0x' + log.topics[2].slice(-40);
+          
+          return {
+            tokenId,
+            owner: ownerAddress,
+            blockNumber: parseInt(log.blockNumber, 16),
+            txHash: log.transactionHash
+          };
+        });
+
+        // Busca dados adicionais (data do mint, entangled info)
+        const enrichedNFTs = await Promise.all(
+          nfts.map(async (nft: any) => {
+            try {
+              // Busca timestamp do bloco
+              const blockResp = await fetch(rpcEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  jsonrpc: '2.0',
+                  id: 1,
+                  method: 'eth_getBlockByNumber',
+                  params: ['0x' + nft.blockNumber.toString(16), false]
+                })
+              });
+
+              const blkData = await blockResp.json();
+              const timestamp = blkData.result?.timestamp ? parseInt(blkData.result.timestamp, 16) * 1000 : null;
+              
+              let mintDate = '';
+              if (timestamp) {
+                const date = new Date(timestamp);
+                mintDate = date.toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: '2-digit',
+                  year: 'numeric'
+                });
+              }
+
+              return {
+                ...nft,
+                mintDate,
+                title: `Mfer-0-#${nft.tokenId}/1000`
+              };
+            } catch (err) {
+              console.error('Erro ao buscar dados do NFT:', err);
+              return nft;
+            }
+          })
+        );
+
+        setMintedNFTs(enrichedNFTs.sort((a, b) => b.tokenId - a.tokenId));
+        console.log('✅ NFTs Mintados:', enrichedNFTs.length, 'encontrados');
+      } catch (err) {
+        console.error('❌ Erro ao buscar NFTs:', err);
+        setMintedNFTs([]);
+      } finally {
+        setLoadingMints(false);
       }
-      setLoadingMints(false);
-    }, 500); // Simulates network latency
-  }, [mounted, revealEntangled]);
+    };
+
+    fetchMintedNFTs();
+  }, []);
 
   if (!mounted) return null;
 
   return (
     <div className="gallery-page">
-      {/* Back to home button */}
-      <a href="/" className="back-to-home">
-        ← Back to Home
-      </a>
-
-      {/* Confetti Matrix */}
       {showConfetti && (
         <div className="confetti-overlay">
           {Array.from({ length: 50 }).map((_, i) => (
@@ -102,161 +306,178 @@ export default function GalleryPage() {
         </div>
       )}
 
-      {/* Hero section - NFT minted */}
-      <section className="hero-section">
-        <div className="hero-title">
-          <h1>Your Mark is Recorded</h1>
-          <p className="hero-subtitle">Mfer-0-Base #{tokenId || '...'} / 1000</p>
-        </div>
+      {/* Header com titulo e conceito */}
+      <div className="gallery-header">
+        <h1 className="gallery-title">KinGallery</h1>
+        <p className="gallery-concept">
+          The art isn't in the spin;<br />
+          it's in that precise <span className="gallery-bold-moment">moment of recognition</span>
+        </p>
+      </div>
 
-        <div className="nft-display">
-          <div className="nft-frame">
-            <img 
-              src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
-              alt="Your Mfer"
-              className="nft-artwork"
-            />
-            <div className="frame-glow"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* Entanglement reveal */}
-      <section className={`entanglement-section ${revealEntangled ? 'revealed' : ''}`}>
-        {!revealEntangled ? (
-          <div className="mystery-state">
-            <div className="mystery-icon">🌀</div>
-            <p className="mystery-text">Discovering your entangled Mfer...</p>
-            <div className="spinner"></div>
-          </div>
-        ) : (
-          <div className="reveal-state">
-            <div className="reveal-header">
-              <h2>Entangled with</h2>
-            </div>
-            
-            <div className="entangled-card">
-              <div className="entangled-glow"></div>
-              <div className="entangled-content">
-                <div className="entangled-icon">⚡</div>
-                <h3 className="entangled-title">Ethereum Mfer #{ethMferId || '???'}</h3>
-                <p className="entangled-subtitle">From the original lineage (2021)</p>
+      <div className="main-container">
+        <div className="nft-wrapper">
+          <div className="glass-shell">
+              <img 
+                src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                alt="Your Mfer"
+                className="nft-artwork"
+              />
+              <div className="glass-reflex">
+                <img src="/ballon-reflexes-cutout.webp" alt="" className="reflex-layer reflex-1" />
+                <img src="/reflexo-rightside-cutout.webp" alt="" className="reflex-layer reflex-2" />
               </div>
+              
+              <button 
+                className="fullscreen-btn"
+                onClick={() => window.open(getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK), '_blank')}
+                title="View full size"
+              >
+                ⛶
+              </button>
             </div>
 
-            <div className="destiny-message">
-              <p>The soul spins at a base —</p>
-              <p>where the smile comes home.</p>
-            </div>
+            {!revealEntangled && (
+              <div className="mystery-overlay">
+                <div className="mystery-icon">🌀</div>
+                <p className="mystery-text">Discovering entangled Mfer...</p>
+              </div>
+            )}
           </div>
-        )}
-      </section>
 
-      {/* Metadata info */}
-      {revealEntangled && (
-        <section className="metadata-section">
-          <div className="metadata-info">
-            <p className="metadata-label">Transaction</p>
-            <p className="metadata-value tx-hash">{searchParams.get('tx')?.slice(0, 10)}...{searchParams.get('tx')?.slice(-8)}</p>
-            <a 
-              href={`https://basescan.org/tx/${searchParams.get('tx')}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="view-link"
-            >
-              view on basescan
-            </a>
-          </div>
-        </section>
-      )}
+        <div className="metadata-wrapper">
+          <ArtworkMetadata 
+            showPricing={false}
+            tokenId={tokenId || undefined}
+            entangledMferId={ethMferId || undefined}
+            ethMferImageUrl={ethMferImageUrl || undefined}
+            transactionHash={txHash || undefined}
+            mintDate={mintDate || undefined}
+            blockNumber={blockNumber || undefined}
+            collisionInfo={collisionInfo || undefined}
+          />
+        </div>
+      </div>
 
-      {/* Mosaic of mints - Loaded after reveal */}
       {revealEntangled && (
-        <section className="mosaic-section">
-          <h3 className="mosaic-title">All Your Mints</h3>
-          
-          {loadingMints ? (
-            <div className="mosaic-loading">
-              <div className="spinner-small"></div>
-              <p>Loading mints...</p>
-            </div>
-          ) : allMints.length > 0 ? (
-            <div className="mosaic-grid">
-              {allMints.map((mint, idx) => (
-                <div key={idx} className="mint-card">
-                  <div className="mint-card-image">
-                    <img 
-                      src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
-                      alt={`Mfer #${mint.ethMferId}`}
-                    />
-                    <div className="mint-card-overlay">
-                      <p className="mint-card-number">#{mint.ethMferId}</p>
+        <div className="mosaic-section">
+
+          <div className="mosaic-grid">
+            {loadingMints ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.6)' }}>
+                Loading collection...
+              </div>
+            ) : mintedNFTs.length > 0 ? (
+              mintedNFTs.map((nft) => (
+                <div 
+                  key={nft.tokenId} 
+                  className="mosaic-item" 
+                  title={`${nft.title} • Minted: ${nft.mintDate} • Owner: ${nft.owner.slice(0, 6)}...`}
+                  onClick={() => window.open(`https://basescan.org/tx/${nft.txHash}`, '_blank')}
+                >
+                  <img 
+                    src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                    alt={nft.title}
+                    className="mosaic-img"
+                  />
+                  <div className="mosaic-overlay">
+                    <span className="mosaic-id">#{nft.tokenId}</span>
+                  </div>
+                  <div className="mosaic-info">
+                    <div className="mosaic-title">{nft.title}</div>
+                    <div className="mosaic-date">{nft.mintDate}</div>
+                    <div className="mosaic-owner">{nft.owner.slice(0, 6)}...{nft.owner.slice(-4)}</div>
+                    <div style={{ marginTop: '4px', fontSize: '7px', color: 'rgba(0,230,255,0.8)', fontFamily: 'monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      tx: {nft.txHash?.slice(0, 8)}...
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="mosaic-empty">
-              <p>No mints yet</p>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Magic button - Mint another */}
-      {mounted && revealEntangled && (
-        <section className="mint-another-section">
-          <MagicMintButton />
-        </section>
+              ))
+            ) : (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.6)' }}>
+                No mints yet
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       <style jsx>{`
+        /* GALLERY HEADER */
+        .gallery-header {
+          text-align: center;
+          padding: 30px 20px 15px 20px;
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 360px;
+          margin: 0 auto;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          border-radius: 16px;
+          margin-top: 20px;
+        }
+
+        .gallery-title {
+          font-size: 1.5rem;
+          margin: 0;
+          margin-bottom: 8px;
+          color: rgba(60, 60, 60, 0.95);
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.2),
+            0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-concept {
+          color: rgba(80, 80, 80, 0.75);
+          font-size: 0.95rem;
+          margin: 0;
+          letter-spacing: 0.02em;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          font-weight: 400;
+          line-height: 1.6;
+          font-style: italic;
+        }
+
+        .gallery-bold-moment {
+          font-weight: 600;
+          color: rgba(80, 80, 80, 0.85);
+        }
+
         .gallery-page {
           min-height: 100vh;
-          background: linear-gradient(135deg, rgba(10, 10, 15, 0.95) 0%, rgba(26, 26, 46, 0.95) 100%), url('/walls/disc-wall-brightgold.webp');
+          width: 100%;
+          max-width: 100vw;
+          background: #000000;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          align-items: center;
+          padding: 0;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .gallery-page::before {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 490px;
+          max-width: 100%;
+          height: 100%;
+          background: url('/walls/disc-wall-brightgold.webp');
           background-size: cover;
           background-position: center;
-          background-attachment: fixed;
-          color: white;
-          padding: 40px 20px;
-          position: relative;
-          overflow: hidden;
-          animation: slideInFromLeft 0.8s ease-in-out forwards;
+          pointer-events: none;
+          z-index: 0;
         }
 
-        .back-to-home {
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          color: #00e6ff;
-          text-decoration: none;
-          font-size: 14px;
-          padding: 8px 12px;
-          border: 1px solid rgba(0, 230, 255, 0.3);
-          border-radius: 4px;
-          transition: all 0.3s ease;
-          z-index: 100;
-        }
-
-        .back-to-home:hover {
-          color: #fff;
-          background: rgba(0, 230, 255, 0.1);
-          border-color: rgba(0, 230, 255, 0.6);
-        }
-
-        @keyframes slideInFromLeft {
-          from { 
-            transform: translateX(100vw);
-            opacity: 0;
-          }
-          to { 
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        /* Confetti */
         .confetti-overlay {
           position: fixed;
           inset: 0;
@@ -279,77 +500,112 @@ export default function GalleryPage() {
           }
         }
 
-        /* Hero section */
-        .hero-section {
-          max-width: 600px;
-          margin: 0 auto 60px;
-          text-align: center;
-        }
-
-        .hero-title h1 {
-          font-size: 42px;
-          font-weight: 700;
-          background: linear-gradient(135deg, #00e6ff, #0052ff);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 12px;
-        }
-
-        .hero-subtitle {
-          font-size: 18px;
-          color: rgba(255, 255, 255, 0.6);
-        }
-
-        .nft-display {
-          margin-top:00px;
-        }
-
-        .nft-frame {
+        .main-container {
+          width: 100%;
+          max-width: 450px;
+          min-width: 320px;
+          margin: 40px auto;
+          display: flex;
+          flex-direction: column;
+          gap: 32px;
+          align-items: center;
+          justify-content: flex-start;
           position: relative;
-          width: 120%;
-          max-width: 400px;
+          z-index: 2;
+          padding: 0 20px;
+        }
+
+        .nft-wrapper {
+          position: relative;
+          width: 100%;
+          max-width: 450px;
           margin: 0 auto;
-          border-radius: 24px;
+        }
+
+        .glass-shell {
+          position: relative;
+          width: 100%;
+          max-width: 375px;
+          aspect-ratio: 3/4;
+          margin: 0 auto;
+          border-radius: 12px;
+          background: rgba(0, 0, 0, 0);
+          backdrop-filter: blur(20px);
+          border: 8px solid #0a0f1a;
+          box-shadow: 
+            0 0 0 1px rgba(255, 255, 255, 0.1),
+            0 20px 50px rgba(0, 0, 0, 0.8);
           overflow: hidden;
-          border: 2px solid rgba(0, 230, 255, 0.3);
         }
 
         .nft-artwork {
           width: 100%;
-          height: auto;
-          display: block;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 4px;
+          position: relative;
+          z-index: 1;
         }
 
-        .frame-glow {
+        .glass-reflex {
           position: absolute;
-          inset: -20px;
-          background: radial-gradient(circle, rgba(0, 230, 255, 0.3), transparent);
-          animation: pulse-glow 3s ease infinite;
+          inset: 0;
           pointer-events: none;
+          z-index: 2;
         }
 
-        @keyframes pulse-glow {
-          0%, 100% { opacity: 0.5; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.05); }
+        .reflex-layer {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.7;
+          mix-blend-mode: screen;
         }
 
-        /* Entanglement section */
-        .entanglement-section {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 40px 20px;
-          transition: all 0.8s ease;
+        .fullscreen-btn {
+          position: absolute;
+          bottom: 12px;
+          right: 12px;
+          width: 32px;
+          height: 32px;
+          background: transparent;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 8px;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 16px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          z-index: 10;
         }
 
-        .mystery-state {
+        .fullscreen-btn:hover {
+          background: rgba(0, 0, 0, 0.3);
+          color: white;
+          border-color: rgba(255, 255, 255, 0.4);
+          transform: scale(1.05);
+        }
+
+        .mystery-overlay {
+          position: absolute;
+          bottom: 20px;
+          left: 50%;
+          transform: translateX(-50%);
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          padding: 16px 24px;
+          border-radius: 16px;
           text-align: center;
-          padding: 60px 20px;
         }
 
         .mystery-icon {
-          font-size: 64px;
+          font-size: 32px;
           animation: spin 2s linear infinite;
-          margin-bottom: 24px;
+          margin-bottom: 8px;
         }
 
         @keyframes spin {
@@ -357,263 +613,232 @@ export default function GalleryPage() {
         }
 
         .mystery-text {
-          font-size: 20px;
-          color: rgba(255, 255, 255, 0.7);
-          margin-bottom: 32px;
-        }
-
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 3px solid rgba(0, 230, 255, 0.2);
-          border-top-color: #00e6ff;
-          border-radius: 50%;
-          margin: 0 auto;
-          animation: spin 1s linear infinite;
-        }
-
-        /* Reveal state */
-        .reveal-state {
-          animation: fadeInUp 0.8s ease;
-        }
-
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .reveal-header {
-          text-align: center;
-          margin-bottom: 32px;
-        }
-
-        .reveal-header h2 {
-          font-size: 28px;
+          font-size: 14px;
           color: rgba(255, 255, 255, 0.8);
         }
 
-        .entangled-card {
-          position: relative;
-          background: rgba(255, 255, 255, 0.05);
-          border: 2px solid rgba(0, 230, 255, 0.4);
-          border-radius: 24px;
-          padding: 48px 32px;
-          text-align: center;
-          overflow: hidden;
+        .entangled-section {
+          margin-top: 24px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
+          animation: fadeIn 0.6s ease;
         }
 
-        .entangled-glow {
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle at center, rgba(0, 230, 255, 0.2), transparent);
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .entangled-badge {
+          background: linear-gradient(135deg, rgba(0, 230, 255, 0.2), rgba(255, 0, 230, 0.2));
+          border: 2px solid rgba(0, 230, 255, 0.6);
+          padding: 12px 24px;
+          border-radius: 24px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          backdrop-filter: blur(10px);
           animation: glow-pulse 2s ease infinite;
         }
 
         @keyframes glow-pulse {
-          0%, 100% { opacity: 0.5; }
-          50% { opacity: 1; }
+          0%, 100% { box-shadow: 0 0 20px rgba(0, 230, 255, 0.4); }
+          50% { box-shadow: 0 0 40px rgba(0, 230, 255, 0.8); }
         }
 
-        .entangled-content {
-          position: relative;
-          z-index: 1;
-        }
-
-        .entangled-icon {
-          font-size: 56px;
-          margin-bottom: 16px;
-        }
-
-        .entangled-title {
-          font-size: 36px;
-          font-weight: 700;
-          background: linear-gradient(135deg, #00e6ff, #ff00e6);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 8px;
-        }
-
-        .entangled-subtitle {
-          font-size: 16px;
-          color: rgba(255, 255, 255, 0.6);
-        }
-
-        .destiny-message {
-          margin-top: 40px;
-          text-align: center;
-          font-size: 20px;
-          line-height: 1.6;
-          color: rgba(255, 255, 255, 0.8);
-          font-style: italic;
-        }
-
-        /* Metadata */
-        .metadata-section {
-          max-width: 600px;
-          margin: 60px auto 0;
-          padding: 40px 20px;
-          text-align: center;
-          border-top: 1px solid rgba(0, 230, 255, 0.2);
-        }
-
-        .metadata-info {
-          padding: 20px;
-        }
-
-        .metadata-label {
-          font-size: 12px;
-          color: rgba(255, 255, 255, 0.5);
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 8px;
-        }
-
-        .metadata-value {
-          font-family: 'Courier New', monospace;
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.9);
-          word-break: break-all;
-          margin-bottom: 12px;
-        }
-
-        .view-link {
-          color: #00e6ff;
-          text-decoration: none;
-          font-size: 13px;
-          transition: opacity 0.3s;
-          cursor: pointer;
-        }
-
-        .view-link:hover {
-          opacity: 0.8;
-          text-decoration: underline;
-        }
-
-        /* Mosaic section */
-        .mosaic-section {
-          max-width: 800px;
-          margin: 80px auto 0;
-          padding: 60px 20px 40px;
-          border-top: 1px solid rgba(0, 230, 255, 0.2);
-        }
-
-        .mosaic-title {
+        .badge-icon {
           font-size: 24px;
+        }
+
+        .badge-text {
+          font-size: 16px;
+          font-weight: 600;
+          color: white;
+        }
+
+        .entangled-mfer-preview {
+          margin-top: 16px;
+          display: flex;
+          justify-content: center;
+        }
+
+        .entangled-mfer-image {
+          width: 120px;
+          height: 120px;
+          border-radius: 12px;
+          border: 2px solid rgba(0, 230, 255, 0.6);
+          box-shadow: 0 0 20px rgba(0, 230, 255, 0.4);
+          object-fit: cover;
+          animation: fadeIn 0.6s ease;
+        }
+
+        .magic-mint-btn {
+          width: 100%;
+          max-width: 360px;
+          padding: 18px;
+          background: linear-gradient(135deg, #00e6ff, #0052ff);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 18px;
           font-weight: 700;
-          color: rgba(255, 255, 255, 0.9);
-          text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 32px;
-          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          animation: fadeIn 0.6s ease;
+        }
+
+        .magic-mint-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 32px rgba(0, 230, 255, 0.5);
+        }
+
+        .metadata-wrapper {
+          width: 100%;
+          max-width: 360px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          background: rgba(255, 255, 255, 0.08);
+          backdrop-filter: blur(12px);
+          border-radius: 24px;
+          padding: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+          margin: 0 auto;
+          position: relative;
+          z-index: 2;
+        }
+
+        .actions-box {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .action-btn {
+          width: 100%;
+          padding: 16px;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+        }
+
+        .action-btn.primary {
+          background: linear-gradient(135deg, #00e6ff, #0052ff);
+          color: white;
+        }
+
+        .action-btn.primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(0, 230, 255, 0.4);
+        }
+
+        .mosaic-section {
+          width: 100%;
+          max-width: 450px;
+          margin: 40px auto 0;
+          padding: 40px 20px;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          position: relative;
+          z-index: 2;
         }
 
         .mosaic-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-          gap: 16px;
-          animation: fadeInUp 0.8s ease;
+          grid-template-columns: repeat(3, 110px);
+          gap: 8px;
+          justify-content: center;
+          margin: 0 auto;
+          width: 100%;
+          max-width: 360px;
         }
 
-        .mint-card {
+        .mosaic-item {
           position: relative;
-          aspect-ratio: 3/4;
+          aspect-ratio: 1;
           border-radius: 12px;
           overflow: hidden;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: transform 0.2s;
         }
 
-        .mint-card:hover {
+        .mosaic-item:hover {
           transform: scale(1.05);
         }
 
-        .mint-card-image {
-          position: relative;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          background: rgba(0, 230, 255, 0.1);
-          border: 1px solid rgba(0, 230, 255, 0.3);
-          border-radius: 12px;
-        }
-
-        .mint-card-image img {
+        .mosaic-img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.3s ease;
         }
 
-        .mint-card:hover .mint-card-image img {
-          transform: scale(1.1);
-        }
-
-        .mint-card-overlay {
+        .mosaic-overlay {
           position: absolute;
           inset: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
           display: flex;
           align-items: flex-end;
-          justify-content: center;
-          background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
           padding: 12px;
           opacity: 0;
-          transition: opacity 0.3s ease;
+          transition: opacity 0.2s;
         }
 
-        .mint-card:hover .mint-card-overlay {
+        .mosaic-item:hover .mosaic-overlay {
           opacity: 1;
         }
 
-        .mint-card-number {
-          font-size: 16px;
-          font-weight: 700;
-          color: #00e6ff;
-          margin: 0;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        .mosaic-id {
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
         }
 
-        .mosaic-loading {
+        .mosaic-info {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+          color: white;
+          padding: 12px 8px 8px 8px;
+          font-size: 9px;
+          opacity: 0;
+          transition: opacity 0.3s;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
-          padding: 60px 20px;
-          text-align: center;
+          gap: 2px;
         }
 
-        .spinner-small {
-          width: 32px;
-          height: 32px;
-          border: 2px solid rgba(0, 230, 255, 0.2);
-          border-top-color: #00e6ff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
+        .mosaic-item:hover .mosaic-info {
+          opacity: 1;
         }
 
-        .mosaic-loading p {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.6);
+        .mosaic-title {
+          font-weight: 600;
+          font-size: 10px;
         }
 
-        .mosaic-empty {
-          text-align: center;
-          padding: 60px 20px;
-          color: rgba(255, 255, 255, 0.4);
-          font-size: 16px;
+        .mosaic-date {
+          color: rgba(255, 200, 100, 0.9);
+          font-size: 8px;
         }
 
-        /* Magic button section */
-        .mint-another-section {
-          margin-top: 80px;
-          padding-top: 40px;
-          border-top: 1px solid rgba(0, 230, 255, 0.1);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          min-height: 600px;
+        .mosaic-owner {
+          color: rgba(0, 150, 255, 0.9);
+          font-size: 8px;
+          font-family: 'Monaco', monospace;
         }
       `}</style>
+
+      {/* Magic Button - allows user to mint more */}
+      <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
+        <MagicMintButton isOnGalleryPage={true} />
+      </div>
     </div>
   );
 }

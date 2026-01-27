@@ -6,6 +6,7 @@ import React from 'react';
 import { base } from 'viem/chains';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors';
+import { SignatureManager } from './components/SignatureManager';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -63,6 +64,7 @@ export default function RootProvider({ children }: { children: React.ReactNode }
           apiKey={apiKey}
           chain={base}
         >
+          <SignatureManager />
           {children}
         </OnchainKitProvider>
       </QueryClientProvider>

@@ -3,7 +3,6 @@
 import MagicMintButton from './components/MagicMintButton';
 import ArtworkMetadata from './components/ArtworkMetadata';
 import Chassis from './components/Chassis';
-import { WalletSecurityStatus } from './components/WalletSecurityStatus';
 import { useEffect, useState } from 'react';
 import { useDisconnect } from 'wagmi';
 import sdk from '@farcaster/miniapp-sdk';
@@ -181,7 +180,6 @@ export default function Page() {
 
   return (
     <Chassis>
-      <WalletSecurityStatus />
       <div className="page-container">
         <header className="header">
           <h1 className="title">KinGallery</h1>
