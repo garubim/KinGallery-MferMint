@@ -329,7 +329,15 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
       // This allows the user to see the 10s animation completely
       setTimeout(() => {
-        router.push({ pathname: '/gallery', query: { tx: hash, ethMferId: ethMferId.toString() } });
+        const target = `/gallery?tx=${encodeURIComponent(hash)}&ethMferId=${encodeURIComponent(ethMferId.toString())}`;
+        console.log('📡 Redirecting to gallery (client):', { target });
+        try {
+          // Use string form to avoid router internal type errors
+          router.push(target);
+        } catch (err) {
+          console.error('❌ router.push failed, falling back to full navigation:', err);
+          window.location.href = target;
+        }
       }, 10500);
       
       // Shows success overlay while navigating (won't be seen, but gets ready)
