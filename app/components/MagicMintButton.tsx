@@ -160,9 +160,9 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   };
 
   const handleMint = async () => {
-    // 🔄 Se está na página 2 (galeria), redireciona pra home (página 1) em vez de mintar
+    // 🔄 If on page 2 (gallery), redirect to home (page 1) instead of minting
     if (isOnGalleryPage) {
-      // Usa location.replace em vez de router.push para preservar estado da wallet
+      // Use full-page navigation to preserve wallet state (location replace behavior)
       if (typeof window !== 'undefined') {
         window.location.href = '/';
       }
@@ -326,10 +326,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       // Mark as redirected to prevent double redirect
       setHasRedirected(true);
       
-      // ⏱️ ESPERA MÍDIA DE 10s COMPLETAR antes de redirecionar (10.5s total)
-      // Isso permite que o usuário veja a animação de 10s completamente
+      // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
+      // This allows the user to see the 10s animation completely
       setTimeout(() => {
-        window.location.href = `/gallery?${params.toString()}`;
+        router.push({ pathname: '/gallery', query: { tx: hash, ethMferId: ethMferId.toString() } });
       }, 10500);
       
       // Shows success overlay while navigating (won't be seen, but gets ready)
@@ -389,33 +389,33 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
               }}>
                 {connectingWalletType === 'eoa' && (
                   <>
-                    <div>🔐 Assinando sua identidade...</div>
+                    <div>🔐 Signing your identity...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Sua wallet vai pedir uma assinatura para confirmar que você é o dono desta carteira.
+                      Your wallet will request a signature to confirm you are the owner of this wallet.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'smart' && (
                   <>
-                    <div>🔐 Abrindo sua Passkey...</div>
+                    <div>🔐 Opening your Passkey...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Use biometria ou PIN para verificar sua identidade.
+                      Use biometrics or PIN to verify your identity.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'extension' && (
                   <>
-                    <div>🔐 Conectando extensão...</div>
+                    <div>🔐 Connecting extension...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Verifique a janela da sua wallet.
+                      Please check your wallet popup or extension window.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'wc' && (
                   <>
-                    <div>🔐 Escaneie o QR Code...</div>
+                    <div>🔐 Scan the QR Code...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Use sua wallet mobile para aprovar a conexão.
+                      Use your mobile wallet to approve the connection.
                     </div>
                   </>
                 )}
@@ -552,12 +552,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         </div>
       )}
 
-      {/* Modal de Erro */}
+      {/* Error Modal */}
       {showError && (
         <div className="error-modal-overlay" onClick={() => setShowError(false)}>
           <div className="error-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="error-modal-close" onClick={() => setShowError(false)}>×</button>
-            <h2 style={{ color: '#ff6b6b', marginBottom: '16px', fontSize: '20px', fontWeight: 'bold' }}>Erro na Transação</h2>
+            <h2 style={{ color: '#ff6b6b', marginBottom: '16px', fontSize: '20px', fontWeight: 'bold' }}>Transaction Error</h2>
             
             <div style={{ 
               color: 'rgba(255, 255, 255, 0.9)', 
@@ -592,7 +592,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 230, 255, 0.3)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 230, 255, 0.2)'}
               >
-                🔄 Tentar Novamente
+                🔄 Try Again
               </button>
 
               <button 
@@ -610,7 +610,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
               >
-                Fechar
+                Close
               </button>
             </div>
 
@@ -620,7 +620,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
               color: 'rgba(255, 255, 255, 0.4)',
               textAlign: 'center'
             }}>
-              Se o problema persistir, verifique sua wallet e conexão com a rede.
+              If the problem persists, check your wallet and network connection.
             </div>
           </div>
         </div>
@@ -677,12 +677,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
               ? () => setShowWalletModal(true)
               : chain?.id !== base.id 
               ? () => {
-                  alert(`⚠️ REDE INCORRETA!\n\nVocê está na ${chain?.name || 'rede desconhecida'}.\n\nPor favor, troque para BASE na sua wallet.`);
+                  alert(`⚠️ WRONG NETWORK!\n\nYou are on ${chain?.name || 'an unknown network'}.\n\nPlease switch to BASE in your wallet.`);
                   switchChain?.({ chainId: base.id });
                 }
               : showSuccessOverlay
               ? () => {
-                  // ✨ RITUAL COMPLETE - Redireciona pra página 2
+                  // ✨ RITUAL COMPLETE - Redirects to page 2
                   const lastSixHash = hash.slice(-6);
                   const lastSixNum = parseInt(lastSixHash, 16);
                   const ethMferId = (lastSixNum % 9999) + 1;
