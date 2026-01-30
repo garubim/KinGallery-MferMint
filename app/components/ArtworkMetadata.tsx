@@ -58,7 +58,19 @@ export default function ArtworkMetadata({
         <div className="metadata-row">
           <div className="metadata-label">Title</div>
           <div className="metadata-value">
-            {tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}
+            <div className="title-line">{tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}</div>
+            {transactionHash && (
+              <div className="title-tx">
+                <a
+                  href={`https://basescan.org/tx/${transactionHash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="View transaction on BaseScan"
+                >
+                  View transaction
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -309,6 +321,30 @@ export default function ArtworkMetadata({
           word-wrap: break-word;
           overflow-wrap: break-word;
           word-break: break-word;
+        }
+
+        .title-line {
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.98);
+        }
+
+        .title-tx {
+          margin-top: 6px;
+          font-size: 11px;
+        }
+
+        .title-tx a {
+          color: rgba(0, 150, 255, 1);
+          text-decoration: none;
+          background: rgba(0, 150, 255, 0.06);
+          padding: 4px 6px;
+          border-radius: 6px;
+          border: 1px solid rgba(0, 150, 255, 0.12);
+          font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .title-tx a:hover {
+          background: rgba(0, 150, 255, 0.12);
         }
 
         .entangled-mfer {

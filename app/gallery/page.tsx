@@ -160,72 +160,70 @@ export default function GalleryPage() {
   }, [searchParams]);
 
   // 🎨 Carregar NFTs mintados do contrato MferBk0Base
-  useEffect(() => {
-    const fetchMintedNFTs = async () => {
-      setLoadingMints(true);
+  // Fetch minted NFTs from RPC, with retries and localStorage fallback
+  const fetchMintedNFTs = async () => {
+    setLoadingMints(true);
+    
+    // Small delay to allow on-chain indexing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    try {
+      const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
+      const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
       
-      // 🔄 Pequeno delay pra deixar a blockchain indexar o mint
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // First, get current block
+      const blockResponse = await fetch(rpcEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_blockNumber',
+          params: []
+        })
+      });
       
-      try {
-        const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
-        const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
-        
-        // Primeiro, pega o bloco atual
-        const blockResponse = await fetch(rpcEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'eth_blockNumber',
-            params: []
-          })
-        });
-        
-        const blockData = await blockResponse.json();
-        const currentBlock = parseInt(blockData.result, 16);
-        const fromBlock = Math.max(0, currentBlock - 5000); // últimos ~5k blocos (~12 horas, mais rápido)
-        
-        console.log(`📊 Buscando logs do bloco ${fromBlock} ao ${currentBlock}...`);
-        
-        // Query para pegar todos os Transfer events (mints)
-        const response = await fetch(rpcEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jsonrpc: '2.0',
-            id: 1,
-            method: 'eth_getLogs',
-            params: [{
-              address: mferContractAddress,
-              topics: [
-                '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
-                '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
-              ],
-              fromBlock: '0x' + fromBlock.toString(16),
-              toBlock: '0x' + currentBlock.toString(16)
-            }]
-          })
-        });
+      const blockData = await blockResponse.json();
+      const currentBlock = parseInt(blockData.result, 16);
+      const fromBlock = Math.max(0, currentBlock - 5000); // last ~5k blocks (~12 hours)
+      
+      console.log(`📊 Searching logs from block ${fromBlock} to ${currentBlock}...`);
+      
+      // Query for Transfer events (mints)
+      const response = await fetch(rpcEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getLogs',
+          params: [{
+            address: mferContractAddress,
+            topics: [
+              '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
+              '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
+            ],
+            fromBlock: '0x' + fromBlock.toString(16),
+            toBlock: '0x' + currentBlock.toString(16)
+          }]
+        })
+      });
 
-        const data = await response.json();
-        
-        console.log('📡 RPC Response:', data);
-        
-        if (data.error) {
-          console.error('❌ RPC Error:', data.error);
-          setMintedNFTs([]);
-          return;
-        }
-        
-        const transfers = data.result || [];
-        console.log(`📦 Encontrados ${transfers.length} Transfer events`);
+      const data = await response.json();
+      
+      console.log('📡 RPC Response:', data);
+      
+      if (data.error) {
+        console.error('❌ RPC Error:', data.error);
+        setMintedNFTs([]);
+      } else {
+        let transfers = data.result || [];
+        console.log(`📦 Found ${transfers.length} Transfer events`);
         if (transfers.length > 0) console.log('🔍 First transfer:', transfers[0]);
-        
-        // 🔧 Se não encontrou logs nos últimos 5k blocos, tenta buscar desde o bloco 0 do contrato
+
+        // If nothing found in last 5k blocks, try since contract creation
         if (transfers.length === 0) {
-          console.warn('⚠️ Nenhum mint encontrado nos últimos 5k blocos, tentando desde início do contrato...');
+          console.warn('⚠️ No mints found in recent window, trying since contract inception...');
           const response2 = await fetch(rpcEndpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -246,14 +244,14 @@ export default function GalleryPage() {
           });
           const data2 = await response2.json();
           if (data2.result && data2.result.length > 0) {
-            console.log(`✅ Encontrados ${data2.result.length} mints desde o início!`);
-            transfers.push(...data2.result);
+            console.log(`✅ Found ${data2.result.length} mints since inception!`);
+            transfers = data2.result;
           } else {
-            console.warn('❌ Ainda nenhum mint encontrado - RPC pode estar com problemas ou contrato não tem mints');
+            console.warn('❌ Still no mints found - RPC may be rate-limited or contract has none');
           }
         }
-        
-        // Processa cada transfer para extrair tokenId e owner
+
+        // Process logs to extract tokenId and owner
         const nfts = transfers.map((log: any) => {
           const tokenIdHex = log.topics[3];
           const tokenId = parseInt(tokenIdHex, 16);
@@ -267,11 +265,10 @@ export default function GalleryPage() {
           };
         });
 
-        // Busca dados adicionais (data do mint, entangled info)
+        // Enrich with block timestamps
         const enrichedNFTs = await Promise.all(
           nfts.map(async (nft: any) => {
             try {
-              // Busca timestamp do bloco
               const blockResp = await fetch(rpcEndpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -302,22 +299,64 @@ export default function GalleryPage() {
                 title: `Mfer-0-#${nft.tokenId}/1000`
               };
             } catch (err) {
-              console.error('Erro ao buscar dados do NFT:', err);
+              console.error('Error fetching NFT block data:', err);
               return nft;
             }
           })
         );
 
         setMintedNFTs(enrichedNFTs.sort((a, b) => b.tokenId - a.tokenId));
-        console.log('✅ NFTs Mintados:', enrichedNFTs.length, 'encontrados');
-      } catch (err) {
-        console.error('❌ Erro ao buscar NFTs:', err);
-        setMintedNFTs([]);
-      } finally {
-        setLoadingMints(false);
+        console.log('✅ Minted NFTs found:', enrichedNFTs.length);
       }
-    };
 
+      // If RPC returned nothing, try localStorage (user's own recent mints cached by UI)
+      if (!data || (data.result && data.result.length === 0)) {
+        try {
+          const stored = JSON.parse(localStorage.getItem('mferMints') || '[]');
+          if (stored && stored.length > 0) {
+            console.log('ℹ️ Loading mints from localStorage cache...');
+            const cached = stored.map((m: any) => ({
+              tokenId: m.tokenId || 1,
+              owner: m.owner || '',
+              blockNumber: m.blockNumber || 0,
+              txHash: m.hash || m.txHash || '',
+              mintDate: m.mintDate || '' ,
+              title: `Mfer-0-#${m.tokenId || 1}/1000`
+            }));
+            setMintedNFTs(cached.sort((a: any, b: any) => b.tokenId - a.tokenId));
+          }
+        } catch (err) {
+          console.error('Error reading mferMints from localStorage:', err);
+        }
+      }
+    } catch (err) {
+      console.error('❌ Error fetching NFTs:', err);
+      // Try localStorage if RPC fails completely
+      try {
+        const stored = JSON.parse(localStorage.getItem('mferMints') || '[]');
+        if (stored && stored.length > 0) {
+          const cached = stored.map((m: any) => ({
+            tokenId: m.tokenId || 1,
+            owner: m.owner || '',
+            blockNumber: m.blockNumber || 0,
+            txHash: m.hash || m.txHash || '',
+            mintDate: m.mintDate || '' ,
+            title: `Mfer-0-#${m.tokenId || 1}/1000`
+          }));
+          setMintedNFTs(cached.sort((a: any, b: any) => b.tokenId - a.tokenId));
+        } else {
+          setMintedNFTs([]);
+        }
+      } catch (err2) {
+        console.error('Error reading localStorage during fallback:', err2);
+        setMintedNFTs([]);
+      }
+    } finally {
+      setLoadingMints(false);
+    }
+  };
+
+  useEffect(() => {
     fetchMintedNFTs();
   }, []);
 
@@ -432,7 +471,42 @@ export default function GalleryPage() {
               ))
             ) : (
               <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '20px', color: 'rgba(255,255,255,0.6)' }}>
-                No mints yet
+                <div style={{ marginBottom: '12px' }}>No mints yet</div>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => fetchMintedNFTs()}
+                    style={{
+                      padding: '10px 14px',
+                      borderRadius: '8px',
+                      background: 'rgba(0, 230, 255, 0.08)',
+                      border: '1px solid rgba(0, 230, 255, 0.14)',
+                      color: 'white',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔄 Refresh
+                  </button>
+
+                  {txHash && (
+                    <button
+                      onClick={() => window.open(`https://basescan.org/tx/${txHash}`, '_blank')}
+                      style={{
+                        padding: '10px 14px',
+                        borderRadius: '8px',
+                        background: 'transparent',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        color: 'rgba(255,255,255,0.9)',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      🔎 View my mint on BaseScan
+                    </button>
+                  )}
+                </div>
+
+                <div style={{ marginTop: '12px', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                  If you just minted, wait a few seconds and hit Refresh. In some cases RPC indexers take a bit to return new logs.
+                </div>
               </div>
             )}
           </div>
