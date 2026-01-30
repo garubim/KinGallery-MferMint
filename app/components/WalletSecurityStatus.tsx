@@ -17,7 +17,7 @@ export function WalletSecurityStatus() {
   const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   if (!isConnected || !address) {
-    return null; // Não mostra nada se desconectado
+    return null; // Don't render if disconnected
   }
 
   const handleValidateClick = async () => {
@@ -55,7 +55,7 @@ export function WalletSecurityStatus() {
         style={{
           background: hasValidatedWithPasskey
             ? 'rgba(0, 255, 136, 0.15)' // Verde quando validado
-            : 'rgba(255, 153, 0, 0.15)', // Laranja quando conectado mas não validado
+            : 'rgba(255, 153, 0, 0.15)', // Orange when connected but not validated
           border: `1px solid ${hasValidatedWithPasskey ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 153, 0, 0.4)'}`,
           borderRadius: '8px',
           padding: '8px 12px',
@@ -72,8 +72,8 @@ export function WalletSecurityStatus() {
         }}
         title={
           hasValidatedWithPasskey
-            ? 'Wallet validada com segurança biométrica'
-            : 'Wallet conectada mas não validada - clique para validar'
+            ? 'Wallet validated with biometric security'
+            : 'Wallet connected but not validated — click to validate'
         }
       >
         {hasValidatedWithPasskey ? (
@@ -116,7 +116,7 @@ export function WalletSecurityStatus() {
             }}
           >
             <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
-              ENDEREÇO DA CARTEIRA
+              WALLET ADDRESS
             </div>
             <div
               style={{
@@ -138,22 +138,22 @@ export function WalletSecurityStatus() {
             }}
           >
             <div style={{ fontSize: '11px', color: '#888', marginBottom: '4px' }}>
-              STATUS DE SEGURANÇA
+              SECURITY STATUS
             </div>
             {hasValidatedWithPasskey ? (
               <div style={{ fontSize: '12px', color: '#00ff88', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>🔒</span>
-                <span>Validada com biometria</span>
+                <span>Validated with biometric</span>
               </div>
             ) : (
               <div style={{ fontSize: '12px', color: '#ff9900', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <span>⚠️</span>
-                <span>Conectada mas não validada</span>
+                <span>Connected but not validated</span>
               </div>
             )}
           </div>
 
-          {/* Ação: Validar com Biometria */}
+          {/* Action: Validate with Biometrics */}
           {!hasValidatedWithPasskey && (
             <button
               onClick={handleValidateClick}
@@ -180,7 +180,7 @@ export function WalletSecurityStatus() {
                 (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 153, 0, 0.15)';
               }}
             >
-              {isValidating ? '🔐 Validando com biometria...' : '🔐 Validar com Biometria'}
+              {isValidating ? '🔐 Validating with biometrics...' : '🔐 Validate with biometrics'}
             </button>
           )}
 
@@ -209,7 +209,7 @@ export function WalletSecurityStatus() {
               (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 50, 50, 0.15)';
             }}
           >
-            {isDisconnecting ? '🚪 Desconectando...' : '🚪 Desconectar de Verdade'}
+            {isDisconnecting ? '🚪 Disconnecting...' : '🚪 Disconnect (sign out)'}
           </button>
 
           {/* Footer - Info */}
@@ -222,12 +222,12 @@ export function WalletSecurityStatus() {
               lineHeight: '1.4',
             }}
           >
-            ℹ️ <strong>Desconectar de Verdade</strong> remove todos os dados de sessão. Você precisará reconectar na próxima visita.
+            ℹ️ <strong>Disconnect (sign out)</strong> removes all session data. You will need to reconnect on your next visit.
           </div>
         </div>
       )}
 
-      {/* Fechar dropdown ao clicar fora */}
+      {/* Close dropdown on outside click */}
       {showDropdown && (
         <div
           style={{

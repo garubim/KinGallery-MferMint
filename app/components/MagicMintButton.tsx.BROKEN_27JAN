@@ -433,33 +433,33 @@ export default function MagicMintButton() {
               }}>
                 {connectingWalletType === 'eoa' && (
                   <>
-                    <div>🔐 Assinando sua identidade...</div>
+                    <div>🔐 Signing your identity...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Sua wallet vai pedir uma assinatura para confirmar que você é o dono desta carteira.
+                      Your wallet will request a signature to confirm you are the owner of this wallet.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'smart' && (
                   <>
-                    <div>🔐 Abrindo sua Passkey...</div>
+                    <div>🔐 Opening your Passkey...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Use biometria ou PIN para verificar sua identidade.
+                      Use biometrics or PIN to verify your identity.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'extension' && (
                   <>
-                    <div>🔐 Conectando extensão...</div>
+                    <div>🔐 Connecting extension...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Verifique a janela da sua wallet.
+                      Please check your wallet popup or extension window.
                     </div>
                   </>
                 )}
                 {connectingWalletType === 'wc' && (
                   <>
-                    <div>🔐 Escaneie o QR Code...</div>
+                    <div>🔐 Scan the QR Code...</div>
                     <div style={{ fontSize: '12px', marginTop: '4px', color: '#8ab4ff' }}>
-                      Use sua wallet mobile para aprovar a conexão.
+                      Use your mobile wallet to approve the connection.
                     </div>
                   </>
                 )}
@@ -601,7 +601,7 @@ export default function MagicMintButton() {
         <div className="error-modal-overlay" onClick={() => setShowError(false)}>
           <div className="error-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="error-modal-close" onClick={() => setShowError(false)}>×</button>
-            <h2 style={{ color: '#ff6b6b', marginBottom: '16px', fontSize: '20px', fontWeight: 'bold' }}>Erro na Transação</h2>
+            <h2 style={{ color: '#ff6b6b', marginBottom: '16px', fontSize: '20px', fontWeight: 'bold' }}>Transaction Error</h2>
             
             <div style={{ 
               color: 'rgba(255, 255, 255, 0.9)', 
@@ -636,7 +636,7 @@ export default function MagicMintButton() {
                 onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(0, 230, 255, 0.3)'}
                 onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(0, 230, 255, 0.2)'}
               >
-                🔄 Tentar Novamente
+                🔄 Try Again
               </button>
 
               <button 
@@ -654,7 +654,7 @@ export default function MagicMintButton() {
                 onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
                 onMouseLeave={(e) => e.currentTarget.style.color = 'rgba(255, 255, 255, 0.6)'}
               >
-                Fechar
+                Close
               </button>
             </div>
 
@@ -664,7 +664,7 @@ export default function MagicMintButton() {
               color: 'rgba(255, 255, 255, 0.4)',
               textAlign: 'center'
             }}>
-              Se o problema persistir, verifique sua wallet e conexão com a rede.
+              If the problem persists, check your wallet and network connection.
             </div>
           </div>
         </div>

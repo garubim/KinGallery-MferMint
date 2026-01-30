@@ -3,8 +3,8 @@
 import { useAutoSignOnConnect } from '@/app/hooks/useAutoSignOnConnect';
 
 /**
- * Componente invisível que gerencia a assinatura automática ao conectar wallet
- * Renderizado dentro do RootProvider para estar sempre disponível
+ * Invisible component that manages automatic signing on wallet connect
+ * Rendered inside the RootProvider so it's always available
  */
 export function SignatureManager() {
   useAutoSignOnConnect();
