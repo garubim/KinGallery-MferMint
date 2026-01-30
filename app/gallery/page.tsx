@@ -22,6 +22,8 @@ export default function GalleryPage() {
   const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
   const [loadingMints, setLoadingMints] = useState(true);
+  const [lastQueriedContract, setLastQueriedContract] = useState<string | null>(null);
+  const [rpcReturnedNoLogs, setRpcReturnedNoLogs] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -168,8 +170,11 @@ export default function GalleryPage() {
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     try {
-      const mferContractAddress = '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241';
-      const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
+        // Use configured Mfer contract or fallback to canonical deployed address
+        const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || '0xAa566959e0290cb578b1f0dffa7203e1f9ddd1d6';
+        setLastQueriedContract(mferContractAddress);
+        setRpcReturnedNoLogs(false);
+        const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
       
       // First, get current block
       const blockResponse = await fetch(rpcEndpoint, {
@@ -248,6 +253,8 @@ export default function GalleryPage() {
             transfers = data2.result;
           } else {
             console.warn('❌ Still no mints found - RPC may be rate-limited or contract has none');
+            // Tell UI we found no logs for this contract
+            setRpcReturnedNoLogs(true);
           }
         }
 
@@ -507,6 +514,12 @@ export default function GalleryPage() {
                 <div style={{ marginTop: '12px', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
                   If you just minted, wait a few seconds and hit Refresh. In some cases RPC indexers take a bit to return new logs.
                 </div>
+
+                {rpcReturnedNoLogs && lastQueriedContract && (
+                  <div style={{ marginTop: '10px', fontSize: '12px', color: 'rgba(255,200,100,0.9)' }}>
+                    ⚠️ No logs found for contract <code style={{ fontFamily: 'monospace' }}>{lastQueriedContract}</code>. If you expect mints, verify the contract address or try again later.
+                  </div>
+                )}
               </div>
             )}
           </div>
