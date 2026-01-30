@@ -24,6 +24,8 @@ export default function GalleryPage() {
   const [loadingMints, setLoadingMints] = useState(true);
   const [lastQueriedContract, setLastQueriedContract] = useState<string | null>(null);
   const [rpcReturnedNoLogs, setRpcReturnedNoLogs] = useState(false);
+  const [rpcSource, setRpcSource] = useState<string | null>(null);
+  const [rpcLogsCount, setRpcLogsCount] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -171,83 +173,112 @@ export default function GalleryPage() {
     
     try {
         // Use configured Mfer contract or fallback to canonical deployed address
-        const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || '0xAa566959e0290cb578b1f0dffa7203e1f9ddd1d6';
+        const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xAa566959e0290cb578b1f0dffa7203e1f9ddd1d6';
         setLastQueriedContract(mferContractAddress);
         setRpcReturnedNoLogs(false);
-        const rpcEndpoint = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
+
+        const primaryRpc = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
+        const fallbackRpc = 'https://mainnet.base.org';
+
+        // Helper to POST JSON-RPC
+        const postRpc = async (endpoint: string, body: any) => {
+          const res = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          return res.json();
+        };
+
+        // First, try to get current block from primary; fallback if necessary
+        let blockResponse = await postRpc(primaryRpc, { jsonrpc: '2.0', id: 1, method: 'eth_blockNumber', params: [] });
+        let usedRpc = primaryRpc;
+        if (!blockResponse || blockResponse.error) {
+          console.warn('Primary RPC blockNumber failed, falling back to mainnet.base.org', blockResponse?.error);
+          blockResponse = await postRpc(fallbackRpc, { jsonrpc: '2.0', id: 1, method: 'eth_blockNumber', params: [] });
+          usedRpc = fallbackRpc;
+        }
+
+        const currentBlock = parseInt(blockResponse.result, 16);
+        const fromBlock = Math.max(0, currentBlock - 5000); // last ~5k blocks (~12 hours)
+
+        console.log(`📊 Searching logs from block ${fromBlock} to ${currentBlock}... (attempting ${usedRpc === primaryRpc ? 'primary' : 'fallback'} RPC)`);
       
-      // First, get current block
-      const blockResponse = await fetch(rpcEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_blockNumber',
-          params: []
-        })
+
+      
+      // Query for Transfer events (mints) — try primary first, then fallback
+      let response = await postRpc(primaryRpc, {
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'eth_getLogs',
+        params: [{
+          address: mferContractAddress,
+          topics: [
+            '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
+            '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
+          ],
+          fromBlock: '0x' + fromBlock.toString(16),
+          toBlock: '0x' + currentBlock.toString(16)
+        }]
       });
-      
-      const blockData = await blockResponse.json();
-      const currentBlock = parseInt(blockData.result, 16);
-      const fromBlock = Math.max(0, currentBlock - 5000); // last ~5k blocks (~12 hours)
-      
-      console.log(`📊 Searching logs from block ${fromBlock} to ${currentBlock}...`);
-      
-      // Query for Transfer events (mints)
-      const response = await fetch(rpcEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+
+      let data = response;
+      let usedRpcForLogs = primaryRpc;
+
+      if (!data || data.error || (Array.isArray(data.result) && data.result.length === 0)) {
+        console.warn('Primary RPC returned no logs or error, trying fallback RPC...', data?.error);
+        const fallbackResponse = await postRpc(fallbackRpc, {
           jsonrpc: '2.0',
           id: 1,
           method: 'eth_getLogs',
           params: [{
             address: mferContractAddress,
             topics: [
-              '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef', // Transfer event
-              '0x0000000000000000000000000000000000000000000000000000000000000000' // from zero (mints)
+              '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+              '0x0000000000000000000000000000000000000000000000000000000000000000'
             ],
-            fromBlock: '0x' + fromBlock.toString(16),
+            fromBlock: '0x0',
             toBlock: '0x' + currentBlock.toString(16)
           }]
-        })
-      });
+        });
 
-      const data = await response.json();
-      
+        data = fallbackResponse;
+        usedRpcForLogs = fallbackRpc;
+      }
+
       console.log('📡 RPC Response:', data);
-      
+
       if (data.error) {
         console.error('❌ RPC Error:', data.error);
         setMintedNFTs([]);
       } else {
         let transfers = data.result || [];
-        console.log(`📦 Found ${transfers.length} Transfer events`);
+        console.log(`📦 Found ${transfers.length} Transfer events via ${usedRpcForLogs}`);
         if (transfers.length > 0) console.log('🔍 First transfer:', transfers[0]);
+
+        // update states about rpc source and counts
+        setRpcSource(usedRpcForLogs === primaryRpc ? 'coinbase' : 'mainnet');
+        setRpcLogsCount(transfers.length);
+
 
         // If nothing found in last 5k blocks, try since contract creation
         if (transfers.length === 0) {
           console.warn('⚠️ No mints found in recent window, trying since contract inception...');
-          const response2 = await fetch(rpcEndpoint, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jsonrpc: '2.0',
-              id: 2,
-              method: 'eth_getLogs',
-              params: [{
-                address: mferContractAddress,
-                topics: [
-                  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
-                  '0x0000000000000000000000000000000000000000000000000000000000000000'
-                ],
-                fromBlock: '0x0',
-                toBlock: '0x' + currentBlock.toString(16)
-              }]
-            })
+          const response2 = await postRpc(usedRpcForLogs, {
+            jsonrpc: '2.0',
+            id: 2,
+            method: 'eth_getLogs',
+            params: [{
+              address: mferContractAddress,
+              topics: [
+                '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+                '0x0000000000000000000000000000000000000000000000000000000000000000'
+              ],
+              fromBlock: '0x0',
+              toBlock: '0x' + currentBlock.toString(16)
+            }]
           });
-          const data2 = await response2.json();
+          const data2 = response2;
           if (data2.result && data2.result.length > 0) {
             console.log(`✅ Found ${data2.result.length} mints since inception!`);
             transfers = data2.result;
@@ -276,18 +307,14 @@ export default function GalleryPage() {
         const enrichedNFTs = await Promise.all(
           nfts.map(async (nft: any) => {
             try {
-              const blockResp = await fetch(rpcEndpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  jsonrpc: '2.0',
-                  id: 1,
-                  method: 'eth_getBlockByNumber',
-                  params: ['0x' + nft.blockNumber.toString(16), false]
-                })
+              const blockResp = await postRpc(usedRpcForLogs, {
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'eth_getBlockByNumber',
+                params: ['0x' + nft.blockNumber.toString(16), false]
               });
 
-              const blkData = await blockResp.json();
+              const blkData = blockResp;
               const timestamp = blkData.result?.timestamp ? parseInt(blkData.result.timestamp, 16) * 1000 : null;
               
               let mintDate = '';
@@ -318,6 +345,7 @@ export default function GalleryPage() {
 
       // If RPC returned nothing, try localStorage (user's own recent mints cached by UI)
       if (!data || (data.result && data.result.length === 0)) {
+        setRpcReturnedNoLogs(true);
         try {
           const stored = JSON.parse(localStorage.getItem('mferMints') || '[]');
           if (stored && stored.length > 0) {
@@ -335,6 +363,9 @@ export default function GalleryPage() {
         } catch (err) {
           console.error('Error reading mferMints from localStorage:', err);
         }
+      } else {
+        // If we have data via RPC, ensure rpcReturnedNoLogs is false
+        setRpcReturnedNoLogs(false);
       }
     } catch (err) {
       console.error('❌ Error fetching NFTs:', err);
@@ -444,6 +475,17 @@ export default function GalleryPage() {
 
       {revealEntangled && (
         <div className="mosaic-section">
+          {/* RPC Debug Badge */}
+          {rpcSource && (
+            <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.75)', marginRight: '8px' }}>RPC:</span>
+              <span style={{ fontSize: '12px', fontFamily: 'monospace', color: 'rgba(0,230,255,0.9)' }}>{rpcSource}</span>
+              <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginLeft: '8px' }}>
+                ({rpcLogsCount ?? 0} logs)
+              </span>
+            </div>
+          )}
+
 
           <div className="mosaic-grid">
             {loadingMints ? (
