@@ -264,7 +264,7 @@ import { useCapabilities, useWriteContracts } from 'wagmi/experimental';
 - Paymaster URL must be active for gas sponsorship (check .env.local)
 
 ### UI/Animation Updates
-- Component structure in [app/components/MagicMintButton.tsx](app/components/MagicMintButton.tsx)
+- Component structure in [app/components/MagicMintButton.tsx](../app/components/MagicMintButton.tsx)
 - CSS-in-JS styling scoped to component (JSX style tags)
 - CustomAnimatedText handles phrase rotation every 3 seconds
 - Payment mode toggle updates UI glow color (ETH = blue, USDC = green)
