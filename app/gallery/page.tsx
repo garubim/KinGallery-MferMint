@@ -14,6 +14,7 @@ export default function GalleryPage() {
   const [tokenId, setTokenId] = useState<number | null>(null);
   const [ethMferId, setEthMferId] = useState<number | null>(null);
   const [ethMferImageUrl, setEthMferImageUrl] = useState<string | null>(null);
+  const [originalTransactionHash, setOriginalTransactionHash] = useState<string | null>(null);
   const [mintDate, setMintDate] = useState<string | null>(null);
   const [blockNumber, setBlockNumber] = useState<number | null>(null);
   const [collisionInfo, setCollisionInfo] = useState<any | null>(null);
@@ -124,10 +125,10 @@ export default function GalleryPage() {
           .then(data => {
             if (data.result?.timestamp) {
               const timestamp = parseInt(data.result.timestamp, 16) * 1000;
-              const date = new Date(timestamp).toLocaleDateString('pt-BR', {
+              const date = new Date(timestamp).toLocaleString('en-US', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric',
+                day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
               });
@@ -140,19 +141,55 @@ export default function GalleryPage() {
       }, 1000);
     }
 
-    // 🎨 Busca imagem do Legacy Mfer entangled no IPFS
+    // 🎨 Fetch entangled legacy Mfer metadata from IPFS and try to detect original Mainnet tx hash
     if (ethMfer) {
       const mferId = parseInt(ethMfer);
-      fetch(`https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo/${mferId}`)
+      const ipfsBase = 'https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo';
+
+      // Helper: recursively search for 0x + 64 hex chars anywhere in metadata
+      const findTxHash = (value: any): string | null => {
+        if (!value) return null;
+        if (typeof value === 'string') {
+          const m = value.match(/0x[a-fA-F0-9]{64}/);
+          if (m) return m[0];
+          return null;
+        }
+        if (Array.isArray(value)) {
+          for (const v of value) {
+            const f = findTxHash(v);
+            if (f) return f;
+          }
+        } else if (typeof value === 'object') {
+          for (const k of Object.keys(value)) {
+            const f = findTxHash(value[k]);
+            if (f) return f;
+          }
+        }
+        return null;
+      };
+
+      fetch(`${ipfsBase}/${mferId}`)
         .then(res => res.json())
         .then(metadata => {
           if (metadata.image) {
-
             const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
             setEthMferImageUrl(imageUrl);
           }
+
+          // Try to find original Mainnet tx hash in the metadata
+          const original = findTxHash(metadata);
+          if (original) {
+            console.log('🔍 Found original Mainnet tx in metadata:', original);
+            setOriginalTransactionHash(original);
+          } else {
+            console.log('ℹ️ No original Mainnet tx found in metadata for Mfer', mferId);
+            setOriginalTransactionHash(null);
+          }
         })
-        .catch(err => console.error('Erro ao buscar Mfer image:', err));
+        .catch(err => {
+          console.error('Erro ao buscar Mfer metadata:', err);
+          setOriginalTransactionHash(null);
+        });
     }
 
     setTimeout(() => setShowConfetti(false), 3000);
@@ -428,6 +465,7 @@ export default function GalleryPage() {
             entangledMferId={ethMferId || undefined}
             ethMferImageUrl={ethMferImageUrl || undefined}
             transactionHash={txHash || undefined}
+            originalTransactionHash={originalTransactionHash || undefined}
             mintDate={mintDate || undefined}
             blockNumber={blockNumber || undefined}
             collisionInfo={collisionInfo || undefined}

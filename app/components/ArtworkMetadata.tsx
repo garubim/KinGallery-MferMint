@@ -10,10 +10,11 @@ interface ArtworkMetadataProps {
   entangledMferId?: number;
   ethMferImageUrl?: string;
   transactionHash?: string;
+  originalTransactionHash?: string;
   mintDate?: string;
   blockNumber?: number;
   collisionInfo?: any;
-}
+} 
 
 export default function ArtworkMetadata({ 
   showPricing = true, 
@@ -159,19 +160,36 @@ export default function ArtworkMetadata({
               </div>
             )}
             
-            <div className="cert-item">
-              <div className="cert-label">Transaction Hash</div>
-              <div className="cert-value cert-hash">
-                <a 
-                  href={`https://basescan.org/tx/${transactionHash}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  title="Ver no BlockScout"
-                >
-                  {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
-                </a>
+            {/* Transaction Hash: prefer original Mainnet tx for entangled Mfers; otherwise show Base tx */}
+            {originalTransactionHash ? (
+              <div className="cert-item">
+                <div className="cert-label">Original Mfer transaction (Mainnet)</div>
+                <div className="cert-value cert-hash">
+                  <a
+                    href={`https://etherscan.io/tx/${originalTransactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="View on Etherscan"
+                  >
+                    {originalTransactionHash.slice(0, 10)}...{originalTransactionHash.slice(-8)}
+                  </a>
+                </div>
               </div>
-            </div>
+            ) : (!entangledMferId && transactionHash) ? (
+              <div className="cert-item">
+                <div className="cert-label">Transaction Hash</div>
+                <div className="cert-value cert-hash">
+                  <a
+                    href={`https://basescan.org/tx/${transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="View on BaseScan"
+                  >
+                    {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
+                  </a>
+                </div>
+              </div>
+            ) : null}
 
             {entangledMferId && (
               <div className="cert-item">
