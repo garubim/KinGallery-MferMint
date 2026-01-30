@@ -124,10 +124,10 @@ export default function GalleryPage() {
           .then(data => {
             if (data.result?.timestamp) {
               const timestamp = parseInt(data.result.timestamp, 16) * 1000;
-              const date = new Date(timestamp).toLocaleDateString('pt-BR', {
+              const date = new Date(timestamp).toLocaleString('en-US', {
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric',
+                day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit'
               });
