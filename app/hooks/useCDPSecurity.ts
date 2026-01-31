@@ -45,32 +45,29 @@ export function useCDPSecurity() {
     }
 
     try {
-      const rpcUrl = 'https://base.llamarpc.com'; // ou process.env.NEXT_PUBLIC_RPC_URL
-      
-      const response = await fetch(rpcUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'eth_blockNumber',
-          params: [],
-        }),
-      });
+      // Call server-side proxy to avoid CORS issues in browser dev
+      const res = await fetch('/api/rpc-health');
 
-      const data = await response.json();
-      const isHealthy = !data.error && data.result;
-      
+      if (!res.ok) {
+        console.error('⚠️ rpc-health endpoint returned:', res.status);
+        setRpcHealthy(false);
+        setLastHealthCheck(now);
+        return false;
+      }
+
+      const json = await res.json();
+      const isHealthy = !!json.healthy;
+
       setRpcHealthy(isHealthy);
       setLastHealthCheck(now);
 
       if (!isHealthy) {
-        console.warn('⚠️ RPC endpoint retornou erro:', data.error?.message);
+        console.warn('⚠️ RPC health proxy reported unhealthy:', json.error || json);
       }
 
       return isHealthy;
     } catch (error) {
-      console.error('❌ RPC health check falhou:', error);
+      console.error('❌ RPC health check failed (proxy):', error);
       setRpcHealthy(false);
       setLastHealthCheck(now);
       return false;
