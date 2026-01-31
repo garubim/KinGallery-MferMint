@@ -21,7 +21,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   // Pre-deployment security hooks
   const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
   
-  // Debug: Atalho para pular direto pra success screen
+  // Debug: Shortcut to jump directly to the success screen
   useEffect(() => {
     const debugMint = searchParams.get('debugMint');
     if (debugMint === 'success') {
@@ -49,7 +49,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
 
-  // Evita hydration error
+  // Prevent hydration errors
   useEffect(() => {
     setMounted(true);
     // Debug: Log initial connection state
@@ -83,7 +83,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
   }, [isConnecting]);
 
-  // Troca automaticamente para Base quando conecta em rede errada
+  // Auto-switch to Base when connected to the wrong network
   useEffect(() => {
     if (isConnected && chain && chain.id !== base.id) {
       console.log('🚨 WRONG NETWORK!', { currentChain: chain?.id, chainName: chain?.name, targetChain: base.id });
