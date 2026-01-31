@@ -202,6 +202,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       
       console.log('🔑 PaymentId:', { string: paymentIdString });
       
+      // Resolve artist contract from environment (prefer explicit MFERBKOBASE var)
+      const artistEnv = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS;
+      if (!artistEnv) {
+        throw new Error('Missing artist contract env: set NEXT_PUBLIC_MFERBKOBASE_CONTRACT or NEXT_PUBLIC_MFER_ADDRESS');
+      }
+
       const data = encodeFunctionData({
         abi: [{
           type: 'function',
@@ -216,7 +222,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }],
         functionName: 'payAndMint',
         args: [
-          (process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xaA566959e0290cB578b1F0dfFA7203E1F9DDd1D6') as `0x${string}`,
+          artistEnv as `0x${string}`,
           address,
           paymentIdString,
         ],
