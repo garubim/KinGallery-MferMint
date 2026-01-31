@@ -636,49 +636,47 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
       {/* Glass cocoon - contains WebP animation */}
       <div className="glass-shell">
-        <div className="glass-mask">
-          {/* Background WebP animation */}
-          <img 
-            src={showMinting
-              ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
-              : isConnected 
-              ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
-              : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
-            }
-            alt=""
-            className="magic-animation"
-          />
+        {/* Background WebP animation */}
+        <img 
+          src={showMinting
+            ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
+            : isConnected 
+            ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
+            : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
+          }
+          alt=""
+          className="magic-animation"
+        />
 
-          {/* Glass reflex layer - using new Box01 reflex image */}
-          <div className="glass-reflex">
-            <img
-              src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-              alt="Glass reflex Box03 layer 1"
-              className="reflex-layer reflex-1"
-            />
-            <img
-              src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-              alt="Glass reflex Box03 layer 2"
-              className="reflex-layer reflex-2"
-            />
-            <img
-              src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-              alt="Glass reflex Box03 layer 3"
-              className="reflex-layer reflex-3"
+        {/* Glass reflex layer - using new Box01 reflex image */}
+        <div className="glass-reflex">
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 1"
+            className="reflex-layer reflex-1"
+          />
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 2"
+            className="reflex-layer reflex-2"
+          />
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 3"
+            className="reflex-layer reflex-3"
+          />
+        </div>
+
+        {/* Loading overlay - appears when wallet is connecting */}
+        {isPending && (
+          <div className="loading-overlay">
+            <img 
+              src="/MagicButton-OfficialAnimatedTitles/Legacy-Mfer-Loading-Loop+FoggyBG-Pretty+ALPHA-SEMI-TRANSP-1280X1080px-WebPAnim-HighQ.webp"
+              alt="Loading..."
+              className="loading-animation"
             />
           </div>
-
-          {/* Loading overlay - appears when wallet is connecting */}
-          {isPending && (
-            <div className="loading-overlay">
-              <img 
-                src="/MagicButton-OfficialAnimatedTitles/Legacy-Mfer-Loading-Loop+FoggyBG-Pretty+ALPHA-SEMI-TRANSP-1280X1080px-WebPAnim-HighQ.webp"
-                alt="Loading..."
-                className="loading-animation"
-              />
-            </div>
-          )}
-        </div>
+        )}
 
         {/* Invisible but functional button */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -996,16 +994,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           transition: all 0.3s ease;
         }
 
-        /* Mask that squeezes the visible animation area by 20% (10% inset each side)
-           Keeps interactive full-area (button) outside the mask so click/swipe still work */
-        .glass-mask {
-          position: absolute;
-          inset: 10%; /* 10% from each side -> visible area reduced ~20% overall */
-          overflow: hidden;
-          border-radius: inherit;
-          pointer-events: none; /* visual-only; allow clicks to pass through to full-size button */
-          z-index: 1;
-        }
+        /* (removed) .glass-mask wrapper used for visual clipping — reverted to original structure */
 
         .glass-shell:hover {
           transform: scale(1.02);
