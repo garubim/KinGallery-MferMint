@@ -648,21 +648,21 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           className="magic-animation"
         />
 
-        {/* Glass reflex layer - all three layers now use new reflections from Pack 02 WebP */}
+        {/* Glass reflex layer - using new Box01 reflex image */}
         <div className="glass-reflex">
-          <img 
-            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp"
-            alt=""
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 1"
             className="reflex-layer reflex-1"
           />
-          <img 
-            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp" 
-            alt=""
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 2"
             className="reflex-layer reflex-2"
           />
-          <img 
-            src="/MagicButton-OfficialAnimatedTitles/Magic-Button-New-reflexes-Pack-02-1280x720pxWebP-High+Alpha-which.webp"
-            alt=""
+          <img
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
+            alt="Glass reflex Box03 layer 3"
             className="reflex-layer reflex-3"
           />
         </div>
@@ -1022,7 +1022,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           width: 40%;
           background: linear-gradient(90deg, rgba(0, 200, 100, 0) 0%, rgba(0, 255, 150, 0.5) 100%);
           border-radius: 0 24px 24px 0;
-          opacity: 1;
+          opacity: 0.9;
           animation: greenGlowPulse 2s ease-in-out infinite;
           z-index: 4;
           pointer-events: none;
@@ -1056,32 +1056,36 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
         .magic-animation {
           position: absolute;
-          top: 50%;
+          top: 46%;
           left: 50%;
-          transform: translate(-50%, -50%) scale(1.2);
+          transform: translate(-50%, -50%) scale(1.1);
           width: 100%;
           height: 100%;
           object-fit: cover;
           object-position: center;
           pointer-events: none;
-          opacity: 0.98;
+          opacity: 0.95;
           z-index: 1;
           will-change: transform;
         }
 
         .glass-reflex {
           position: absolute;
+          width: 100%;
+          height: 100%;
           inset: 0;
           pointer-events: none;
-          z-index: 5;
-          mix-blend-mode: lighten;
+          /* Elevated above the main animation so reflex layers visually sit on top */
+          z-index: 25;
+          /* keep a soft reflective appearance */
+          mix-blend-mode: soft-light;
           opacity: 0.7;
         }
 
         .reflex-layer {
           position: absolute;
           width: 100%;
-          height: 200%;
+          height: 100%;
           object-fit: cover;
           object-position: center;
           pointer-events: none;
@@ -1091,11 +1095,11 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }
 
         .reflex-1 {
-          opacity: 0.7;
+          opacity: 0.5;
         }
 
         .reflex-2 {
-          opacity: 0.9;
+          opacity: 0.7;
           filter: brightness(0.8);
         }
 

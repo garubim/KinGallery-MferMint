@@ -22,7 +22,7 @@ While workiing on documents, please translate any Portuguese content that you fi
 
 **This section is the single source of information for project completion status. All copilots must check here before making changes.**
 
-**Last Updated**: January 27, 2026 - FRESH REDEPLOY COMPLETE ✅
+**Last Updated**: January 30, 2026 - FRESH REDEPLOY COMPLETE ✅
 
 ### ✅ PRODUCTION READY - NEW CONTRACTS LIVE
 
@@ -35,16 +35,17 @@ While workiing on documents, please translate any Portuguese content that you fi
   - Multisig: 0x4d639D1Bd428899599F0Da564926DA1a1A3bd3a8
   - Gallery payee: 0x26dcd83d4e449059abf0334e4435d48e74f28eb0 ✅
 
-- ✅ **MferBk0Base**: `0xaA566959e0290cB578b1F0dfFA7203E1F9DDd1D6`
-  - Public name: "MferBk0Base" ✅
+- ✅ **MferBk0Base**: `0xb222e11864A2050bd19e2Df6648CfbB971f28325`
+  - Public name: "Mfer-0-Base" ✅
   - Verified on Sourcify, BaseScan, BlockScout, RouteScan
   - Max supply: 1000 ERC-721 tokens (verified on BaseScan)
   - Token counter: Starts at 1 (fresh!)
   - Metadata: IPFS-based with `.json` suffix in tokenURI ✅
   - Royalties: 5% to artist (ERC2981)
-  - baseURI: `ipfs://bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq/`
+  - [ tokenURI(uint256) method Response ]
+    string :  ipfs://bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq/1to1000.json
   - Owner: Artist EOA (0xbcd980d37293CBee62Bf5f93a26a0B744C18964D)
-  - **CRITICAL**: Call `setGallery(0xebc497a5c36cb1a9264fd122a586b3f461fcc568)` to connect with KinGallery ⚠️
+  - _gallery(0x33cd6f5d) 0xEbC497a5C36cb1a9264FD122a586B3F461fcC568
 
 **Frontend Stack:**
 - ✅ Animation system (10s WebP mint reveal)
@@ -56,12 +57,12 @@ While workiing on documents, please translate any Portuguese content that you fi
 
 ### 📚 Documentation Index:
 - [BASESCAN_VERIFICATION_CLEAN_2026.md](../BASESCAN_VERIFICATION_CLEAN_2026.md) - BaseScan verification guide
-- [VALIDACAO_INTEGRACAO_CONTRATOS.md](../VALIDACAO_INTEGRACAO_CONTRATOS.md) - Contract integration checklist
+- [CONTRACTS_VALIDATION_INTEGRATION.md](../CONTRACTS_VALIDATION_INTEGRATION.md) - Contract integration checklist
 
 ### ⏳ NEXT IMMEDIATE STEPS
 
 **Critical (Do First):**
-1. Call `MferBk0Base.setGallery(0xebc497a5c36cb1a9264fd122a586b3f461fcc568)` via Remix/BaseScan ⚠️
+1. Call `MferBk0Base.setGallery(0xebc497a5c36cb1a9264fd122a586b3f461fcc568)` via Remix/BaseScan DONE ✅
 2. Test mint flow end-to-end:
    - Connect wallet (any: Zerion, MetaMask, Coinbase Wallet)
    - Click Magic Button → mint
@@ -70,6 +71,7 @@ While workiing on documents, please translate any Portuguese content that you fi
    - Check token appears in gallery
 3. Validate tokenURI includes `.json`: `ipfs://bafybei.../1.json` ✅
 4. Verify on Magic Eden / OpenSea metadata loading
+5. **NEXT ACTION:** Come up with a seamless way to include the entangled original L1 Mfer data into every minted token metadata. Just Title, tokenId and Thumbnail of the entangled L1 Mfer should be enough.
 
 **This Week:**
 - [ ] Farcaster miniapp integration testing
@@ -100,21 +102,21 @@ While workiing on documents, please translate any Portuguese content that you fi
    - Calls MferMint contract's `payAndMint(address,address,string),` and `processPayment(address,address,uint256,string)`
    - Tracks processed payments via mapping to prevent replay attacks
    - Configurable mint price (default: 0.0003 ETH = 300_000_000_000_000 wei)
-   - Deployed: `0x8abb13088c1707e9d5be43dac0e78e8d9d35e44f`
+   - Deployed: `0xEbC497a5C36cb1a9264FD122a586B3F461fcC568`
 
 2. **Artist Contract** (`contracts/MferBk0Base.sol`)
-   - ✅ **DEPLOYED & VERIFIED**: `0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241` (Base chain)
+   - ✅ **DEPLOYED & VERIFIED**: `0xb222e11864A2050bd19e2Df6648CfbB971f28325` (Base chain)
    - Verified on Sourcify: January 14, 2026 (Exact Match)
    - Includes required functions: `payAndMint(address,address,string),` and `processPayment(address,address,uint256,string)`
    - Features: Creator-friendly (artists mint free), royalties, onchain poetry
-   - Old incompatible contract (`0x86a34dfab59996c6fb809d1f2b016a0ed397e682`) should NOT be used
+   - Old incompatible contracts should be labeled as "Legacy Testing Contracts" (`0x86a34dfab59996c6fb809d1f2b016a0ed397e682`0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241', and other previous ones) should NOT be used
 
 3. **Frontend** (`app/components/MagicMintButton.tsx`)
    - Next.js 16 with wagmi v2.19 + viem v2.44 for wallet integration
    - Direct transaction submission to blockchain (no backend)
-   - Paymaster sponsorship via Coinbase SDK (automatic)
-   - Payment mode toggle (ETH/USDC) with animated UI
-   - Animated ritual phrases system after wallet connect
+   - Paymaster sponsorship via Coinbase SDK admins all secrets (automatic)
+   - Payment mode toggle (ETH/USDC) with animated UI- not active ATM
+   - Animated ritual phrases system before wallet connect, after connect until mint, through mint, until page redirect to page2, where the NFT is displayed with metadata. Animated phrases are all prerendered WebP animated images loaded locally.
    - Environment variables for contract addresses (fallbacks hardcoded)
 
 ## Critical Workflows
@@ -141,6 +143,12 @@ npm run dev
 npm run build      # Next.js build to .next/
 npm start          # Production server
 ```
+
+
+
+
+
+NOT UPDATED from here down ↓ 
 
 ### Smart Contract Deployment
 - Solidity 0.8.19 configured in `hardhat.config.cjs`
