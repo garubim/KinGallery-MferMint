@@ -4,9 +4,10 @@ pragma solidity ^0.8.19;
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/token/ERC721/ERC721.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/token/common/ERC2981.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/access/Ownable.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contracts/utils/Strings.sol"; 
 
 /**
- * @title MferBk0Base
+ * @title Mfer-0-Base
  * @notice Smart gallery-compatible NFT contract with creator-friendly pricing model
  * 
  * MINTING FLOWS:
@@ -19,8 +20,10 @@ import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v4.9.0/contr
  * MaxTotalSupply: 1000 ERC-721 tokens ✅
  */
 contract MferBk0Base is ERC721, ERC2981, Ownable {
+    using Strings for uint256;
+
     uint256 private _tokenIdCounter = 1;
-    string private _baseTokenURI = "ipfs://metadata/";
+    string private _baseTokenURI = "ipfs://bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq/";
     address public gallery;
     address public artist;
     uint96 public royaltyPercentage;
@@ -156,6 +159,13 @@ contract MferBk0Base is ERC721, ERC2981, Ownable {
     
     function _baseURI() internal view override returns (string memory) {
         return _baseTokenURI;
+    }
+
+    /// @notice tokenURI returns baseURI + tokenId + ".json"
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        string memory baseURI = _baseURI();
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString(), ".json")) : "";
     }
 
     function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC2981) returns (bool) {
