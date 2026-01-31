@@ -1,0 +1,4 @@
+Trigger Netlify deploy
+Timestamp: 2026-01-31T17:40:00Z
+
+This is a tiny no-op file added to create a new commit and trigger Netlify auto-deploy.
