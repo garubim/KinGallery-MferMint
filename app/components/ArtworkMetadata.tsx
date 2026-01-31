@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useAccount } from 'wagmi';
 
 interface ArtworkMetadataProps {
   showPricing?: boolean;
@@ -37,6 +38,9 @@ export default function ArtworkMetadata({
     setUsdcPrice(estimatedUsdcPrice);
   }, []);
 
+  // Wagmi hook to show connected address
+  const { address, isConnected } = useAccount();
+
   if (!mounted) return null;
 
   const containerClass = isCompact ? 'artwork-metadata compact' : 'artwork-metadata';
@@ -55,6 +59,7 @@ export default function ArtworkMetadata({
           <div className="metadata-value">Kinwiz.base.eth</div>
         </div>
 
+
         <div className="metadata-row">
           <div className="metadata-label">Title</div>
           <div className="metadata-value">
@@ -71,8 +76,19 @@ export default function ArtworkMetadata({
                 </a>
               </div>
             )}
+
+
+
           </div>
         </div>
+
+        {isConnected && address && (
+          <div className="metadata-row">
+            <div className="metadata-label">Connected</div>
+            <div className="metadata-value connected-value">{`${address.slice(0,6)}…${address.slice(-4)}`}</div>
+          </div>
+        )}
+
       </div>
 
       {/* Linha "chão" - Entangled with (sem borda) */}
@@ -101,6 +117,7 @@ export default function ArtworkMetadata({
           </div>
         </div>
       )}
+
 
       {/* 🌠 COLISÃO DE HASH - Rare Event */}
       {collisionInfo && (
@@ -222,6 +239,19 @@ export default function ArtworkMetadata({
           flex-direction: column;
           gap: 8px;
           width: 100%;
+        }
+
+        /* Connected wallet value styling */
+        .connected-value {
+          color: rgba(0, 230, 255, 0.9);
+          font-family: 'Courier New', monospace;
+          font-size: 13px;
+          letter-spacing: 0.01em;
+        }
+
+        /* Wallet connected block spacing */
+        .wallet-connected {
+          margin-top: 8px;
         }
 
         .eth-mfer-photo {
