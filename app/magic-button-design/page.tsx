@@ -174,12 +174,12 @@ export default function MagicButtonDesignPage() {
 
           {/* Color Info */}
           <div className="mt-12 pt-8 border-t border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Cor Selecionada</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Selected Color</h3>
             <div className={`p-8 rounded-lg bg-gradient-to-br ${color.gradient} text-white`}>
               <p className="text-2xl font-bold mb-2">{color.name}</p>
               <p className="text-lg opacity-90">{color.hex}</p>
               <p className="text-sm mt-4 opacity-75">
-                Esta é a cor que será usada em todos os botões, backgrounds e elementos interativos.
+                This is the color used across buttons, backgrounds and interactive elements.
               </p>
             </div>
           </div>
@@ -187,13 +187,13 @@ export default function MagicButtonDesignPage() {
 
         {/* Implementation Notes */}
         <div className="mt-12 bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
-          <h3 className="text-lg font-semibold text-blue-900 mb-3">📝 Próximos Passos</h3>
+          <h3 className="text-lg font-semibold text-blue-900 mb-3">📝 Next Steps</h3>
           <ul className="space-y-2 text-blue-800">
-            <li>✓ Criar componente React MagicButton com 3 versões</li>
-            <li>✓ Integrar animação do Welcome (WELCOME-COMPLETE-MBLUR.webm)</li>
-            <li>✓ Implementar seletores ETH/USDC (versão 2)</li>
-            <li>✓ Testar responsividade em mobile</li>
-            <li>✓ Conectar ao smart contract</li>
+            <li>✓ Create React MagicButton component with 3 variants</li>
+            <li>✓ Integrate Welcome animation (WELCOME-COMPLETE-MBLUR.webm)</li>
+            <li>✓ Implement ETH/USDC selectors (v2)</li>
+            <li>✓ Test responsiveness on mobile</li>
+            <li>✓ Connect to smart contract</li>
           </ul>
         </div>
       </div>

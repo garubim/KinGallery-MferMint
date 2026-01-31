@@ -171,13 +171,13 @@ export default function IntegratedMintFlowPage() {
 
         {/* Next Steps */}
         <div className="mt-8 bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-blue-300 mb-3">🚀 Próximos Passos</h3>
+          <h3 className="text-lg font-semibold text-blue-300 mb-3">🚀 Next Steps</h3>
           <ul className="space-y-2 text-blue-200 text-sm">
-            <li>✓ Testar animação e botão em mobile (DevTools)</li>
-            <li>✓ Ajustar timing se necessário</li>
-            <li>✓ Integrar com smart contract real</li>
-            <li>✓ Adicionar SUCCESS e ERROR animations</li>
-            <li>✓ Deploy para produção</li>
+            <li>✓ Test animation and button on mobile (DevTools)</li>
+            <li>✓ Adjust timing if necessary</li>
+            <li>✓ Integrate with real smart contract</li>
+            <li>✓ Add SUCCESS and ERROR animations</li>
+            <li>✓ Deploy to production</li>
           </ul>
         </div>
       </div>
