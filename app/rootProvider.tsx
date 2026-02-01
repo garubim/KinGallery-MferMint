@@ -30,18 +30,24 @@ if (typeof window !== 'undefined') {
 const wagmiConfig = createConfig({
   chains: [base],
   connectors: [
+    // 🔷 Coinbase Wallet - Smart Wallet Only (matches official example)
     coinbaseWallet({
       appName: 'KinGallery',
-      // EOA: oferece opção de carteiras non-custodial
+      preference: 'smartWalletOnly',
+      version: '4',
     }),
+    // 💳 Coinbase Wallet - EOA option 
     coinbaseWallet({
       appName: 'KinGallery',
-      preference: 'smartWalletOnly', // Smart Account ONLY via Passkey/Biometria
+      preference: 'eoaOnly',
+      version: '4',
     }),
+    // 🔗 WalletConnect for other wallets
     walletConnect({
       projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '44788a3961a4e5fa217c4ddb6ae62da8',
       showQrModal: true,
     }),
+    // 🦊 Injected wallets (MetaMask, Zerion, etc.)
     injected({
       shimDisconnect: true,
       unstable_shimAsyncInject: 1_000,
@@ -50,7 +56,7 @@ const wagmiConfig = createConfig({
   multiInjectedProviderDiscovery: true,
   ssr: false,
   transports: {
-    [base.id]: http('https://mainnet.base.org'),
+    [base.id]: http(process.env.NEXT_PUBLIC_PAYMASTER_URL || 'https://api.developer.coinbase.com/rpc/v1/base/YOUR_API_KEY'),
   },
 });
 

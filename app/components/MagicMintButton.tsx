@@ -1,7 +1,8 @@
 'use client';
 
-import { useAccount, useSendTransaction, useWaitForTransactionReceipt, useSwitchChain, useConnect, useDisconnect } from 'wagmi';
-import { useState, useEffect } from 'react';
+import { useAccount, useSwitchChain, useConnect, useDisconnect } from 'wagmi';
+import { useCapabilities, useWriteContracts } from 'wagmi/experimental';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { encodeFunctionData } from 'viem';
 import { base } from 'viem/chains';
@@ -12,8 +13,22 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const router = useRouter();
   const searchParams = useSearchParams();
   const { address, isConnected, chain } = useAccount();
-  const { sendTransaction, data: hash, isPending, error: txError } = useSendTransaction();
-  const { isLoading: isConfirming, isSuccess, error: receiptError } = useWaitForTransactionReceipt({ hash });
+  // SDK v2: Using useWriteContracts + useCapabilities
+  const { writeContracts, data: hash, isPending, error: txError, isSuccess } = useWriteContracts({
+    mutation: {
+      onSuccess: (data) => {
+        console.log('✅ Transaction successful!', data);
+      },
+      onError: (error) => {
+        console.error('❌ Transaction failed:', error);
+      }
+    }
+  });
+  
+  // Detect paymaster capabilities
+  const { data: availableCapabilities } = useCapabilities({
+    account: address,
+  });
   const { switchChain } = useSwitchChain();
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
@@ -49,6 +64,23 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [isProcessingTransaction, setIsProcessingTransaction] = useState(false); // 🛡️ Prevent double transactions
+  
+  // ⭐ SDK v2: Dynamic paymaster capabilities detection
+  const capabilities = useMemo(() => {
+    if (!availableCapabilities || !chain?.id) return {};
+    const capabilitiesForChain = availableCapabilities[chain.id];
+    if (
+      capabilitiesForChain?.["paymasterService"] &&
+      capabilitiesForChain["paymasterService"].supported
+    ) {
+      return {
+        paymasterService: {
+          url: process.env.NEXT_PUBLIC_PAYMASTER_URL || 'https://api.developer.coinbase.com/rpc/v1/base/YOUR_API_KEY',
+        },
+      };
+    }
+    return {};
+  }, [availableCapabilities, chain?.id]);
 
   // Prevent hydration errors
   useEffect(() => {
@@ -249,20 +281,40 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         return;
       }
 
-      console.log('📤 Sending transaction...', {
+      console.log('📤 Sending transaction with SDK v2...', {
         to: kingalleryAddress,
         value: '0.0003 ETH',
         chainId: base.id,
+        capabilities,
       });
 
       setShowMinting(true);
       setTransactionState({ status: 'pending', hash: 'pending...' });
       
-      sendTransaction({
-        to: kingalleryAddress,
-        value: BigInt('300000000000000'),
-        data,
-        chainId: base.id,
+      // ⭐ SDK v2: writeContracts with capabilities for paymaster
+      writeContracts({
+        contracts: [{
+          address: kingalleryAddress,
+          abi: [{
+            type: 'function',
+            name: 'payAndMint',
+            inputs: [
+              { name: '_artistContract', type: 'address' },
+              { name: '_to', type: 'address' },
+              { name: '_paymentId', type: 'string' },
+            ],
+            outputs: [],
+            stateMutability: 'payable',
+          }],
+          functionName: 'payAndMint',
+          args: [
+            artistEnv as `0x${string}`,
+            address,
+            paymentIdString,
+          ],
+          value: BigInt('300000000000000'), // 0.0003 ETH
+        }],
+        capabilities, // ⭐ This enables paymaster!
       });
     } catch (error: any) {
       console.error('❌ Erro no mint:', error);
@@ -281,20 +333,16 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
   };
 
-  // Detects and handles transaction errors with smart mapping
+  // SDK v2: Enhanced error handling
   useEffect(() => {
-    if (txError || receiptError) {
-      const error = txError || receiptError;
+    if (txError) {
+      const errorInfo = mapTransactionError(txError);
       
-      // ✅ Uses smart error mapping function
-      const errorInfo = mapTransactionError(error);
-      
-      console.error('🚨 TRANSACTION ERROR:', {
-        type: txError ? 'sendTransaction' : 'receipt',
+      console.error('🚨 TRANSACTION ERROR (SDK v2):', {
         error: errorInfo.message,
         code: errorInfo.code,
         isRetryable: errorInfo.isRetryable,
-        details: error
+        details: txError
       });
       
       setErrorMessage(errorInfo.message);
@@ -302,36 +350,44 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       setShowMinting(false);
       setTransactionState({
         status: 'error',
-        error: error,
+        error: txError,
         errorCode: errorInfo.code,
         isRetryable: errorInfo.isRetryable,
       });
+      setIsProcessingTransaction(false);
     }
-  }, [txError, receiptError]);
+  }, [txError]);
 
-  // ✅ PRE-DEPLOYMENT: Tracks transaction state changes
+  // ✅ SDK v2: Transaction state tracking
   useEffect(() => {
     if (hash && isPending) {
-      setTransactionState({ status: 'pending', hash });
-      console.log('📡 Transaction sent:', hash);
+      // hash is now transaction hash directly from SDK v2
+      const txHash = typeof hash === 'string' ? hash : hash?.[0];
+      setTransactionState({ status: 'pending', hash: txHash });
+      console.log('📡 Transaction sent (SDK v2):', txHash);
     } else if (isSuccess && hash) {
-      setTransactionState({ status: 'success', hash });
-      console.log('✅ Transaction confirmed:', hash);
+      const txHash = typeof hash === 'string' ? hash : hash?.[0];
+      setTransactionState({ status: 'success', hash: txHash });
+      console.log('✅ Transaction confirmed (SDK v2):', txHash);
     }
   }, [hash, isPending, isSuccess]);
 
-  // Waits for transaction to be confirmed, then redirects IMMEDIATELY
-  // Page 2 animation starts with a 1s delay to avoid clashing with entry
+  // SDK v2: Success handling with proper hash extraction
   useEffect(() => {
     if (showMinting && isSuccess && hash && !hasRedirected) {
-      console.log('✅ MINT Success! Redirecting IMMEDIATELY to page 2...', { hash, isSuccess });
+      const txHash = typeof hash === 'string' ? hash : hash?.[0];
+      console.log('✅ MINT Success! Redirecting to page 2... (SDK v2)', { txHash, isSuccess });
       
-      // 🚀 OPTION B: Redirect IMMEDIATELY (does not wait for animation to complete)
-      const lastSixHash = hash.slice(-6);
+      if (!txHash) {
+        console.error('❌ No transaction hash found');
+        return;
+      }
+      
+      const lastSixHash = txHash.slice(-6);
       const lastSixNum = parseInt(lastSixHash, 16);
       const ethMferId = (lastSixNum % 9999) + 1;
       const params = new URLSearchParams({
-        tx: hash,
+        tx: txHash,
         ethMferId: ethMferId.toString()
       });
       
@@ -342,12 +398,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       setIsProcessingTransaction(false);
       
       // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
-      // This allows the user to see the 10s animation completely
       setTimeout(() => {
-        const target = `/gallery?tx=${encodeURIComponent(hash)}&ethMferId=${encodeURIComponent(ethMferId.toString())}`;
-        console.log('📡 Redirecting to gallery (client):', { target });
+        const target = `/gallery?tx=${encodeURIComponent(txHash)}&ethMferId=${encodeURIComponent(ethMferId.toString())}`;
+        console.log('📡 Redirecting to gallery (SDK v2):', { target });
         try {
-          // Use string form to avoid router internal type errors
           router.push(target);
         } catch (err) {
           console.error('❌ router.push failed, falling back to full navigation:', err);
