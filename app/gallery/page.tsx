@@ -21,11 +21,12 @@ export default function GalleryPage() {
   const [revealEntangled, setRevealEntangled] = useState(false);
   const [activeTab, setActiveTab] = useState<'collection' | 'yours'>('collection');
   const [mintedNFTs, setMintedNFTs] = useState<any[]>([]);
-  const [loadingMints, setLoadingMints] = useState(true);
+  const [loadingMints, setLoadingMints] = useState(false); // ✅ FIX: Começa como false
   const [lastQueriedContract, setLastQueriedContract] = useState<string | null>(null);
   const [rpcReturnedNoLogs, setRpcReturnedNoLogs] = useState(false);
   const [rpcSource, setRpcSource] = useState<string | null>(null);
   const [rpcLogsCount, setRpcLogsCount] = useState<number | null>(null);
+  const [fetchAttemptCount, setFetchAttemptCount] = useState(0); // 🛡️ Prevent infinite loops
 
   useEffect(() => {
     setMounted(true);
@@ -217,22 +218,16 @@ export default function GalleryPage() {
   }, [searchParams]);
 
   // 🎨 Carregar NFTs mintados do contrato MferBk0Base
-  // Fetch minted NFTs from RPC, with retries and localStorage fallback
   const fetchMintedNFTs = async () => {
-    // 🛡️ DEBOUNCE: Evitar múltiplas chamadas simultâneas
-    if (loadingMints) {
-      console.log('⚠️ fetchMintedNFTs já está rodando, ignorando nova chamada');
+    // 🛡️ Prevent infinite loops
+    if (fetchAttemptCount > 3) {
+      console.warn('⚠️ fetchMintedNFTs: Maximum attempts (3) reached, aborting');
       return;
     }
     
-    console.log('🚀 fetchMintedNFTs INICIANDO execução real...');
+    setFetchAttemptCount(prev => prev + 1);
+    console.log('🚀 fetchMintedNFTs INICIANDO execução... (attempt #' + (fetchAttemptCount + 1) + ')');
     setLoadingMints(true);
-    
-    // 🛡️ Safety timeout - auto-reset após 30s se travar
-    const safetyTimeout = setTimeout(() => {
-      console.warn('⏰ fetchMintedNFTs travada > 30s, resetando...');
-      setLoadingMints(false);
-    }, 30000);
     
     try {
         // 🧪 TEMPORARY: Demo mode due to SDK v2 vs OnchainKit v1 conflicts
@@ -302,9 +297,9 @@ export default function GalleryPage() {
 
         const currentBlock = parseInt(blockResponse.result, 16);
         
-        // 🎯 SMART SEARCH: Últimos 2000 blocos (onde provavelmente estão todos os tokens)
-        // Se o contrato é novo, todos os mints devem estar nos últimos 2000 blocos
-        const fromBlock = Math.max(0, currentBlock - 2000); // Max 2000 blocos = ~6-7 horas na Base
+        // 🎯 SMART SEARCH: Últimos 800 blocos (respeitando limite RPC de 1000)
+        // Se o contrato é novo, todos os mints devem estar nos últimos 800 blocos
+        const fromBlock = Math.max(0, currentBlock - 800); // Max 800 blocos (< 1000 limit) = ~2-3 horas na Base
         
         console.log(`📊 Smart search: ${fromBlock} to ${currentBlock} (${currentBlock - fromBlock} blocks)`);
         console.log(`🔍 Contract address: ${mferContractAddress}`);
@@ -396,7 +391,7 @@ export default function GalleryPage() {
 
         // If still no transfers found, try expanded search
         if (transfers.length === 0) {
-          console.warn('❌ No mints found in last 2000 blocks, trying expanded search...');
+          console.warn('❌ No mints found in last 800 blocks, trying expanded search...');
           
           // 🔍 Expanded search: últimos 10000 blocos (em chunks de 1000)
           const chunks = 10; // 10 chunks de 1000 blocos cada = 10000 blocos total
@@ -576,20 +571,24 @@ export default function GalleryPage() {
       }
     } finally {
       console.log('✅ fetchMintedNFTs FINALIZANDO...');
-      clearTimeout(safetyTimeout);
       setLoadingMints(false);
     }
   };
 
   useEffect(() => {
-    // 🛡️ Reset loadingMints no mount para evitar travamento
+    // 🛡️ Reset states on mount
     setLoadingMints(false);
-    console.log('🔧 Reset loadingMints state on mount');
+    setFetchAttemptCount(0);
+    console.log('🔧 Reset states on mount');
     
-    // Delay pequeno para garantir que tudo carregou
-    setTimeout(() => {
-      fetchMintedNFTs();
-    }, 500);
+    // Only fetch if we don't have demo data yet
+    if (mintedNFTs.length === 0) {
+      setTimeout(() => {
+        fetchMintedNFTs();
+      }, 500);
+    } else {
+      console.log('✅ Demo data already loaded, skipping fetchMintedNFTs');
+    }
   }, []);
 
   if (!mounted) return null;
@@ -722,6 +721,7 @@ export default function GalleryPage() {
                   <button
                     onClick={() => {
                       if (!loadingMints) {
+                        setFetchAttemptCount(0); // Reset counter
                         fetchMintedNFTs();
                       }
                     }}

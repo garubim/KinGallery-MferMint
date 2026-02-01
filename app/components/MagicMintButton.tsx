@@ -1,7 +1,6 @@
 'use client';
 
 import { useAccount, useSwitchChain, useConnect, useDisconnect, useWriteContract } from 'wagmi';
-import { useCapabilities } from 'wagmi/experimental';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { base } from 'viem/chains';
@@ -24,10 +23,6 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
   });
   
-  // Detect paymaster capabilities
-  const { data: availableCapabilities } = useCapabilities({
-    account: address,
-  });
   const { switchChain } = useSwitchChain();
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
@@ -63,23 +58,6 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [isProcessingTransaction, setIsProcessingTransaction] = useState(false); // 🛡️ Prevent double transactions
-  
-  // ⭐ SDK v2: Dynamic paymaster capabilities detection
-  const capabilities = useMemo(() => {
-    if (!availableCapabilities || !chain?.id) return {};
-    const capabilitiesForChain = availableCapabilities[chain.id];
-    if (
-      capabilitiesForChain?.["paymasterService"] &&
-      capabilitiesForChain["paymasterService"].supported
-    ) {
-      return {
-        paymasterService: {
-          url: process.env.NEXT_PUBLIC_PAYMASTER_URL || 'https://api.developer.coinbase.com/rpc/v1/base/YOUR_API_KEY',
-        },
-      };
-    }
-    return {};
-  }, [availableCapabilities, chain?.id]);
 
   // Prevent hydration errors
   useEffect(() => {
@@ -260,7 +238,6 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         artist: artistEnv,
         value: '0.0003 ETH',
         chainId: base.id,
-        capabilities,
       });
 
       setShowMinting(true);
@@ -283,7 +260,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         functionName: 'payAndMint',
         args: [artistEnv, address, paymentIdString],
         value: BigInt('300000000000000'), // 0.0003 ETH
-        // capabilities, // ⚠️ Temporarily removed - will add back when wallet supports it
+        // capabilities removed for maximum wallet compatibility
       });
     } catch (error: any) {
       console.error('❌ Erro no mint:', error);
