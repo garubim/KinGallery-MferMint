@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { encodeFunctionData } from 'viem';
 import { base } from 'viem/chains';
-import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
+// REMOVED: GPT-5 added this unnecessarily: import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
 import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
 
 export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalleryPage?: boolean }) {
@@ -18,8 +18,8 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
   
-  // Pre-deployment security hooks
-  const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
+  // Pre-deployment security hooks - REMOVED (GPT-5 addition that broke the app)
+  // const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
   
   // Debug: Shortcut to jump directly to the success screen
   useEffect(() => {
@@ -171,16 +171,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
     if (!address) return;
     
-    // ✅ PRE-DEPLOYMENT: Validates RPC health BEFORE minting
-    const rpcIsHealthy = await checkRPCHealth();
-    if (!rpcIsHealthy) {
-      const errorInfo = mapTransactionError({ message: 'RPC endpoint is not responding' });
-      setErrorMessage('⚠️ RPC is having issues. Please wait a few seconds and try again.');
-      setShowError(true);
-      setShowMinting(false);
-      console.warn('🚨 RPC is not healthy. Aborting mint.');
-      return;
-    }
+    // ✅ ORIGINAL CODE: No RPC health check needed (worked fine for 2 months)
+    // REMOVED: GPT-5 addition that broke the app
+    // const rpcIsHealthy = await checkRPCHealth();
+    // if (!rpcIsHealthy) { ... }
     
     // CRITIC: Verifies if connected to Base before minting
     if (chain?.id !== base.id) {
@@ -194,7 +188,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       return;
     }
     
-    console.log('🎯 Starting mint...', { chain: chain?.name, chainId: chain?.id, rpcHealthy });
+    console.log('🎯 Starting mint...', { chain: chain?.name, chainId: chain?.id });
     
     try {
       // Generates unique paymentId as string (KinGallery and MferBk0Base now use string)

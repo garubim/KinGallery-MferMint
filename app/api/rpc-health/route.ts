@@ -2,13 +2,15 @@ import { NextResponse } from 'next/server';
 
 // Server-side RPC health check proxy to avoid CORS from browser
 export async function GET() {
-  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || 'https://base.llamarpc.com/';
+  // Use reliable Base RPC endpoints
+  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL || 'https://base.drpc.org';
 
   try {
     const res = await fetch(rpcUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_blockNumber', params: [] }),
+      signal: AbortSignal.timeout(5000), // 5s timeout instead of default 30s
     });
 
     if (!res.ok) {

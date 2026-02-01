@@ -127,16 +127,19 @@ export default function GalleryPage() {
           .then(res => res?.json())
           .then(data => {
             if (data.result?.timestamp) {
-              const timestamp = parseInt(data.result.timestamp, 16) * 1000;
-              const date = new Date(timestamp).toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-              });
-              console.log('📅 Mint Date:', date);
-              setMintDate(date);
+              // COMENTADO: não queremos a data do mint atual (2026), 
+              // queremos a data do Mfer original (2021)
+              // const timestamp = parseInt(data.result.timestamp, 16) * 1000;
+              // const date = new Date(timestamp).toLocaleString('en-US', {
+              //   year: 'numeric',
+              //   month: 'long',
+              //   day: '2-digit',
+              //   hour: '2-digit',
+              //   minute: '2-digit'
+              // });
+              // console.log('📅 Mint Date:', date);
+              // setMintDate(date);
+              console.log('📅 Skipping current mint date - using original Mfer date instead');
             }
           })
           .catch(err => console.error('❌ Erro ao buscar timestamp:', err));
@@ -147,16 +150,66 @@ export default function GalleryPage() {
     // 🎨 Busca imagem do Legacy Mfer entangled no IPFS
     if (ethMfer) {
       const mferId = parseInt(ethMfer);
+      
+      // Busca metadata do Mfer original
       fetch(`https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo/${mferId}`)
         .then(res => res.json())
         .then(metadata => {
+          console.log(`🔍 Metadata completa do Mfer #${mferId}:`, metadata);
+          
           if (metadata.image) {
-
             const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
             setEthMferImageUrl(imageUrl);
           }
+          
+          // 🗓️ Verificar se tem data na metadata
+          const possibleDateFields = ['created_date', 'mint_date', 'timestamp', 'date', 'created_at'];
+          let foundDate = null;
+          
+          possibleDateFields.forEach(field => {
+            if (metadata[field]) {
+              console.log(`📅 Campo de data encontrado - ${field}:`, metadata[field]);
+              foundDate = metadata[field];
+            }
+          });
+          
+          // Se encontrou data na metadata, usar ela ao invés da genérica
+          if (foundDate) {
+            try {
+              const realDate = new Date(foundDate).toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'UTC'
+              });
+              setMintDate(realDate + ' (Original Mfer)');
+              console.log(`✅ Usando data real da metadata: ${realDate}`);
+              return; // Sai da função para não usar a data genérica
+            } catch (e) {
+              console.warn(`⚠️ Erro ao parsear data da metadata:`, e);
+            }
+          }
+          
+          console.log(`🤷‍♂️ Nenhuma data encontrada na metadata, usando data genérica`);
         })
         .catch(err => console.error('Erro ao buscar Mfer image:', err));
+
+      // 🗓️ SIMPLIFICADO: Usa data conhecida dos Mfers originais (2021)
+      // Os Mfers originais foram mintados entre Nov-Dec 2021
+      // Vamos usar uma data representativa ao invés de fazer query custosa na L1
+      const originalMferDate = new Date('2021-11-30T00:00:00Z').toLocaleString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'UTC'
+      });
+      
+      setMintDate(originalMferDate + ' (Original L1 Mint)');
+      console.log(`📅 Usando data representativa dos Mfers originais: ${originalMferDate}`);
     }
 
     setTimeout(() => setShowConfetti(false), 3000);
@@ -168,17 +221,17 @@ export default function GalleryPage() {
   const fetchMintedNFTs = async () => {
     setLoadingMints(true);
     
-    // Small delay to allow on-chain indexing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // OTIMIZAÇÃO: Delay maior devido aos problemas da Base (31 Jan 2026)
+    await new Promise(resolve => setTimeout(resolve, 5000)); // 5s ao invés de 2s
     
     try {
         // Use configured Mfer contract or fallback to canonical deployed address
-        const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xAa566959e0290cb578b1f0dffa7203e1f9ddd1d6';
+        const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xb222e11864A2050bd19e2Df6648CfbB971f28325';
         setLastQueriedContract(mferContractAddress);
         setRpcReturnedNoLogs(false);
 
         const primaryRpc = 'https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N';
-        const fallbackRpc = 'https://mainnet.base.org';
+        const fallbackRpc = 'https://base.drpc.org'; // RPC mais confiável
 
         // Helper to POST JSON-RPC
         const postRpc = async (endpoint: string, body: any) => {
@@ -200,9 +253,10 @@ export default function GalleryPage() {
         }
 
         const currentBlock = parseInt(blockResponse.result, 16);
-        const fromBlock = Math.max(0, currentBlock - 5000); // last ~5k blocks (~12 hours)
+        const fromBlock = Math.max(0, currentBlock - 500); // REDUZIDO para 500 blocks devido aos problemas da Base
 
         console.log(`📊 Searching logs from block ${fromBlock} to ${currentBlock}... (attempting ${usedRpc === primaryRpc ? 'primary' : 'fallback'} RPC)`);
+        console.log(`🔍 Contract address: ${mferContractAddress}`);
       
 
       
@@ -224,6 +278,8 @@ export default function GalleryPage() {
 
       let data = response;
       let usedRpcForLogs = primaryRpc;
+
+      console.log(`🔍 Primary RPC response for contract ${mferContractAddress}:`, data?.result ? `${data.result.length} Transfer events found` : `Error: ${data?.error?.message || 'No data'}`);
 
       if (!data || data.error || (Array.isArray(data.result) && data.result.length === 0)) {
         console.warn('Primary RPC returned no logs or error, trying fallback RPC...', data?.error);
@@ -303,6 +359,9 @@ export default function GalleryPage() {
           };
         });
 
+        console.log(`🎨 Processed ${transfers.length} Transfer events into ${nfts.length} NFT objects`);
+        console.log('📋 Sample NFT objects:', nfts.slice(0, 3));
+
         // Enrich with block timestamps
         const enrichedNFTs = await Promise.all(
           nfts.map(async (nft: any) => {
@@ -369,6 +428,8 @@ export default function GalleryPage() {
       }
     } catch (err) {
       console.error('❌ Error fetching NFTs:', err);
+      setRpcReturnedNoLogs(true);
+      
       // Try localStorage if RPC fails completely
       try {
         const stored = JSON.parse(localStorage.getItem('mferMints') || '[]');
