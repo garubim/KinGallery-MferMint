@@ -1,6 +1,7 @@
 'use client';
 
 import { useAccount, useSwitchChain, useConnect, useDisconnect, useWriteContract } from 'wagmi';
+import { useCapabilities } from 'wagmi/experimental'; // 🎯 HYBRID: Keep for Smart Wallets
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { base } from 'viem/chains';
@@ -23,6 +24,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
   });
   
+  // 🎯 HYBRID: Detect paymaster capabilities for Smart Wallets
+  const { data: availableCapabilities } = useCapabilities({
+    account: address,
+  });
   const { switchChain } = useSwitchChain();
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
@@ -58,6 +63,41 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [isProcessingTransaction, setIsProcessingTransaction] = useState(false); // 🛡️ Prevent double transactions
+
+  // 🎯 HYBRID: Dynamic paymaster capabilities detection
+  const capabilities = useMemo(() => {
+    if (!availableCapabilities || !chain?.id) return {};
+    const capabilitiesForChain = availableCapabilities[chain.id];
+    if (
+      capabilitiesForChain?.["paymasterService"] &&
+      capabilitiesForChain["paymasterService"].supported
+    ) {
+      return {
+        paymasterService: {
+          url: process.env.NEXT_PUBLIC_PAYMASTER_URL || 'https://api.developer.coinbase.com/rpc/v1/base/YOUR_API_KEY',
+        },
+      };
+    }
+    return {};
+  }, [availableCapabilities, chain?.id]);
+
+  // 🎯 HYBRID: Smart Wallet Detection
+  const isSmartWallet = useMemo(() => {
+    return !!(capabilities?.paymasterService);
+  }, [capabilities]);
+
+  // Debug smart wallet detection
+  useEffect(() => {
+    if (isConnected && address) {
+      console.log('🔍 Wallet Analysis:', {
+        address: address?.slice(0, 8) + '...',
+        isSmartWallet,
+        hasPaymasterCapability: !!capabilities?.paymasterService,
+        capabilities: Object.keys(capabilities),
+        chainId: chain?.id,
+      });
+    }
+  }, [isConnected, address, isSmartWallet, capabilities, chain?.id]);
 
   // Prevent hydration errors
   useEffect(() => {
@@ -101,41 +141,35 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
   }, [isConnecting]);
 
-  // Auto-switch to Base when connected to the wrong network
+  // Auto-switch to Base when connected to the wrong network (Smart Wallets only)
   useEffect(() => {
     if (isConnected && chain && chain.id !== base.id) {
-      console.log('🚨 WRONG NETWORK!', { currentChain: chain?.id, chainName: chain?.name, targetChain: base.id });
+      console.log('🚨 WRONG NETWORK!', { currentChain: chain?.id, chainName: chain?.name, targetChain: base.id, isSmartWallet });
       
-      // Immediate visual warning
-      alert(`⚠️ WRONG NETWORK!\n\nYou are on ${chain?.name || 'an unknown network'} (chain ${chain?.id}).\n\nSwitching to Base (chain 8453)...\n\n💡 Your wallet will ask for permission to switch networks.`);
-      
-      // Tries to switch to Base with retry
-      const attemptSwitch = async () => {
-        try {
-          await switchChain?.({ chainId: base.id });
-          console.log('✅ Successfully switched to Base network!');
-        } catch (error: any) {
-          console.error('❌ Error switching network:', error);
-          // Auto Retry after 1 second (only if still connected)
-          setTimeout(() => {
-            if (isConnected && switchChain) {
-              console.log('🔄 Trying again...');
-              switchChain({ chainId: base.id }).catch(e => {
-                console.error('❌ Retry failed:', e);
-              });
-            }
-          }, 1000);
+      // 🎯 HYBRID: Only auto-switch for Smart Wallets (more reliable)
+      if (isSmartWallet && switchChain) {
+        console.log('🔷 Smart Wallet detected - attempting auto network switch...');
+        const attemptSwitch = async () => {
+          try {
+            await switchChain({ chainId: base.id });
+            console.log('✅ Successfully switched to Base network!');
+          } catch (error: any) {
+            console.error('❌ Auto switch failed (Smart Wallet):', error);
+          }
+        };
+        attemptSwitch();
+      } else {
+        // 🔶 EOA: Just show warning (manual switch required)
+        console.log('🔶 EOA detected - showing manual switch warning');
+        if (chain.id !== base.id) { // Avoid spam
+          alert(`⚠️ WRONG NETWORK!\n\nYou are on ${chain?.name || 'an unknown network'} (chain ${chain?.id}).\n\nPlease manually switch to BASE (chain 8453) in your wallet.\n\n💡 EOA wallets require manual network switching.`);
         }
-      };
-      
-      attemptSwitch().catch(e => {
-        console.error('❌ Switch attempt failed:', e);
-      });
+      }
     }
     if (isConnected && address && chain?.id === base.id) {
-      console.log('✅ Wallet connected to BASE:', { address, chain: chain?.name });
+      console.log('✅ Wallet connected to BASE:', { address, chain: chain?.name, walletType: isSmartWallet ? 'Smart Wallet' : 'EOA' });
     }
-  }, [isConnected, chain, address, switchChain]);
+  }, [isConnected, chain, address, switchChain, isSmartWallet]);
 
 
   // Reset connectingWalletType when connection ends or modal closes
@@ -233,35 +267,62 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0xebc497a5c36cb1a9264fd122a586b3f461fcc568') as `0x${string}`;
       const artistEnv = (process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS) as `0x${string}`;
 
-      console.log('📤 Sending transaction with SDK v2...', {
+      console.log('📤 Sending transaction with HYBRID approach...', {
         to: kingalleryAddress,
         artist: artistEnv,
         value: '0.0003 ETH',
         chainId: base.id,
+        isSmartWallet,
+        paymaster: isSmartWallet ? 'ERC-7677 Auto' : 'Manual Sponsorship',
       });
 
       setShowMinting(true);
       setTransactionState({ status: 'pending', hash: 'pending...' });
       
-      // ⭐ SDK v2: writeContract with traditional structure (all wallets support)
-      writeContract({
-        address: kingalleryAddress,
-        abi: [{
-          type: 'function',
-          name: 'payAndMint',
-          inputs: [
-            { name: '_artistContract', type: 'address' },
-            { name: '_to', type: 'address' },
-            { name: '_paymentId', type: 'string' },
-          ],
-          outputs: [],
-          stateMutability: 'payable',
-        }],
-        functionName: 'payAndMint',
-        args: [artistEnv, address, paymentIdString],
-        value: BigInt('300000000000000'), // 0.0003 ETH
-        // capabilities removed for maximum wallet compatibility
-      });
+      // 🎯 HYBRID APPROACH: Different strategies for different wallet types
+      if (isSmartWallet) {
+        console.log('🔷 Smart Wallet detected - using ERC-7677 + capabilities');
+        // ⭐ Smart Wallet: Use ERC-7677 with automatic paymaster
+        writeContract({
+          address: kingalleryAddress,
+          abi: [{
+            type: 'function',
+            name: 'payAndMint',
+            inputs: [
+              { name: '_artistContract', type: 'address' },
+              { name: '_to', type: 'address' },
+              { name: '_paymentId', type: 'string' },
+            ],
+            outputs: [],
+            stateMutability: 'payable',
+          }],
+          functionName: 'payAndMint',
+          args: [artistEnv, address, paymentIdString],
+          value: BigInt('300000000000000'), // 0.0003 ETH
+          capabilities, // 🎯 ERC-7677 automatic paymaster
+        });
+      } else {
+        console.log('🔶 EOA detected - using traditional approach + manual paymaster');
+        // ⭐ EOA: Traditional approach (still gets paymaster via OnchainKit/CDP)
+        writeContract({
+          address: kingalleryAddress,
+          abi: [{
+            type: 'function',
+            name: 'payAndMint',
+            inputs: [
+              { name: '_artistContract', type: 'address' },
+              { name: '_to', type: 'address' },
+              { name: '_paymentId', type: 'string' },
+            ],
+            outputs: [],
+            stateMutability: 'payable',
+          }],
+          functionName: 'payAndMint',
+          args: [artistEnv, address, paymentIdString],
+          value: BigInt('300000000000000'), // 0.0003 ETH
+          // No capabilities - relies on CDP/OnchainKit paymaster integration
+        });
+      }
     } catch (error: any) {
       console.error('❌ Erro no mint:', error);
       const errorInfo = mapTransactionError(error);
