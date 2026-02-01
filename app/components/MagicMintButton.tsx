@@ -734,19 +734,37 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       <div className="glass-shell">
         {/* Glass mask - visual clipping wrapper */}
         <div className="glass-mask">
-          {/* Background WebP animation */}
-          <img 
-          src={isOnGalleryPage
-            ? "/MagicButton-OfficialAnimatedTitles/WANT-MORE-MFERQ-CLICK+Alpha+Mblur-1280x720px-sizefull-WebP-High.webp"
-            : showMinting
-            ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
-            : isConnected 
-            ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
-            : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
-          }
-          alt=""
-          className="magic-animation"
-        />
+          {/* Background WebP animation (masked only before a user connects) */}
+          {(!isConnected && !showMinting && !isOnGalleryPage) ? (
+            <div className="glass-mask-inner">
+              <img 
+                src={isOnGalleryPage
+                  ? "/MagicButton-OfficialAnimatedTitles/WANT-MORE-MFERQ-CLICK+Alpha+Mblur-1280x720px-sizefull-WebP-High.webp"
+                  : showMinting
+                  ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
+                  : isConnected 
+                  ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
+                  : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
+                }
+                alt=""
+                className="magic-animation"
+              />
+            </div>
+          ) : (
+            <img 
+              src={isOnGalleryPage
+                ? "/MagicButton-OfficialAnimatedTitles/WANT-MORE-MFERQ-CLICK+Alpha+Mblur-1280x720px-sizefull-WebP-High.webp"
+                : showMinting
+                ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
+                : isConnected 
+                ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
+                : "/MagicButton-OfficialAnimatedTitles/MagicButton_Titles-Welcome-to-Connect+MBlur+Alpha-1920x1080px-AnimatedWebP-HighQ-minsize-Lossy-Inf-loop.webp"
+              }
+              alt=""
+              className="magic-animation"
+            />
+          )}
+
 
         {/* Glass reflex layer - using new Box01 reflex image */}
         <div className="glass-reflex">
@@ -1106,6 +1124,16 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           z-index: 1;
         }
 
+        /* Inner clipping mask used only for the initial welcome media (43px inset left/right) */
+        .glass-mask-inner {
+          position: absolute;
+          inset: 0 43px; /* top:0; right:43px; bottom:0; left:43px */
+          border-radius: calc(120px - 43px);
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 2;
+        }
+
         .glass-shell:hover {
           transform: scale(1.02);
           box-shadow: 
@@ -1170,7 +1198,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           position: absolute;
           top: 46%;
           left: 50%;
-          transform: translate(-50%, -50%) scale(1.1);
+          transform: translate(-50%, -50%) scale(1.2);
           width: 100%;
           height: 100%;
           object-fit: cover;
