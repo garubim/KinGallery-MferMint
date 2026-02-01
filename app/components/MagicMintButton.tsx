@@ -245,14 +245,25 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     
     // CRITIC: Verifies if connected to Base before minting
     if (chain?.id !== base.id) {
-      alert(`⚠️ WRONG NETWORK!\n\nYou are connected to ${chain?.name || 'an unknown network'}.\nPlease switch to BASE in your wallet before minting.\n\n(Ethereum gas costs ~100x more!)`);
-      // Tries to switch automatically
-      try {
-        await switchChain?.({ chainId: base.id });
-      } catch (error) {
-        console.error('Error switching network:', error);
+      const networkName = chain?.id === 1 ? 'ETHEREUM MAINNET' : (chain?.name || 'an unknown network');
+      const costWarning = chain?.id === 1 ? '\n\n💸 ETHEREUM GAS COSTS ~$50-200 PER TRANSACTION!' : '';
+      
+      alert(`🚨 WRONG NETWORK!\n\nYou are connected to ${networkName}.\nPlease switch to BASE in your wallet before minting.${costWarning}\n\n✅ Correct network: Base (chain 8453)\n❌ Your network: ${networkName} (chain ${chain?.id})`);
+      
+      // Tries to switch automatically (only for Smart Wallets)
+      if (isSmartWallet) {
+        try {
+          await switchChain?.({ chainId: base.id });
+          console.log('✅ Auto-switched to Base network');
+        } catch (error) {
+          console.error('❌ Auto switch failed:', error);
+          setIsProcessingTransaction(false);
+          return;
+        }
+      } else {
+        setIsProcessingTransaction(false);
+        return; // 🛡️ BLOCK mint on wrong network for EOAs
       }
-      return;
     }
     
     console.log('🎯 Starting mint...', { chain: chain?.name, chainId: chain?.id });
@@ -515,11 +526,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
             
             {!isConnected ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {/* 🔷 Base Smart Account - Passkey apenas */}
+                {/* 🔷 Base Smart Account - Passkey (PRIMEIRO) */}
                 <button
                   onClick={() => {
+                    // 🔧 FIX: Smart Wallet é sempre idx=0 na nova ordem
                     const smartWalletConnector = connectors.find(
-                      (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 1
+                      (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 0
                     );
                     if (smartWalletConnector) {
                       setConnectingWalletType('smart');
@@ -534,11 +546,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
                   {isConnecting && ' (Connecting...)'}
                 </button>
 
-                {/* 💳 Coinbase Wallet - Non-custodial EOA */}
+                {/* 💳 Coinbase Wallet - EOA (SEGUNDO) */}
                 <button
                   onClick={() => {
+                    // 🔧 FIX: EOA Wallet é sempre idx=1 na nova ordem
                     const eaoConnector = connectors.find(
-                      (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 0
+                      (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 1
                     );
                     if (eaoConnector) {
                       setConnectingWalletType('eoa');
