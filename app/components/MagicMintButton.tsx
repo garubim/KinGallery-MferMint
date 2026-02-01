@@ -1,10 +1,9 @@
 'use client';
 
-import { useAccount, useSwitchChain, useConnect, useDisconnect } from 'wagmi';
-import { useCapabilities, useWriteContracts } from 'wagmi/experimental';
+import { useAccount, useSwitchChain, useConnect, useDisconnect, useWriteContract } from 'wagmi';
+import { useCapabilities } from 'wagmi/experimental';
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { encodeFunctionData } from 'viem';
 import { base } from 'viem/chains';
 // REMOVED: GPT-5 added this unnecessarily: import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
 import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
@@ -13,8 +12,8 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const router = useRouter();
   const searchParams = useSearchParams();
   const { address, isConnected, chain } = useAccount();
-  // SDK v2: Using useWriteContracts + useCapabilities
-  const { writeContracts, data: hash, isPending, error: txError, isSuccess } = useWriteContracts({
+  // SDK v2: Using useWriteContract + useCapabilities
+  const { writeContract, data: hash, isPending, error: txError, isSuccess } = useWriteContract({
     mutation: {
       onSuccess: (data) => {
         console.log('✅ Transaction successful!', data);
@@ -92,6 +91,14 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       chainId: chain?.id,
       chainName: chain?.name,
     });
+
+    // Cleanup function to prevent memory leaks
+    return () => {
+      console.log('🧹 MagicMintButton unmounting - cleaning up timers');
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+      }
+    };
   }, []);
 
   // Debug: Track wallet connection changes
@@ -131,15 +138,21 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           console.log('✅ Successfully switched to Base network!');
         } catch (error: any) {
           console.error('❌ Error switching network:', error);
-          // Auto Retry after 1 second
+          // Auto Retry after 1 second (only if still connected)
           setTimeout(() => {
-            console.log('🔄 Trying again...');
-            switchChain?.({ chainId: base.id });
+            if (isConnected && switchChain) {
+              console.log('🔄 Trying again...');
+              switchChain({ chainId: base.id }).catch(e => {
+                console.error('❌ Retry failed:', e);
+              });
+            }
           }, 1000);
         }
       };
       
-      attemptSwitch();
+      attemptSwitch().catch(e => {
+        console.error('❌ Switch attempt failed:', e);
+      });
     }
     if (isConnected && address && chain?.id === base.id) {
       console.log('✅ Wallet connected to BASE:', { address, chain: chain?.name });
@@ -238,13 +251,24 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       
       console.log('🔑 PaymentId:', { string: paymentIdString });
       
-      // Resolve artist contract from environment (prefer explicit MFERBKOBASE var)
-      const artistEnv = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS;
-      if (!artistEnv) {
-        throw new Error('Missing artist contract env: set NEXT_PUBLIC_MFERBKOBASE_CONTRACT or NEXT_PUBLIC_MFER_ADDRESS');
-      }
+      // ⭐ SDK v2: Simplified approach following official example
+      const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0xebc497a5c36cb1a9264fd122a586b3f461fcc568') as `0x${string}`;
+      const artistEnv = (process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS) as `0x${string}`;
 
-      const data = encodeFunctionData({
+      console.log('📤 Sending transaction with SDK v2...', {
+        to: kingalleryAddress,
+        artist: artistEnv,
+        value: '0.0003 ETH',
+        chainId: base.id,
+        capabilities,
+      });
+
+      setShowMinting(true);
+      setTransactionState({ status: 'pending', hash: 'pending...' });
+      
+      // ⭐ SDK v2: writeContract with traditional structure (all wallets support)
+      writeContract({
+        address: kingalleryAddress,
         abi: [{
           type: 'function',
           name: 'payAndMint',
@@ -257,64 +281,9 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           stateMutability: 'payable',
         }],
         functionName: 'payAndMint',
-        args: [
-          artistEnv as `0x${string}`,
-          address,
-          paymentIdString,
-        ],
-      });
-
-      // ✅ PRE-DEPLOYMENT: Validates critical inputs BEFORE sending
-      const kingalleryAddress = (process.env.NEXT_PUBLIC_KINGALLERY_ADDRESS || '0xebc497a5c36cb1a9264fd122a586b3f461fcc568') as `0x${string}`;
-      
-      const validation = validateTransactionInput({
-        to: kingalleryAddress,
-        value: BigInt('300000000000000'),
-        data,
-        chainId: base.id,
-      });
-
-      if (!validation.valid) {
-        setErrorMessage(`❌ Validation error: ${validation.error}`);
-        setShowError(true);
-        console.error('❌ Validation failed:', validation.error);
-        return;
-      }
-
-      console.log('📤 Sending transaction with SDK v2...', {
-        to: kingalleryAddress,
-        value: '0.0003 ETH',
-        chainId: base.id,
-        capabilities,
-      });
-
-      setShowMinting(true);
-      setTransactionState({ status: 'pending', hash: 'pending...' });
-      
-      // ⭐ SDK v2: writeContracts with capabilities for paymaster
-      writeContracts({
-        contracts: [{
-          address: kingalleryAddress,
-          abi: [{
-            type: 'function',
-            name: 'payAndMint',
-            inputs: [
-              { name: '_artistContract', type: 'address' },
-              { name: '_to', type: 'address' },
-              { name: '_paymentId', type: 'string' },
-            ],
-            outputs: [],
-            stateMutability: 'payable',
-          }],
-          functionName: 'payAndMint',
-          args: [
-            artistEnv as `0x${string}`,
-            address,
-            paymentIdString,
-          ],
-          value: BigInt('300000000000000'), // 0.0003 ETH
-        }],
-        capabilities, // ⭐ This enables paymaster!
+        args: [artistEnv, address, paymentIdString],
+        value: BigInt('300000000000000'), // 0.0003 ETH
+        // capabilities, // ⚠️ Temporarily removed - will add back when wallet supports it
       });
     } catch (error: any) {
       console.error('❌ Erro no mint:', error);
@@ -383,45 +352,52 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         return;
       }
       
-      const lastSixHash = txHash.slice(-6);
-      const lastSixNum = parseInt(lastSixHash, 16);
-      const ethMferId = (lastSixNum % 9999) + 1;
-      const params = new URLSearchParams({
-        tx: txHash,
-        ethMferId: ethMferId.toString()
-      });
-      
-      // Mark as redirected to prevent double redirect
-      setHasRedirected(true);
-      
-      // 🛡️ Reset transaction flag on success
-      setIsProcessingTransaction(false);
-      
-      // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
-      setTimeout(() => {
-        const target = `/gallery?tx=${encodeURIComponent(txHash)}&ethMferId=${encodeURIComponent(ethMferId.toString())}`;
-        console.log('📡 Redirecting to gallery (SDK v2):', { target });
-        try {
-          router.push(target);
-        } catch (err) {
-          console.error('❌ router.push failed, falling back to full navigation:', err);
-          window.location.href = target;
-        }
-      }, 10500);
-      
-      // Shows success overlay while navigating (won't be seen, but gets ready)
-      setShowSuccessOverlay(true);
-      setCountdown(10); // Countdown of 10 seconds (animation duration)
-      
-      // Generates confetti (will be rendered on page 2 with a 1s delay)
-      const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 0.3
-      }));
-      setConfetti(confettiPieces);
+      try {
+        const lastSixHash = txHash.slice(-6);
+        const lastSixNum = parseInt(lastSixHash, 16);
+        const ethMferId = (lastSixNum % 9999) + 1;
+        const params = new URLSearchParams({
+          tx: txHash,
+          ethMferId: ethMferId.toString()
+        });
+        
+        // Mark as redirected to prevent double redirect
+        setHasRedirected(true);
+        
+        // 🛡️ Reset transaction flag on success
+        setIsProcessingTransaction(false);
+        
+        // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
+        setTimeout(() => {
+          const target = `/gallery?tx=${encodeURIComponent(txHash)}&ethMferId=${encodeURIComponent(ethMferId.toString())}`;
+          console.log('📡 Redirecting to gallery (SDK v2):', { target });
+          try {
+            router.push(target);
+          } catch (err) {
+            console.error('❌ router.push failed, falling back to full navigation:', err);
+            window.location.href = target;
+          }
+        }, 10500);
+        
+        // Shows success overlay while navigating (won't be seen, but gets ready)
+        setShowSuccessOverlay(true);
+        setCountdown(10); // Countdown of 10 seconds (animation duration)
+        
+        // Generates confetti (will be rendered on page 2 with a 1s delay)
+        const confettiPieces = Array.from({ length: 30 }, (_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          delay: Math.random() * 0.3
+        }));
+        setConfetti(confettiPieces);
+      } catch (error) {
+        console.error('❌ Error in success handler:', error);
+        setIsProcessingTransaction(false);
+        setErrorMessage('Error processing success. Please check the gallery manually.');
+        setShowError(true);
+      }
     }
-  }, [showMinting, isSuccess, hash, hasRedirected]);
+  }, [showMinting, isSuccess, hash, hasRedirected, router]);
 
   // Renders empty until mounted on client
   if (!mounted) {
@@ -825,13 +801,13 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
             onMouseLeave={() => {
               if (longPressTimer) clearTimeout(longPressTimer);
             }}
-            disabled={isPending || isConfirming || isProcessingTransaction || (isConnected && chain?.id !== base.id)}
+            disabled={isPending || isProcessingTransaction || (isConnected && chain?.id !== base.id)}
             style={{
               width: '100%',
               height: '100%',
               background: 'transparent',
               border: 'none',
-              cursor: (isPending || isConfirming || isProcessingTransaction || (isConnected && chain?.id !== base.id)) 
+              cursor: (isPending || isProcessingTransaction || (isConnected && chain?.id !== base.id)) 
                 ? (isConnected && chain?.id !== base.id ? 'not-allowed' : 'wait') 
                 : showSuccessOverlay ? 'grab'
                 : 'pointer',

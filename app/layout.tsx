@@ -1,4 +1,5 @@
 import RootProvider from './rootProvider';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export const dynamic = 'force-dynamic';
 
@@ -58,9 +59,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body style={{ margin: 0, padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)', background: '#071017', color: '#fff', fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
-        <RootProvider>
-          {children}
-        </RootProvider>
+        <ErrorBoundary>
+          <RootProvider>
+            {children}
+          </RootProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

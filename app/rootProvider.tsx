@@ -69,6 +69,15 @@ export default function RootProvider({ children }: { children: React.ReactNode }
         <OnchainKitProvider
           apiKey={apiKey}
           chain={base}
+          config={{
+            // Disable analytics to prevent ad blocker issues during development
+            appearance: {
+              name: 'KinGallery',
+              logo: 'https://kingallery.netlify.app/favicon.ico'
+            },
+            // Disable telemetry that's causing Failed to fetch errors
+            telemetry: false,
+          }}
         >
           {/* � SignatureManager REMOVIDO - não necessário para Farcaster/Base.app */}
           {children}
