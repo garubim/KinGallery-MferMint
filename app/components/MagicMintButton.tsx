@@ -48,6 +48,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const [longPressTimer, setLongPressTimer] = useState<NodeJS.Timeout | null>(null);
   const [connectingWalletType, setConnectingWalletType] = useState<'smart' | 'eoa' | 'wc' | 'extension' | null>(null);
   const [hasRedirected, setHasRedirected] = useState(false);
+  const [isProcessingTransaction, setIsProcessingTransaction] = useState(false); // 🛡️ Prevent double transactions
 
   // Prevent hydration errors
   useEffect(() => {
@@ -160,6 +161,12 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   };
 
   const handleMint = async () => {
+    // �️ PROTEÇÃO: Prevenir múltiplas transações simultâneas
+    if (isProcessingTransaction) {
+      console.log('⚠️ Transação já em progresso, ignorando nova chamada');
+      return;
+    }
+
     // 🔄 If on page 2 (gallery), redirect to home (page 1) instead of minting
     if (isOnGalleryPage) {
       // Use full-page navigation to preserve wallet state (location replace behavior)
@@ -170,6 +177,9 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
     }
 
     if (!address) return;
+    
+    // 🛡️ Marca que está processando transação
+    setIsProcessingTransaction(true);
     
     // ✅ ORIGINAL CODE: No RPC health check needed (worked fine for 2 months)
     // REMOVED: GPT-5 addition that broke the app
@@ -266,6 +276,8 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         errorCode: errorInfo.code,
         isRetryable: errorInfo.isRetryable,
       });
+      // 🛡️ Reset flag on error
+      setIsProcessingTransaction(false);
     }
   };
 
@@ -325,6 +337,9 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       
       // Mark as redirected to prevent double redirect
       setHasRedirected(true);
+      
+      // 🛡️ Reset transaction flag on success
+      setIsProcessingTransaction(false);
       
       // ⏱️ WAIT FOR 10s MEDIA TO COMPLETE before redirecting (10.5s total)
       // This allows the user to see the 10s animation completely
@@ -636,9 +651,13 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
       {/* Glass cocoon - contains WebP animation */}
       <div className="glass-shell">
-        {/* Background WebP animation */}
-        <img 
-          src={showMinting
+        {/* Glass mask - visual clipping wrapper */}
+        <div className="glass-mask">
+          {/* Background WebP animation */}
+          <img 
+          src={isOnGalleryPage
+            ? "/MagicButton-OfficialAnimatedTitles/WANT-MORE-MFERQ-CLICK+Alpha+Mblur-1280x720px-sizefull-WebP-High.webp"
+            : showMinting
             ? "/MagicButton-OfficialAnimatedTitles/MintStatus-Success+TITLES+Mfer-on-Base+OriginalMfers+Entanglement-Status+Alpha+Mblur-1280x720px-size0,700-WebP-High.webp"
             : isConnected 
             ? "/MagicButton-OfficialAnimatedTitles/MagicButton_LOGIN-to-MINT-COMPLETE+Alpha-1280x720px-30fps-AnimatedWebP-HighQ-Lossy-Letterbox-20pcent.webp"
@@ -677,11 +696,14 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
             />
           </div>
         )}
+        </div>
 
         {/* Invisible but functional button */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <button 
-            onClick={!isConnected 
+            onClick={isOnGalleryPage
+              ? handleMint  // 🎯 PÁGINA 2: Sempre redireciona para página 1
+              : !isConnected 
               ? () => setShowWalletModal(true)
               : chain?.id !== base.id 
               ? () => {
@@ -749,13 +771,13 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
             onMouseLeave={() => {
               if (longPressTimer) clearTimeout(longPressTimer);
             }}
-            disabled={isPending || isConfirming || (isConnected && chain?.id !== base.id)}
+            disabled={isPending || isConfirming || isProcessingTransaction || (isConnected && chain?.id !== base.id)}
             style={{
               width: '100%',
               height: '100%',
               background: 'transparent',
               border: 'none',
-              cursor: (isPending || isConfirming || (isConnected && chain?.id !== base.id)) 
+              cursor: (isPending || isConfirming || isProcessingTransaction || (isConnected && chain?.id !== base.id)) 
                 ? (isConnected && chain?.id !== base.id ? 'not-allowed' : 'wait') 
                 : showSuccessOverlay ? 'grab'
                 : 'pointer',
@@ -763,7 +785,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
               lineHeight: 0,
               color: 'transparent',
             }}
-            aria-label={!isConnected ? 'Connect Wallet' : chain?.id !== base.id ? 'Switch to Base' : showSuccessOverlay ? 'Go to Gallery' : 'Mint NFT'}
+            aria-label={isOnGalleryPage ? 'Go Back to Mint More' : !isConnected ? 'Connect Wallet' : chain?.id !== base.id ? 'Switch to Base' : showSuccessOverlay ? 'Go to Gallery' : 'Mint NFT'}
           />
         </div>
       </div>
@@ -994,7 +1016,14 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           transition: all 0.3s ease;
         }
 
-        /* (removed) .glass-mask wrapper used for visual clipping — reverted to original structure */
+        .glass-mask {
+          position: absolute;
+          inset: 0;
+          border-radius: 120px;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 1;
+        }
 
         .glass-shell:hover {
           transform: scale(1.02);
@@ -1019,7 +1048,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           content: '';
           position: absolute;
           right: 0;
-          top: 0;
+          top: 05;
           bottom: 0;
           width: 40%;
           background: linear-gradient(90deg, rgba(0, 200, 100, 0) 0%, rgba(0, 255, 150, 0.5) 100%);
@@ -1081,7 +1110,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           z-index: 25;
           /* keep a soft reflective appearance */
           mix-blend-mode: soft-light;
-          opacity: 0.7;
+          opacity: 0.5;
         }
 
         .reflex-layer {
@@ -1101,8 +1130,8 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }
 
         .reflex-2 {
-          opacity: 0.7;
-          filter: brightness(0.8);
+          opacity: 0.5;
+          filter: brightness(0.5);
         }
 
         /* Loading overlay - wallet connecting */

@@ -6,7 +6,7 @@ import React from 'react';
 import { base } from 'viem/chains';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors';
-import { SignatureManager } from './components/SignatureManager';
+// REMOVED: import { SignatureManager } from './components/SignatureManager'; // 🚫 Não necessário para Farcaster/Base.app
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,7 +64,7 @@ export default function RootProvider({ children }: { children: React.ReactNode }
           apiKey={apiKey}
           chain={base}
         >
-          <SignatureManager />
+          {/* � SignatureManager REMOVIDO - não necessário para Farcaster/Base.app */}
           {children}
         </OnchainKitProvider>
       </QueryClientProvider>

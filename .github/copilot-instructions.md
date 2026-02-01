@@ -18,6 +18,28 @@ While workiing on documents, please translate any Portuguese content that you fi
 
 ---
 
+## ⚠️ CRITICAL COMPONENTS - HANDLE WITH EXTREME CARE
+
+### 🚨 Magic Button (`app/components/MagicMintButton.tsx`)
+**STATUS**: EXTREMELY SENSITIVE - CORE APP FUNCTIONALITY
+
+**⚠️ DANGER ZONE**: This is a **complex, sensitive component** that is the **centerpiece of a "single-button app"**. 
+- **Any changes can cause severe crashes**
+- **Test extensively** before committing changes
+- **Backup working state** before modifications
+- **Component handles**: wallet connection, transaction submission, animations, state management, error handling, navigation
+- **Multi-conditional rendering** with complex onClick logic
+- **Rate limiting** and **anti-double-transaction** protections implemented
+
+**Safe Modification Guidelines**:
+- ✅ Change only specific properties/values
+- ✅ Test after each small change
+- ❌ Never refactor large blocks simultaneously
+- ❌ Don't modify multiple useEffects at once
+- ❌ Avoid changing core transaction logic unless critical
+
+---
+
 ## ⚠️ IMPLEMENTATION STATUS - READ FIRST
 
 **This section is the single source of information for project completion status. All copilots must check here before making changes.**
