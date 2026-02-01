@@ -156,7 +156,23 @@ export default function ArtworkMetadata({
             {/* Imagem no lado esquerdo com espaço */}
             {entangledMferId && ethMferImageUrl && (
               <div className="attestation-image">
-                <img src={ethMferImageUrl} alt={`Ethereum Mfer #${entangledMferId}`} />
+                <img 
+                  src={ethMferImageUrl} 
+                  alt={`Ethereum Mfer #${entangledMferId}`}
+                  onError={(e) => {
+                    console.warn(`Failed to load ETH Mfer #${entangledMferId} image, trying alternative`);
+                    // Try alternative IPFS gateways
+                    const currentSrc = e.currentTarget.src;
+                    if (currentSrc.includes('gateway.pinata.cloud')) {
+                      e.currentTarget.src = `https://ipfs.io/ipfs/QmWiQE65tmpYjdcCbdgqWbTrJtGPeXUVyJUvmF7VfKzJ3F/${entangledMferId}.png`;
+                    } else if (currentSrc.includes('ipfs.io')) {
+                      e.currentTarget.src = `https://cloudflare-ipfs.com/ipfs/QmWiQE65tmpYjdcCbdgqWbTrJtGPeXUVyJUvmF7VfKzJ3F/${entangledMferId}.png`;
+                    } else {
+                      // Last fallback - hide image if all fail
+                      e.currentTarget.style.display = 'none';
+                    }
+                  }}
+                />
               </div>
             )}
             

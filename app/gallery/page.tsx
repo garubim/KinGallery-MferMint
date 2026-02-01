@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
 import MagicMintButton from '../components/MagicMintButton';
 import ArtworkMetadata from '../components/ArtworkMetadata';
-
-const KNOWN_CIDs = {
-  MFER_ARTWORK: 'bafybeihwtlwxbgnzfjsamyr7uyrgi3bt3osv72vv6muesrq7mnvbrtawcq'
-};
-
-const getIPFSUrl = (cid: string) => `https://gateway.pinata.cloud/ipfs/${cid}`;
 
 export default function GalleryPage() {
   const router = useRouter();
@@ -60,36 +55,39 @@ export default function GalleryPage() {
       console.log('🎯 Using contract address:', mferContractAddress);
       setLastQueriedContract(mferContractAddress);
       
-      // 🚀 METHOD 1: Base Official NFT Indexer API
+      // 🚀 METHOD 1: Blockscout Base NFT API (Working!)
       try {
-        console.log('📡 Attempting Base Indexer API...');
-        const indexerResponse = await fetch(`https://api.base.org/v1/nfts/contract/${mferContractAddress}?limit=100&order=desc`);
+        console.log('📡 Attempting Blockscout Base API...');
+        const blockscoutResponse = await fetch(`https://base.blockscout.com/api/v2/tokens/${mferContractAddress}/instances`);
         
-        if (indexerResponse.ok) {
-          const indexerData = await indexerResponse.json();
-          console.log('✅ Base Indexer API success:', indexerData?.nfts?.length || 0, 'tokens found');
+        if (blockscoutResponse.ok) {
+          const blockscoutData = await blockscoutResponse.json();
+          console.log('✅ Blockscout API success:', blockscoutData?.items?.length || 0, 'tokens found');
           
-          if (indexerData?.nfts?.length > 0) {
-            const formattedNFTs = indexerData.nfts.map((nft: any) => ({
-              tokenId: parseInt(nft.tokenId),
-              owner: nft.owner,
-              blockNumber: nft.blockNumber || 'Unknown',
-              txHash: nft.transactionHash || 'Unknown',
-              mintDate: nft.timestamp ? new Date(nft.timestamp * 1000).toLocaleDateString() : 'Unknown',
-              title: `Mfer-0-#${nft.tokenId}/1000`
+          if (blockscoutData?.items?.length > 0) {
+            const formattedNFTs = blockscoutData.items.map((item: any) => ({
+              tokenId: parseInt(item.id),
+              owner: item.owner?.hash || 'Unknown',
+              blockNumber: 'Unknown', // Blockscout doesn't provide block number here
+              txHash: 'Unknown', // Blockscout doesn't provide tx hash here
+              mintDate: 'Recent', // Blockscout doesn't provide timestamp here
+              title: `Mfer-0-#${item.id}/1000`
             }));
             
-            setMintedNFTs(formattedNFTs.sort((a, b) => b.tokenId - a.tokenId));
-            setRpcSource('base-indexer');
-            setRpcLogsCount(formattedNFTs.length);
+            // Sort by tokenId descending (highest first)
+            const sortedNFTs = formattedNFTs.sort((a, b) => b.tokenId - a.tokenId);
+            
+            setMintedNFTs(sortedNFTs);
+            setRpcSource('blockscout-api');
+            setRpcLogsCount(sortedNFTs.length);
             setRpcReturnedNoLogs(false);
-            console.log('🎉 METHOD 1 SUCCESS: Base Indexer API delivered', formattedNFTs.length, 'tokens!');
+            console.log('🎉 METHOD 1 SUCCESS: Blockscout API delivered', sortedNFTs.length, 'tokens!');
             return;
           }
         }
-        console.log('⚠️ Base Indexer API returned empty or failed');
+        console.log('⚠️ Blockscout API returned empty or failed');
       } catch (apiError) {
-        console.warn('❌ Base Indexer API failed:', apiError);
+        console.warn('❌ Blockscout API failed:', apiError);
       }
 
       // 🔄 METHOD 2: Smart Event Chunking 
@@ -309,6 +307,13 @@ export default function GalleryPage() {
     return `${info.status} (${info.logsCount} mints)`;
   };
 
+  // Function to get token-specific image URL
+  const getTokenImageUrl = (tokenId: number) => {
+    // For now, all Mfer-0-Base tokens use the same artwork
+    // In the future, this could fetch from tokenURI or use different CIDs
+    return getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK);
+  };
+
   // Don't render until mounted (prevent hydration mismatch)
   if (!mounted) {
     return <div>Loading gallery...</div>;
@@ -391,9 +396,13 @@ export default function GalleryPage() {
                 onClick={() => window.open(`https://basescan.org/tx/${nft.txHash}`, '_blank')}
               >
                 <img 
-                  src={getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK)}
+                  src={getTokenImageUrl(nft.tokenId)}
                   alt={nft.title}
                   className="mosaic-img"
+                  onError={(e) => {
+                    console.warn(`Failed to load image for token ${nft.tokenId}, using fallback`);
+                    e.currentTarget.src = getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK);
+                  }}
                 />
                 <div className="mosaic-overlay">
                   <span className="mosaic-id">#{nft.tokenId}</span>
