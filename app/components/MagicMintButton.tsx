@@ -1198,7 +1198,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           position: absolute;
           top: 46%;
           left: 50%;
-          transform: translate(-50%, -50%) scale(1.2);
+          transform: translate(-50%, -50%) scale(1.1);
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -1207,6 +1207,11 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           opacity: 0.95;
           z-index: 1;
           will-change: transform;
+        }
+
+        /* Scoped scale for the masked welcome media only */
+        .glass-mask-inner .magic-animation {
+          transform: translate(-50%, -50%) scale(1.2);
         }
 
         .glass-reflex {
