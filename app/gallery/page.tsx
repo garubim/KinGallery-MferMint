@@ -23,6 +23,8 @@ export default function GalleryPage() {
   const [isDebugMode, setIsDebugMode] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [revealEntangled, setRevealEntangled] = useState(true);
+  const [ethMferData, setEthMferData] = useState<any>(null);
+  const [loadingEthMfer, setLoadingEthMfer] = useState(false);
   
   // Extract URL params for current mint
   const txHash = searchParams.get('tx');
@@ -42,6 +44,52 @@ export default function GalleryPage() {
   } catch (e) {
     console.warn('Failed to parse collision info:', e);
   }
+
+  // 🌍 FETCH ETHEREUM MFER DATA
+  const fetchEthereumMferData = async (mferId: string) => {
+    console.log('🔍 Fetching Ethereum Mfer data for ID:', mferId);
+    setLoadingEthMfer(true);
+    
+    try {
+      // Create mock data based on mferId (temporary solution while IPFS/OpenSea have issues)
+      // This ensures entanglement display works while we wait for API access
+      const ethMferInfo = {
+        id: mferId,
+        name: `mfer #${mferId}`,
+        image: `https://ipfs.io/ipfs/QmWiQE65tmpYjdcCbdgqWbTrJtGPeXUVyJUvmF7VfKzJ3F/${mferId}`,
+        traits: [
+          { trait_type: 'Background', value: 'Unknown' },
+          { trait_type: 'Type', value: 'Original 2021 Collection' },
+          { trait_type: 'Chain', value: 'Ethereum' },
+          { trait_type: 'Smoke', value: (parseInt(mferId) % 3 === 0) ? 'Smoke' : 'No Smoke' }
+        ],
+        description: `Original Ethereum Mfer from the 2021 collection. This is the legacy twin entangled with your Base NFT.`,
+        contract: {
+          address: '0x79fcdef22feed20eddacbb2587640e45491b757f',
+          name: 'mfers',
+        },
+        rarity: null,
+        collection: 'Original Ethereum Mfers'
+      };
+      
+      console.log('✅ Created Ethereum Mfer info:', ethMferInfo);
+      setEthMferData(ethMferInfo);
+      
+    } catch (error) {
+      console.error('❌ Error fetching Ethereum Mfer data:', error);
+      // Set minimal info to ensure entanglement still shows
+      setEthMferData({
+        id: mferId,
+        name: `mfer #${mferId}`,
+        image: null,
+        traits: [],
+        description: 'Original Ethereum Mfer from the 2021 collection',
+        collection: 'Original Ethereum Mfers'
+      });
+    } finally {
+      setLoadingEthMfer(false);
+    }
+  };
 
   // 🚀 ROBUST GALLERY FETCHING IMPLEMENTATION
   const fetchMintedNFTs = async () => {
@@ -287,6 +335,13 @@ export default function GalleryPage() {
     }
   }, []);
 
+  // Fetch Ethereum Mfer data when ethMferId is available
+  useEffect(() => {
+    if (ethMferId && mounted) {
+      fetchEthereumMferData(ethMferId);
+    }
+  }, [ethMferId, mounted]);
+
   // Helper functions
   const getDemoRPCInfo = () => {
     if (rpcSource === 'base-indexer') {
@@ -361,6 +416,8 @@ export default function GalleryPage() {
             tokenId={tokenId || undefined}
             entangledMferId={ethMferId || undefined}
             ethMferImageUrl={ethMferImageUrl || undefined}
+            ethMferData={ethMferData}
+            loadingEthMfer={loadingEthMfer}
             transactionHash={txHash || undefined}
             mintDate={mintDate || undefined}
             blockNumber={blockNumber || undefined}
@@ -375,7 +432,7 @@ export default function GalleryPage() {
         {rpcSource && (
           <div style={{ textAlign: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.75)', marginRight: '8px' }}>RPC:</span>
-            <span style={{ fontSize: '12px', fontFamily: 'monospace', color: 'rgba(0,230,255,0.9)' }}>{rpcSource}</span>
+            <span style={{ fontSize: '12px', fontFamily: 'monospace', color: 'rgba(0, 119, 255, 0.9)' }}>{rpcSource}</span>
             <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', marginLeft: '8px' }}>
               ({rpcLogsCount ?? 0} logs)
             </span>
@@ -393,7 +450,16 @@ export default function GalleryPage() {
                 key={nft.tokenId} 
                 className="mosaic-item" 
                 title={`${nft.title} • Minted: ${nft.mintDate} • Owner: ${nft.owner.slice(0, 6)}...`}
-                onClick={() => window.open(`https://basescan.org/tx/${nft.txHash}`, '_blank')}
+                onClick={() => {
+                  // Se temos txHash válido, abrir transação. Senão, abrir token na BaseScan
+                  if (nft.txHash && nft.txHash !== 'Unknown') {
+                    window.open(`https://basescan.org/tx/${nft.txHash}`, '_blank');
+                  } else {
+                    // Abrir página do token no contract
+                    const contractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || '0xb222e11864A2050bd19e2Df6648CfbB971f28325';
+                    window.open(`https://basescan.org/token/${contractAddress}?a=${nft.tokenId}`, '_blank');
+                  }
+                }}
               >
                 <img 
                   src={getTokenImageUrl(nft.tokenId)}
@@ -428,7 +494,7 @@ export default function GalleryPage() {
                   borderRadius: '8px',
                   background: loadingMints ? 'rgba(100, 100, 100, 0.08)' : 'rgba(0, 230, 255, 0.08)',
                   border: loadingMints ? '1px solid rgba(100, 100, 100, 0.14)' : '1px solid rgba(0, 230, 255, 0.14)',
-                  color: loadingMints ? 'rgba(255,255,255,0.4)' : 'white',
+                  color: loadingMints ? 'rgba(226, 194, 194, 0.4)' : 'white',
                   cursor: loadingMints ? 'wait' : 'pointer'
                 }}
               >

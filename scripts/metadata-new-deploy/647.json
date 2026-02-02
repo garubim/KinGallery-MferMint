@@ -1,0 +1,46 @@
+{
+  "name": "Mfer-0'-Base #647/1000",
+  "description": "Your mark is recorded. This NFT is entangled with Ethereum Mfer #5081 from the original 2021 collection. Part of the Mfer-0'-Base collection on Base chain. Evolution documented, not imitation.",
+  "image": "https://orange-eager-slug-339.mypinata.cloud/ipfs/bafybeiaevaflz35fjr4qhrrcaejbxqiie5v3itvgqmabtstwbpfe7vlodq",
+  "animation_url": "https://orange-eager-slug-339.mypinata.cloud/ipfs/bafybeiaevaflz35fjr4qhrrcaejbxqiie5v3itvgqmabtstwbpfe7vlodq",
+  "external_url": "https://kingallery.netlify.app/gallery?tokenId=647",
+  "background_color": "000000",
+  "attributes": [
+    {
+      "trait_type": "Collection",
+      "value": "Mfer-0'-Base"
+    },
+    {
+      "trait_type": "Chain",
+      "value": "Base (8453)"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "647/1000"
+    },
+    {
+      "trait_type": "Type",
+      "value": "Entangled L1-L2"
+    },
+    {
+      "trait_type": "Artist",
+      "value": "Kinwiz.base.eth"
+    },
+    {
+      "trait_type": "Entangled With",
+      "value": "Ethereum Mfer #5081"
+    },
+    {
+      "trait_type": "Original Chain",
+      "value": "Ethereum Mainnet"
+    },
+    {
+      "trait_type": "Evolution Layer",
+      "value": "Base"
+    },
+    {
+      "trait_type": "Entanglement Status",
+      "value": "Active"
+    }
+  ]
+}

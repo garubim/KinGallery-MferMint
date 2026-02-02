@@ -194,6 +194,18 @@ contract MferBk0Base is ERC721, ERC2981, Ownable {
     function remainingSupply() external view returns (uint256) {
         return maxTotalSupply - (_tokenIdCounter - 1);
     }
+    
+    /**
+     * @dev BaseScan compatibility functions
+     * These functions ensure BaseScan displays "Max Total Supply: 1000" correctly
+     */
+    function totalSupply() public view returns (uint256) {
+        return _tokenIdCounter - 1; // Current minted tokens
+    }
+
+    function maxSupply() public view returns (uint256) {
+        return maxTotalSupply; // Maximum possible tokens (1000)
+    }
 
     receive() external payable {}
 }

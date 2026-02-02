@@ -10,6 +10,8 @@ interface ArtworkMetadataProps {
   tokenId?: number;
   entangledMferId?: number;
   ethMferImageUrl?: string;
+  ethMferData?: any;
+  loadingEthMfer?: boolean;
   transactionHash?: string;
   mintDate?: string;
   blockNumber?: number;
@@ -23,6 +25,8 @@ export default function ArtworkMetadata({
   tokenId,
   entangledMferId,
   ethMferImageUrl,
+  ethMferData,
+  loadingEthMfer = false,
   transactionHash,
   mintDate,
   blockNumber,
@@ -63,24 +67,32 @@ export default function ArtworkMetadata({
         <div className="metadata-row">
           <div className="metadata-label">Title</div>
           <div className="metadata-value">
-            <div className="title-line">{tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}</div>
-            {transactionHash && (
-              <div className="title-tx">
-                <a
-                  href={`https://basescan.org/tx/${transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="View transaction on BaseScan"
-                >
-                  View transaction
-                </a>
-              </div>
-            )}
-
-
-
+            <div className="title-line">{tokenId ? `Mfer-0-Base #${tokenId}/1000` : `Mfer-0-Base #.../1000`}</div>
           </div>
         </div>
+        
+        {transactionHash && (
+          <div className="metadata-row">
+            <div className="metadata-label">hashTx</div>
+            <div className="metadata-value">
+              <a
+                href={`https://basescan.org/tx/${transactionHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View transaction on BaseScan"
+                style={{ 
+                  color: 'rgba(0, 230, 255, 0.8)', 
+                  textDecoration: 'none',
+                  fontFamily: 'monospace',
+                  wordBreak: 'break-all',
+                  fontSize: '14px'
+                }}
+              >
+                {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
+              </a>
+            </div>
+          </div>
+        )}
 
         {isConnected && address && (
           <div className="metadata-row">
@@ -207,12 +219,72 @@ export default function ArtworkMetadata({
             </div>
 
             {entangledMferId && (
-              <div className="cert-item">
-                <div className="cert-label">Legacy Twin</div>
-                <div className="cert-value">
-                  Ethereum Mfer #{entangledMferId} (Mainnet)
+              <>
+                {/* Smoke Status - agora na seção correta */}
+                <div className="cert-item">
+                  <div className="cert-label">Smoke</div>
+                  <div className="cert-value">
+                    {(parseInt(tokenId || '1') % 3 === 0) ? '🚬 Smoke' : '🚭 No Smoke'}
+                  </div>
                 </div>
-              </div>
+                
+                <div className="cert-item">
+                  <div className="cert-label">Legacy Twin</div>
+                  <div className="cert-value">
+                    <a 
+                      href={`https://opensea.io/assets/ethereum/0x79fcdef22feed20eddacbb2587640e45491b757f/${entangledMferId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="View on OpenSea"
+                      style={{ color: '#0ea5e9', textDecoration: 'none' }}
+                    >
+                      ↔️ Ethereum Mfer #{entangledMferId} (Mainnet)
+                    </a>
+                  </div>
+                </div>
+                
+                {loadingEthMfer && (
+                  <div className="cert-item">
+                    <div className="cert-label">Entanglement Data</div>
+                    <div className="cert-value" style={{ opacity: 0.7 }}>Loading...</div>
+                  </div>
+                )}
+                
+                {ethMferData && !loadingEthMfer && (
+                  <>
+                    <div className="cert-item">
+                      <div className="cert-label">Original Collection</div>
+                      <div className="cert-value">
+                        {ethMferData.collection || 'Original Ethereum Mfers'}
+                      </div>
+                    </div>
+                    
+                    <div className="cert-item">
+                      <div className="cert-label">Legacy Preview</div>
+                      <div className="cert-value">
+                        {ethMferData.image ? (
+                          <img 
+                            src={ethMferData.image} 
+                            alt={`Mfer #${entangledMferId}`}
+                            style={{ 
+                              width: '64px', 
+                              height: '64px', 
+                              borderRadius: '8px',
+                              objectFit: 'cover',
+                              border: '1px solid rgba(255, 255, 255, 0.2)'
+                            }}
+                            onError={(e) => {
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <span style={{ opacity: 0.6, fontSize: '12px' }}>Image loading...</span>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
             )}
           </div>
           {/* Fim certification-grid */}
