@@ -68,23 +68,25 @@ export default function ArtworkMetadata({
           <div className="metadata-label">Title</div>
           <div className="metadata-value">
             <div className="title-line">{tokenId ? `Mfer-0-#${tokenId}/1000` : 'Mfer-0-#.../1000'}</div>
-            {transactionHash && (
-              <div className="title-tx">
-                <a
-                  href={`https://basescan.org/tx/${transactionHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="View transaction on BaseScan"
-                >
-                  View transaction
-                </a>
-              </div>
-            )}
-
-
-
           </div>
         </div>
+
+        {/* Hash field */}
+        {transactionHash && (
+          <div className="metadata-row">
+            <div className="metadata-label">Hash</div>
+            <div className="metadata-value">
+              <a
+                href={`https://basescan.org/tx/${transactionHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="View transaction on BaseScan"
+              >
+                {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
+              </a>
+            </div>
+          </div>
+        )}
 
         {isConnected && address && (
           <div className="metadata-row">
@@ -196,29 +198,7 @@ export default function ArtworkMetadata({
               </div>
             )}
             
-            <div className="cert-item">
-              <div className="cert-label">Transaction Hash</div>
-              <div className="cert-value cert-hash">
-                <a 
-                  href={`https://basescan.org/tx/${transactionHash}`} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  title="Ver no BlockScout"
-                >
-                  {transactionHash.slice(0, 10)}...{transactionHash.slice(-8)}
-                </a>
-              </div>
-            </div>
-
-            {entangledMferId && (
-              <div className="cert-item">
-                <div className="cert-label">Legacy Twin</div>
-                <div className="cert-value">
-                  Ethereum Mfer #{entangledMferId} (Mainnet)
-                </div>
-              </div>
-            )}
-
+            {/* 🚬 SMOKE / NO 🚭 SMOKE indicator from original L1 Mfer metadata */}
             {originalSmoke !== undefined && entangledMferId && (
               <div className="cert-item">
                 <div className="cert-label">Smoke</div>
@@ -228,6 +208,22 @@ export default function ArtworkMetadata({
                   ) : (
                     <>🚭 no 🚬 smoke</>
                   )}
+                </div>
+              </div>
+            )}
+            
+            {blockNumber && (
+              <div className="cert-item">
+                <div className="cert-label">Block</div>
+                <div className="cert-value">#{blockNumber}</div>
+              </div>
+            )}
+
+            {entangledMferId && (
+              <div className="cert-item">
+                <div className="cert-label">Legacy Twin</div>
+                <div className="cert-value">
+                  Ethereum Mfer #{entangledMferId} (Mainnet)
                 </div>
               </div>
             )}
