@@ -24,17 +24,17 @@ export default function GalleryPage() {
   const [showConfetti, setShowConfetti] = useState(true);
   const [revealEntangled, setRevealEntangled] = useState(true);
   
+  // State for original Mfer metadata and image
+  const [ethMferImageUrl, setEthMferImageUrl] = useState<string | null>(null);
+  const [originalSmoke, setOriginalSmoke] = useState<boolean | undefined>(undefined);
+  const [originalTransactionHash, setOriginalTransactionHash] = useState<string | null>(null);
+  
   // Extract URL params for current mint
   const txHash = searchParams.get('tx');
   const ethMferId = searchParams.get('ethMferId');
   const tokenId = parseInt(searchParams.get('tokenId') || '0') || undefined;
   const blockNumber = searchParams.get('blockNumber');
   const mintDate = searchParams.get('mintDate');
-  const ethMferImageUrl = ethMferId ? `https://gateway.pinata.cloud/ipfs/QmWiQE65tmpYjdcCbdgqWbTrJtGPeXUVyJUvmF7VfKzJ3F/${ethMferId}.png` : undefined;
-  
-  // State for original Mfer metadata (smoke trait)
-  const [originalSmoke, setOriginalSmoke] = useState<boolean | undefined>(undefined);
-  const [originalTransactionHash, setOriginalTransactionHash] = useState<string | null>(null);
   
   // Parse collision info from URL
   let collisionInfo = null;
@@ -293,20 +293,41 @@ export default function GalleryPage() {
     // Buscar metadata do Mfer original se temos ethMferId
     if (ethMferId) {
       console.log('🔍 Buscando metadata do Mfer original #' + ethMferId);
-      fetch(`https://metadata.mfers.art/${ethMferId}`)
+      
+      // Busca metadata completa com imagem
+      const ipfsBase = 'https://metadata.mfers.art';
+      fetch(`${ipfsBase}/${ethMferId}`)
         .then(res => res.json())
-        .then(data => {
-          console.log('📝 Metadata do Mfer original:', data);
+        .then(metadata => {
+          console.log('📝 Metadata do Mfer original:', metadata);
           
-          // Detecta smoke trait
-          const smokeAttribute = data?.attributes?.find((attr: any) => 
-            attr.trait_type?.toLowerCase().includes('smoke')
-          );
+          // Configura a imagem
+          if (metadata.image) {
+            const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
+            setEthMferImageUrl(imageUrl);
+            console.log('🖼️ Imagem do Mfer original:', imageUrl);
+          }
           
-          if (smokeAttribute) {
-            const hasSmoke = smokeAttribute.value !== 'no smoke';
-            setOriginalSmoke(hasSmoke);
-            console.log('🚬 Smoke trait:', hasSmoke ? 'SMOKING' : 'NO SMOKE');
+          // Detecta smoke trait corretamente
+          if (metadata.attributes && Array.isArray(metadata.attributes)) {
+            const smokeTrait = metadata.attributes.find(
+              (attr: any) => 
+                attr.trait_type?.toLowerCase().includes('smoke') ||
+                attr.trait_type?.toLowerCase().includes('cigar')
+            );
+            
+            if (smokeTrait) {
+              const smokeValue = String(smokeTrait.value).toLowerCase();
+              const hasSmoke = 
+                smokeValue.includes('yes') ||
+                smokeValue.includes('true') ||
+                smokeValue.includes('smoke') ||
+                smokeValue === '1' ||
+                !smokeValue.includes('no');
+              
+              setOriginalSmoke(hasSmoke);
+              console.log('🚬 SMOKE detected:', hasSmoke ? '✔️' : '❌', 'from trait:', smokeTrait);
+            }
           }
         })
         .catch(err => {
@@ -360,6 +381,24 @@ export default function GalleryPage() {
 
   return (
     <div className="gallery-page">
+      {showConfetti && (
+        <div className="confetti-overlay">
+          {Array.from({ length: 50 }).map((_, i) => (
+            <div
+              key={i}
+              className="confetti-particle"
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 2}s`,
+                animationDuration: `${2 + Math.random() * 2}s`,
+              }}
+            >
+              {['0', '1', '█', '▓', '▒', '░'][Math.floor(Math.random() * 6)]}
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Header */}
       <div className="gallery-header">
         <h1 className="gallery-title">KinGallery</h1>
@@ -509,6 +548,28 @@ export default function GalleryPage() {
           background-position: center;
           pointer-events: none;
           z-index: 0;
+        }
+
+        .confetti-overlay {
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1000;
+        }
+
+        .confetti-particle {
+          position: absolute;
+          top: -20px;
+          font-size: 24px;
+          color: rgba(0, 230, 255, 0.8);
+          animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+          to { 
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+          }
         }
 
         .gallery-header {
