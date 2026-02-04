@@ -32,7 +32,8 @@ export default function GalleryPage() {
   // Extract URL params for current mint
   const txHash = searchParams.get('tx');
   const ethMferId = searchParams.get('ethMferId');
-  const tokenId = parseInt(searchParams.get('tokenId') || '0') || undefined;
+  const urlTokenId = searchParams.get('tokenId');
+  const tokenId = urlTokenId ? parseInt(urlTokenId) : undefined;
   const blockNumber = searchParams.get('blockNumber');
   const mintDate = searchParams.get('mintDate');
   
@@ -334,7 +335,49 @@ export default function GalleryPage() {
           setOriginalSmoke(undefined);
         });
     }
-  }, [ethMferId]);
+    
+    // 🚀 BUSCA COMPLETA: tokenId + blockNumber da transação (como no commit 5d40bd5)
+    if (txHash) {
+      console.log('📡 Buscando receipt da transação:', txHash);
+      fetch('https://mainnet.base.org', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getTransactionReceipt',
+          params: [txHash]
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('📦 Transaction Receipt:', data.result);
+        
+        if (data.result) {
+          // Extrai tokenId do log (Transfer event)
+          if (data.result?.logs) {
+            const transferLog = data.result.logs.find((log: any) => 
+              log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+            );
+            if (transferLog?.topics[3]) {
+              const tokenIdHex = transferLog.topics[3];
+              const tokenIdNum = parseInt(tokenIdHex, 16);
+              console.log('✨ Token ID extraído:', tokenIdNum);
+              // Atualizar URL com tokenId se necessário
+              const currentUrl = new URL(window.location.href);
+              if (!currentUrl.searchParams.has('tokenId')) {
+                currentUrl.searchParams.set('tokenId', tokenIdNum.toString());
+                window.history.replaceState({}, '', currentUrl.toString());
+              }
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.warn('⚠️ Erro ao buscar transaction receipt:', err);
+      });
+    }
+  }, [ethMferId, txHash]);
 
   // Timer para esconder confetti após 4 segundos
   useEffect(() => {
