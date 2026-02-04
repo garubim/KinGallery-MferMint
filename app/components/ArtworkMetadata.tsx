@@ -14,6 +14,8 @@ interface ArtworkMetadataProps {
   mintDate?: string;
   blockNumber?: number;
   collisionInfo?: any;
+  originalSmoke?: boolean | undefined;
+  originalTransactionHash?: string;
 }
 
 export default function ArtworkMetadata({ 
@@ -26,7 +28,9 @@ export default function ArtworkMetadata({
   transactionHash,
   mintDate,
   blockNumber,
-  collisionInfo
+  collisionInfo,
+  originalSmoke,
+  originalTransactionHash
 }: ArtworkMetadataProps) {
   const [usdcPrice, setUsdcPrice] = useState('0.75');
   const [mounted, setMounted] = useState(false);
@@ -211,6 +215,19 @@ export default function ArtworkMetadata({
                 <div className="cert-label">Legacy Twin</div>
                 <div className="cert-value">
                   Ethereum Mfer #{entangledMferId} (Mainnet)
+                </div>
+              </div>
+            )}
+
+            {originalSmoke !== undefined && entangledMferId && (
+              <div className="cert-item">
+                <div className="cert-label">Smoke</div>
+                <div className="cert-value">
+                  {originalSmoke ? (
+                    <>a lot 🚬 ✔️</>
+                  ) : (
+                    <>🚭 no 🚬 smoke</>
+                  )}
                 </div>
               </div>
             )}

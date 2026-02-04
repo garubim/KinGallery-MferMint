@@ -21,7 +21,7 @@ export default function GalleryPage() {
   const [lastQueriedContract, setLastQueriedContract] = useState<string>('');
   const [fetchAttemptCount, setFetchAttemptCount] = useState(0);
   const [isDebugMode, setIsDebugMode] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(true);
   const [revealEntangled, setRevealEntangled] = useState(true);
   
   // Extract URL params for current mint
@@ -31,6 +31,10 @@ export default function GalleryPage() {
   const blockNumber = searchParams.get('blockNumber');
   const mintDate = searchParams.get('mintDate');
   const ethMferImageUrl = ethMferId ? `https://gateway.pinata.cloud/ipfs/QmWiQE65tmpYjdcCbdgqWbTrJtGPeXUVyJUvmF7VfKzJ3F/${ethMferId}.png` : undefined;
+  
+  // State for original Mfer metadata (smoke trait)
+  const [originalSmoke, setOriginalSmoke] = useState<boolean | undefined>(undefined);
+  const [originalTransactionHash, setOriginalTransactionHash] = useState<string | null>(null);
   
   // Parse collision info from URL
   let collisionInfo = null;
@@ -285,7 +289,42 @@ export default function GalleryPage() {
       console.log('🧪 Debug mode enabled');
       setIsDebugMode(true);
     }
-  }, []);
+    
+    // Buscar metadata do Mfer original se temos ethMferId
+    if (ethMferId) {
+      console.log('🔍 Buscando metadata do Mfer original #' + ethMferId);
+      fetch(`https://metadata.mfers.art/${ethMferId}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('📝 Metadata do Mfer original:', data);
+          
+          // Detecta smoke trait
+          const smokeAttribute = data?.attributes?.find((attr: any) => 
+            attr.trait_type?.toLowerCase().includes('smoke')
+          );
+          
+          if (smokeAttribute) {
+            const hasSmoke = smokeAttribute.value !== 'no smoke';
+            setOriginalSmoke(hasSmoke);
+            console.log('🚬 Smoke trait:', hasSmoke ? 'SMOKING' : 'NO SMOKE');
+          }
+        })
+        .catch(err => {
+          console.warn('⚠️ Erro ao buscar metadata do Mfer original:', err);
+          setOriginalSmoke(undefined);
+        });
+    }
+  }, [ethMferId]);
+
+  // Timer para esconder confetti após 4 segundos
+  useEffect(() => {
+    if (showConfetti) {
+      const timer = setTimeout(() => {
+        setShowConfetti(false);
+      }, 4000);
+      return () => clearTimeout(timer);
+    }
+  }, [showConfetti]);
 
   // Helper functions
   const getDemoRPCInfo = () => {
@@ -365,6 +404,8 @@ export default function GalleryPage() {
             mintDate={mintDate || undefined}
             blockNumber={blockNumber || undefined}
             collisionInfo={collisionInfo || undefined}
+            originalSmoke={originalSmoke}
+            originalTransactionHash={originalTransactionHash || undefined}
           />
         </div>
       </div>
