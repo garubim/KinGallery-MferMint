@@ -322,8 +322,7 @@ export default function GalleryPage() {
                 smokeValue.includes('yes') ||
                 smokeValue.includes('true') ||
                 smokeValue.includes('smoke') ||
-                smokeValue === '1' ||
-                !smokeValue.includes('no');
+                smokeValue === '1';
               
               setOriginalSmoke(hasSmoke);
               console.log('🚬 SMOKE detected:', hasSmoke ? '✔️' : '❌', 'from trait:', smokeTrait);

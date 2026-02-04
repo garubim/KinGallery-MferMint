@@ -203,10 +203,12 @@ export default function ArtworkMetadata({
               <div className="cert-item">
                 <div className="cert-label">Smoke</div>
                 <div className="cert-value">
-                  {originalSmoke ? (
-                    <>a lot 🚬 ✔️</>
+                  {originalSmoke === true ? (
+                    <>A 🚬 Lot ✔️</>
+                  ) : originalSmoke === false ? (
+                    <>no 🚭 way!</>
                   ) : (
-                    <>🚭 no 🚬 smoke</>
+                    <>—</>
                   )}
                 </div>
               </div>
