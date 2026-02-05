@@ -31,7 +31,8 @@ export default function GalleryPage() {
   
   // Extract URL params for current mint
   const txHash = searchParams.get('tx');
-  const ethMferId = searchParams.get('ethMferId');
+  const ethMferIdString = searchParams.get('ethMferId');
+  const ethMferId = ethMferIdString ? parseInt(ethMferIdString) : undefined; // Convert to number like 5d40bd5
   const urlTokenId = searchParams.get('tokenId');
   const tokenId = urlTokenId ? parseInt(urlTokenId) : undefined;
   const blockNumber = searchParams.get('blockNumber');
