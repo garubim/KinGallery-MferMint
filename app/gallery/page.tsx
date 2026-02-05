@@ -320,14 +320,26 @@ export default function GalleryPage() {
             
             if (smokeTrait) {
               const smokeValue = String(smokeTrait.value).toLowerCase();
+              console.log('🔍 SMOKE TRAIT DEBUG:', {
+                trait_type: smokeTrait.trait_type,
+                value: smokeTrait.value,
+                valueString: smokeValue,
+                allAttributes: metadata.attributes
+              });
+              
               const hasSmoke = 
-                smokeValue.includes('yes') ||
-                smokeValue.includes('true') ||
-                smokeValue.includes('smoke') ||
-                smokeValue === '1';
+                (smokeValue.includes('cig') ||     // "cig white", "cig brown", etc.
+                 smokeValue.includes('cigar') ||  // cigar variations
+                 smokeValue.includes('yes') ||
+                 smokeValue.includes('true') ||
+                 smokeValue === '1' ||
+                 (smokeValue.includes('smoke') && !smokeValue.includes('no'))) && // "smoke" but not "no smoke"
+                !smokeValue.includes('no');        // exclude "no", "no smoke"
               
               setOriginalSmoke(hasSmoke);
               console.log('🚬 SMOKE detected:', hasSmoke ? '✔️' : '❌', 'from trait:', smokeTrait);
+            } else {
+              console.log('❌ No smoke trait found in attributes:', metadata.attributes);
             }
           }
         })

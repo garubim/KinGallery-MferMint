@@ -200,7 +200,7 @@ export default function ArtworkMetadata({
             
             {/* 🚬 SMOKE / NO 🚭 SMOKE indicator from original L1 Mfer metadata */}
             {originalSmoke !== undefined && entangledMferId && (
-              <div className="cert-item">
+              <div className="cert-item smoke-trait">
                 <div className="cert-label">Smoke</div>
                 <div className="cert-value">
                   {originalSmoke === true ? (
@@ -213,16 +213,9 @@ export default function ArtworkMetadata({
                 </div>
               </div>
             )}
-            
-            {blockNumber && (
-              <div className="cert-item">
-                <div className="cert-label">Block</div>
-                <div className="cert-value">#{blockNumber}</div>
-              </div>
-            )}
 
             {entangledMferId && (
-              <div className="cert-item">
+              <div className="cert-item legacy-twin">
                 <div className="cert-label">Legacy Twin</div>
                 <div className="cert-value">
                   Ethereum Mfer #{entangledMferId} (Mainnet)
@@ -635,6 +628,15 @@ export default function ArtworkMetadata({
           color: rgba(0, 200, 255, 1);
           background: rgba(0, 150, 255, 0.15);
           border-color: rgba(0, 150, 255, 0.4);
+        }
+
+        /* Spacing between smoke trait and legacy twin */
+        .cert-item.smoke-trait {
+          margin-bottom: 12px;
+        }
+
+        .cert-item.legacy-twin {
+          margin-top: 12px;
         }
 
         .value-proposition {
