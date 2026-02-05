@@ -296,8 +296,8 @@ export default function GalleryPage() {
     if (ethMferId) {
       console.log('🔍 Buscando metadata do Mfer original #' + ethMferId);
       
-      // Busca metadata completa com imagem
-      const ipfsBase = 'https://metadata.mfers.art';
+      // Busca metadata completa com imagem (URL correta do commit 5d40bd5)
+      const ipfsBase = 'https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo';
       fetch(`${ipfsBase}/${ethMferId}`)
         .then(res => res.json())
         .then(metadata => {
