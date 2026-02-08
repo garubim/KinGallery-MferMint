@@ -199,7 +199,7 @@ export default function ArtworkMetadata({
             )}
             
             {/* 🚬 SMOKE / NO 🚭 SMOKE indicator from original L1 Mfer metadata */}
-            {originalSmoke !== undefined && entangledMferId && (
+            {entangledMferId && (
               <div className="cert-item smoke-trait">
                 <div className="cert-label">Smoke</div>
                 <div className="cert-value">
@@ -208,7 +208,7 @@ export default function ArtworkMetadata({
                   ) : originalSmoke === false ? (
                     <>no 🚭 way!</>
                   ) : (
-                    <>—</>
+                    <>⚡ loading...</>
                   )}
                 </div>
               </div>
