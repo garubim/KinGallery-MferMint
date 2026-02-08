@@ -751,18 +751,18 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         {/* Glass reflex layer - using new Box01 reflex image */}
         <div className="glass-reflex">
           <img
-            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-            alt="Glass reflex Box03 layer 1"
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box16.webp"
+            alt="Glass reflex Box16 layer 1"
             className="reflex-layer reflex-1"
           />
           <img
-            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-            alt="Glass reflex Box03 layer 2"
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box16.webp"
+            alt="Glass reflex Box16 layer 2"
             className="reflex-layer reflex-2"
           />
           <img
-            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box03.webp"
-            alt="Glass reflex Box03 layer 3"
+            src="/MagicButton-OfficialAnimatedTitles/MagicButton-NewReflex-Box16.webp"
+            alt="Glass reflex Box16 layer 3"
             className="reflex-layer reflex-3"
           />
         </div>
@@ -1051,7 +1051,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           display: flex;
           flex-direction: column;
           align-items: center;
-          margin-top: 17px;
+          margin-top: 22px;
           margin-bottom: 20px;
           transition: all 3s cubic-bezier(0.77, 0, 0.175, 1);
         }
@@ -1083,7 +1083,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         .glass-shell {
           position: relative;
           width: 480px;
-          height: 190px;
+          height: 200px;
           border-radius: 120px;
           background: rgba(54, 32, 3, 0.08);
           backdrop-filter: blur(30px);
@@ -1103,7 +1103,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           border-radius: 120px;
           overflow: hidden;
           pointer-events: none;
-          z-index: 1;
+          z-index: 1.1;
         }
 
         .glass-shell:hover {
@@ -1129,7 +1129,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           content: '';
           position: absolute;
           right: 0;
-          top: 05;
+          top: 08;
           bottom: 0;
           width: 40%;
           background: linear-gradient(90deg, rgba(0, 200, 100, 0) 0%, rgba(0, 255, 150, 0.5) 100%);
@@ -1161,14 +1161,14 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
             filter: blur(3px);
           }
           50% {
-            opacity: 0.9;
+            opacity: 0.8;
             filter: blur(6px);
           }
         }
 
         .magic-animation {
           position: absolute;
-          top: 46%;
+          top: 45%;
           left: 50%;
           transform: translate(-50%, -50%) scale(1.1);
           width: 100%;
@@ -1176,8 +1176,8 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           object-fit: cover;
           object-position: center;
           pointer-events: none;
-          opacity: 0.95;
-          z-index: 1;
+          opacity: 1;
+          z-index: 1.2;
           will-change: transform;
         }
 
@@ -1190,13 +1190,13 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           /* Elevated above the main animation so reflex layers visually sit on top */
           z-index: 25;
           /* keep a soft reflective appearance */
-          mix-blend-mode: soft-light;
-          opacity: 0.5;
+          mix-blend-mode: overlay;
+          /* opacity controlled individually by each layer */
         }
 
         .reflex-layer {
           position: absolute;
-          width: 100%;
+          width: 105%;
           height: 100%;
           object-fit: cover;
           object-position: center;
@@ -1207,12 +1207,19 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }
 
         .reflex-1 {
-          opacity: 0.5;
+          opacity: 0.3;  /* Ajuste aqui para primeira camada */
+          mix-blend-mode: screen; /* Modo de composição camada 1 */
         }
 
         .reflex-2 {
-          opacity: 0.5;
-          filter: brightness(0.5);
+          opacity: 0.2; /* Ajuste aqui para segunda camada */
+          filter: brightness(0.99);
+          mix-blend-mode: overlay; /* Modo de composição camada 2 */
+        }
+
+        .reflex-3 {
+          opacity: 0.1; /* Ajuste aqui para terceira camada */
+          mix-blend-mode: hard-light; /* Modo de composição camada 3 */
         }
 
         /* Loading overlay - wallet connecting */
@@ -1387,7 +1394,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           color: white;
         }
 
-        /* ========== NOVOS ESTILOS: SUCCESS OVERLAY EXPANDIDO ========== */
+        /* ========== NEW STYLES ========== */
 
         /* Confetti Animation */
         @keyframes confetti-fall {
