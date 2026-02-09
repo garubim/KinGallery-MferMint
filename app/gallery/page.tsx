@@ -327,20 +327,16 @@ export default function GalleryPage() {
                 allAttributes: metadata.attributes
               });
               
-              const hasSmoke = 
-                (smokeValue.includes('cig') ||     // "cig white", "cig brown", etc.
-                 smokeValue.includes('cigar') ||  // cigar variations
-                 smokeValue.includes('yes') ||
-                 smokeValue.includes('true') ||
-                 smokeValue === '1' ||
-                 (smokeValue.includes('smoke') && !smokeValue.includes('no'))) && // "smoke" but not "no smoke"
-                !smokeValue.includes('no');        // exclude "no", "no smoke"
+              // 🚬 LÓGICA CORRETA: 
+              // - Se smoke trait = "no" → false (raro)
+              // - Se smoke trait = qualquer outra coisa → true (comum)
+              const hasSmoke = !smokeValue.includes('no'); // Only false if explicitly "no"
               
               setOriginalSmoke(hasSmoke);
-              console.log('🚬 SMOKE detected:', hasSmoke ? '✔️' : '❌', 'from trait:', smokeTrait);
+              console.log('🚬 SMOKE detected:', hasSmoke ? '✔️ A lot' : '❌ No way', 'from trait:', smokeTrait);
             } else {
-              console.log('❌ No smoke trait found in attributes, setting to FALSE (no smoke)');
-              setOriginalSmoke(false); // ✅ FIX: No smoke trait = no smoke
+              console.log('✅ No smoke trait found = DEFAULT TO SMOKE (most Mfers smoke)');
+              setOriginalSmoke(true); // ✅ FIX: No smoke trait = DEFAULT has smoke
             }
           }
         })
