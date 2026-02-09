@@ -1096,9 +1096,9 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
         .glass-shell {
           position: relative;
-          width: 480px;
-          height: 200px;
-          border-radius: 120px;
+          width: 360px;
+          height: 150px;
+          border-radius: 90px;
           background: rgba(54, 32, 3, 0.08);
           backdrop-filter: blur(30px);
           border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1114,7 +1114,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         .glass-mask {
           position: absolute;
           inset: 0;
-          border-radius: 120px;
+          border-radius: 90px;
           overflow: hidden;
           pointer-events: none;
           z-index: 1.1;

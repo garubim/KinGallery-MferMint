@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
-import MagicMintButton from '../components/MagicMintButton';
+// 🛡️ VAULT SYSTEM: Protected Magic Button (Feb 9, 2026)
+import { SafeMagicButton } from '../vault';
 import ArtworkMetadata from '../components/ArtworkMetadata';
 
 export default function GalleryPage() {
@@ -575,13 +576,14 @@ export default function GalleryPage() {
         .gallery-page {
           min-height: 100vh;
           width: 100%;
-          max-width: 100vw;
+          max-width: 380px;
+          margin: 0 auto;
           background: #000000;
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
           align-items: center;
-          padding: 0;
+          padding: 16px 12px;
           position: relative;
           overflow-x: hidden;
         }
@@ -592,8 +594,7 @@ export default function GalleryPage() {
           top: 0;
           left: 50%;
           transform: translateX(-50%);
-          width: 490px;
-          max-width: 100%;
+          width: min(460px, 98vw);
           height: 100%;
           background: url('/walls/disc-wall-brightgold.webp');
           background-size: cover;
@@ -670,9 +671,10 @@ export default function GalleryPage() {
 
         .main-container {
           width: 100%;
-          max-width: 450px;
-          min-width: 320px;
-          margin: 40px auto;
+          max-width: 384px;
+          min-width: 0px;
+          margin: 20px auto;
+          margin-right: 4px;
           display: flex;
           flex-direction: column;
           gap: 32px;
@@ -680,29 +682,29 @@ export default function GalleryPage() {
           justify-content: flex-start;
           position: relative;
           z-index: 2;
-          padding: 0 20px;
+          padding: 0 0px;
         }
 
         .nft-wrapper {
           position: relative;
           width: 100%;
-          max-width: 450px;
+          max-width: 384px;
           margin: 0 auto;
         }
 
         .glass-shell {
           position: relative;
           width: 100%;
-          max-width: 375px;
+          max-width: 384px;
           aspect-ratio: 3/4;
           margin: 0 auto;
           border-radius: 12px;
           background: rgba(0, 0, 0, 0);
           backdrop-filter: blur(20px);
-          border: 8px solid #0a0f1a;
+          border: 8px solid rgb(70, 50, 21);
           box-shadow: 
             0 0 0 1px rgba(255, 255, 255, 0.1),
-            0 20px 50px rgba(0, 0, 0, 0.8);
+            0 10px 20px rgba(0, 0, 0, 0.8);
           overflow: hidden;
         }
 
@@ -760,26 +762,27 @@ export default function GalleryPage() {
 
         .metadata-wrapper {
           width: 100%;
-          max-width: 360px;
+          max-width: 354px;
           display: flex;
           flex-direction: column;
-          gap: 24px;
+          gap: 0px;
           background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(12px);
           border-radius: 24px;
-          padding: 28px;
+          margin-right: 4px;
+          padding: 20px 20px;
           border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-          margin: 0 auto;
+          margin:  0 auto;
           position: relative;
           z-index: 2;
         }
 
         .mosaic-section {
           width: 100%;
-          max-width: 450px;
+          max-width: 384px;
           margin: 40px auto 0;
-          padding: 40px 20px;
+          padding: 40px 0px;
           border-top: 1px solid rgba(255, 255, 255, 0.1);
           position: relative;
           z-index: 2;
@@ -872,9 +875,9 @@ export default function GalleryPage() {
         }
       `}</style>
 
-      {/* Magic Button - allows user to mint more */}
+      {/* 🛡️ PROTECTED Magic Button - Vault System Active */}
       <div style={{ marginTop: '40px', display: 'flex', justifyContent: 'center' }}>
-        <MagicMintButton isOnGalleryPage={true} />
+        <SafeMagicButton isOnGalleryPage={true} />
       </div>
     </div>
   );

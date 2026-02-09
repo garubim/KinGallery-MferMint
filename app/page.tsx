@@ -1,6 +1,7 @@
 'use client';
 
-import MagicMintButton from './components/MagicMintButton';
+// 🛡️ VAULT SYSTEM: Protected Magic Button (Feb 9, 2026)
+import { SafeMagicButton } from './vault';
 import ArtworkMetadata from './components/ArtworkMetadata';
 import Chassis from './components/Chassis';
 import { useEffect, useState } from 'react';
@@ -243,7 +244,8 @@ export default function Page() {
           </div>
 
           <div className="button-section">
-            <MagicMintButton />
+            {/* 🛡️ PROTECTED Magic Button - Vault System Active */}
+            <SafeMagicButton />
           </div>
 
           <ArtworkMetadata 
@@ -263,8 +265,9 @@ export default function Page() {
           display: flex;
           flex-direction: column;
           height: 100vh;
-          padding: 8px 16px 24px 16px;
-          max-width: 500px;
+          padding: 8px 12px 24px 12px;
+          width: 100%;
+          max-width: 360px;
           margin: 0 auto;
           justify-content: space-between;
           overflow-y: auto;
@@ -277,11 +280,10 @@ export default function Page() {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: min(640px, 98vw);
+          width: min(480px, 100vw);
           height: min(98vh, 1100px);
-          /* Petrogreen: */
+          /* Fundo texturizado dourado - mais largo para ver laterais */
           background: url('/walls/disc-wall-gold.webp') center/cover no-repeat;
-          /* Opções: brightgold | blue | dark-blue | blue-grey | gold | black */
           opacity: 0.6;
           z-index: -1;
           border-radius: 20px;
