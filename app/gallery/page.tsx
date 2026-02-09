@@ -339,7 +339,8 @@ export default function GalleryPage() {
               setOriginalSmoke(hasSmoke);
               console.log('🚬 SMOKE detected:', hasSmoke ? '✔️' : '❌', 'from trait:', smokeTrait);
             } else {
-              console.log('❌ No smoke trait found in attributes:', metadata.attributes);
+              console.log('❌ No smoke trait found in attributes, setting to FALSE (no smoke)');
+              setOriginalSmoke(false); // ✅ FIX: No smoke trait = no smoke
             }
           }
         })
