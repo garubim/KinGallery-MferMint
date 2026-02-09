@@ -6,6 +6,7 @@ import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
 // 🛡️ VAULT SYSTEM: Protected Magic Button (Feb 9, 2026)
 import { SafeMagicButton } from '../vault';
 import ArtworkMetadata from '../components/ArtworkMetadata';
+import SocialShareIcons from '../components/SocialShareIcons';
 
 export default function GalleryPage() {
   const router = useRouter();
@@ -293,25 +294,25 @@ export default function GalleryPage() {
       setIsDebugMode(true);
     }
     
-    // Buscar metadata do Mfer original se temos ethMferId
+    // Fetch original Mfer metadata if we have ethMferId
     if (ethMferId) {
-      console.log('🔍 Buscando metadata do Mfer original #' + ethMferId);
+      console.log('🔍 Fetching original Mfer metadata #' + ethMferId);
       
-      // Busca metadata completa com imagem (URL correta do commit 5d40bd5)
+      // Fetch complete metadata with image (correct URL from commit 5d40bd5)
       const ipfsBase = 'https://ipfs.io/ipfs/QmWiQE65tmpYzcokCheQmng2DCM33DEhjXcPB6PanwpAZo';
       fetch(`${ipfsBase}/${ethMferId}`)
         .then(res => res.json())
         .then(metadata => {
-          console.log('📝 Metadata do Mfer original:', metadata);
+          console.log('📝 Original Mfer metadata:', metadata);
           
-          // Configura a imagem
+          // Configure the image
           if (metadata.image) {
             const imageUrl = metadata.image.replace('ipfs://', 'https://ipfs.io/ipfs/');
             setEthMferImageUrl(imageUrl);
-            console.log('🖼️ Imagem do Mfer original:', imageUrl);
+            console.log('🖼️ Original Mfer image:', imageUrl);
           }
           
-          // Detecta smoke trait corretamente
+          // Detect smoke trait correctly
           if (metadata.attributes && Array.isArray(metadata.attributes)) {
             const smokeTrait = metadata.attributes.find(
               (attr: any) => 
@@ -328,9 +329,9 @@ export default function GalleryPage() {
                 allAttributes: metadata.attributes
               });
               
-              // 🚬 LÓGICA CORRETA: 
-              // - Se smoke trait = "no" → false (raro)
-              // - Se smoke trait = qualquer outra coisa → true (comum)
+              // 🚬 CORRECT LOGIC: 
+              // - If smoke trait = "no" → false (rare)
+              // - If smoke trait = anything else → true (common)
               const hasSmoke = !smokeValue.includes('no'); // Only false if explicitly "no"
               
               setOriginalSmoke(hasSmoke);
@@ -342,14 +343,14 @@ export default function GalleryPage() {
           }
         })
         .catch(err => {
-          console.warn('⚠️ Erro ao buscar metadata do Mfer original:', err);
+          console.warn('⚠️ Error fetching original Mfer metadata:', err);
           setOriginalSmoke(undefined);
         });
     }
     
-    // 🚀 BUSCA COMPLETA: tokenId + blockNumber da transação (como no commit 5d40bd5)
+    // 🚀 COMPLETE SEARCH: tokenId + blockNumber from transaction (as in commit 5d40bd5)
     if (txHash) {
-      console.log('📡 Buscando receipt da transação:', txHash);
+      console.log('📡 Fetching transaction receipt:', txHash);
       fetch('https://mainnet.base.org', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -365,7 +366,7 @@ export default function GalleryPage() {
         console.log('📦 Transaction Receipt:', data.result);
         
         if (data.result) {
-          // Extrai tokenId do log (Transfer event)
+          // Extract tokenId from log (Transfer event)
           if (data.result?.logs) {
             const transferLog = data.result.logs.find((log: any) => 
               log.topics[0] === '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
@@ -373,8 +374,8 @@ export default function GalleryPage() {
             if (transferLog?.topics[3]) {
               const tokenIdHex = transferLog.topics[3];
               const tokenIdNum = parseInt(tokenIdHex, 16);
-              console.log('✨ Token ID extraído:', tokenIdNum);
-              // Atualizar URL com tokenId se necessário
+              console.log('✨ Token ID extracted:', tokenIdNum);
+              // Update URL with tokenId if necessary
               const currentUrl = new URL(window.location.href);
               if (!currentUrl.searchParams.has('tokenId')) {
                 currentUrl.searchParams.set('tokenId', tokenIdNum.toString());
@@ -385,12 +386,12 @@ export default function GalleryPage() {
         }
       })
       .catch(err => {
-        console.warn('⚠️ Erro ao buscar transaction receipt:', err);
+        console.warn('⚠️ Error fetching transaction receipt:', err);
       });
     }
   }, [ethMferId, txHash]);
 
-  // Timer para esconder confetti após 4 segundos
+  // Timer to hide confetti after 4 seconds
   useEffect(() => {
     if (showConfetti) {
       const timer = setTimeout(() => {
@@ -499,6 +500,13 @@ export default function GalleryPage() {
             originalSmoke={originalSmoke}
             originalTransactionHash={originalTransactionHash || undefined}
           />
+          
+          {/* 📱 SOCIAL SHARE ICONS - Share entanglement info */}
+          <SocialShareIcons 
+            tokenId={tokenId}
+            ethMferId={ethMferId}
+            transactionHash={txHash || undefined}
+          />
         </div>
       </div>
 
@@ -526,7 +534,27 @@ export default function GalleryPage() {
                 key={nft.tokenId} 
                 className="mosaic-item" 
                 title={`${nft.title} • Minted: ${nft.mintDate} • Owner: ${nft.owner.slice(0, 6)}...`}
-                onClick={() => window.open(`https://basescan.org/tx/${nft.txHash}`, '_blank')}
+                onClick={() => {
+                  // Build complete URL with all available parameters
+                  const params = new URLSearchParams();
+                  if (nft.txHash && nft.txHash !== 'Unknown' && nft.txHash !== 'unavailable') {
+                    params.set('tx', nft.txHash);
+                  }
+                  if (nft.tokenId) {
+                    params.set('tokenId', nft.tokenId.toString());
+                  }
+                  if (nft.blockNumber && nft.blockNumber !== 'Unknown') {
+                    params.set('blockNumber', nft.blockNumber.toString());
+                  }
+                  if (nft.mintDate && nft.mintDate !== 'Recent') {
+                    params.set('mintDate', nft.mintDate);
+                  }
+                  
+                  // For now, navigate to current page with new parameters
+                  // In future: could implement ethMferId lookup for full entanglement
+                  const url = `${window.location.origin}/gallery?${params.toString()}`;
+                  window.open(url, '_blank');
+                }}
               >
                 <img 
                   src={getTokenImageUrl(nft.tokenId)}

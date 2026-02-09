@@ -10,29 +10,20 @@
     "homeUrl": "https://kingallery.netlify.app/",
     "iconUrl": "https://kingallery.netlify.app/icon.png",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
-    "splashBackgroundColor": "#071017",
+    "splashBackgroundColor": "#05080a",
     "webhookUrl": "",
-    "subtitle": "Mint Arte Onchain",
-    "description": "Mini app para expor e mintar arte de artistas na Base, com paymaster sponsorship.",
+    "subtitle": "Collaborative NFT Minting",
+    "description": "Revolutionary collaborative NFT system on Base. Each mint creates entanglement magic for the next person with gas sponsorship.",
     "screenshotUrls": [
       "https://kingallery.netlify.app/screenshot1.png"
     ],
     "primaryCategory": "collectibles",
-    "tags": ["arte", "nft", "base", "paymaster"],
+    "tags": ["nft", "base", "mint", "collaborative", "entanglement"],
     "heroImageUrl": "https://kingallery.netlify.app/hero.png",
-    "tagline": "Desperte a KinGallery",
-    "ogTitle": "KinGallery - Mint Arte",
-    "ogDescription": "Mint NFTs artísticos na Base com gas sponsorship.",
+    "tagline": "Each mint creates magic for the next",
+    "ogTitle": "KinGallery - Collaborative NFT Minting",
+    "ogDescription": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
     "ogImageUrl": "https://kingallery.netlify.app/og.png",
-    "noindex": true
-  }
-}
-    "tags": ["nft", "base", "mint"],
-    "heroImageUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/og.png",
-    "tagline": "Mint your NFT on Base!",
-    "ogTitle": "Whaaa?! Mfer-0-base",
-    "ogDescription": "Mint exclusive Kin's NFTs on Base network.",
-    "ogImageUrl": "https://694177152a650b998ece26b4--mfer-o-base.netlify.app/og.png",
-    "noindex": true
+    "noindex": false
   }
 }

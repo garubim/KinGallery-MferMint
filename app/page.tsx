@@ -4,6 +4,7 @@
 import { SafeMagicButton } from './vault';
 import ArtworkMetadata from './components/ArtworkMetadata';
 import Chassis from './components/Chassis';
+import SaveToFarcasterButton from './components/SaveToFarcasterButton';
 import { useEffect, useState } from 'react';
 import { useDisconnect } from 'wagmi';
 import sdk from '@farcaster/miniapp-sdk';
@@ -61,6 +62,9 @@ export default function Page() {
           </div>
           
           <div className="loading-spinner"></div>
+          
+          {/* 🚀 Save to Farcaster Button - App Retention */}
+          <SaveToFarcasterButton />
           
           <div className="splash-actions">
             <button 

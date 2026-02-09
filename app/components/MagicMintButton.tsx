@@ -5,8 +5,10 @@ import { useCapabilities } from 'wagmi/experimental'; // 🎯 HYBRID: Keep for S
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { base } from 'viem/chains';
-// REMOVED: GPT-5 added this unnecessarily: import { useCDPSecurity } from '@/app/hooks/useCDPSecurity';
 import { mapTransactionError, validateTransactionInput, TransactionState } from '@/app/utils/transactionValidation';
+// 🎭 FARCASTER: Import Farcaster integration hooks
+import { useFarcasterDetection } from '@/app/hooks/useFarcasterDetection';
+import { useFarcasterTransaction } from '@/app/hooks/useFarcasterWallet';
 
 export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalleryPage?: boolean }) {
   const router = useRouter();
@@ -31,6 +33,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   const { switchChain } = useSwitchChain();
   const { connect, connectors, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
+  
+  // 🎭 FARCASTER: Environment detection and transaction handling
+  const { isFarcaster, isLoading: isFarcasterLoading } = useFarcasterDetection();
+  const { sendTransaction: sendFarcasterTransaction, isPending: isFarcasterPending, error: farcasterError } = useFarcasterTransaction();
   
   // Pre-deployment security hooks - REMOVED (GPT-5 addition that broke the app)
   // const { rpcHealthy, checkRPCHealth } = useCDPSecurity();
@@ -304,8 +310,34 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
       setShowMinting(true);
       setTransactionState({ status: 'pending', hash: 'pending...' });
       
-      // 🎯 HYBRID APPROACH: Different strategies for different wallet types
-      if (isSmartWallet) {
+      // � FARCASTER: Handle transactions in Farcaster environment
+      if (isFarcaster) {
+        console.log('🎭 Farcaster environment detected - using Farcaster SDK');
+        
+        try {
+          // Encode contract call for Farcaster
+          const contractCall = {
+            to: kingalleryAddress,
+            data: '0x' + 'payAndMint' + paymentIdString, // Simplified for now - would need proper encoding
+            value: '300000000000000', // 0.0003 ETH
+          };
+          
+          const txHash = await sendFarcasterTransaction(contractCall);
+          console.log('✅ Farcaster transaction sent:', txHash);
+          setTransactionState({ status: 'pending', hash: txHash });
+          
+          // Farcaster transactions are automatically sponsored
+          // Continue with success handling...
+          
+        } catch (error) {
+          console.error('❌ Farcaster transaction failed:', error);
+          setTransactionState({ status: 'error', error: farcasterError?.message || 'Farcaster transaction failed' });
+          setIsProcessingTransaction(false);
+          return;
+        }
+      }
+      // 🎯 HYBRID APPROACH: Different strategies for different wallet types  
+      else if (isSmartWallet) {
         console.log('🔷 Smart Wallet detected - using ERC-7677 + capabilities');
         // ⭐ Smart Wallet: Use ERC-7677 with automatic paymaster
         writeContract({

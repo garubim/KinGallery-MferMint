@@ -14,23 +14,24 @@ export async function GET() {
     },
     "miniapp": {
       "version": "1",
-      "name": "KinGallery - The Smile at 9h",
+      "name": "KinGallery - Entanglement System",
       "homeUrl": URL,
       "iconUrl": `${URL}/icon.png`,
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
       "webhookUrl": `${URL}/api/webhook`,
-      "subtitle": "This is not animation; it's a ritual",
-      "description": "The art isn't in the spin; it's in that precise moment of recognition. Mint the Smile at 9h on Base with gas sponsorship.",
+      "subtitle": "Revolutionary collaborative NFT entanglement on Base",
+      "description": "Experience the world's first collaborative entanglement system. Each mint creates magic for the next person in an eternal circular pattern. Deploy #6 with revolutionary entanglement now live on Base with gas sponsorship.",
       "screenshotUrls": [
-        `${URL}/hero.png`
+        `${URL}/hero.png`,
+        `${URL}/entanglement-demo.png`
       ],
       "primaryCategory": "social",
-      "tags": ["art", "nft", "base", "ritual", "kinmutable"],
+      "tags": ["art", "nft", "base", "entanglement", "collaborative", "ritual", "revolutionary", "mfer"],
       "heroImageUrl": `${URL}/hero.png`,
-      "tagline": "Save the ritual on your profile",
-      "ogTitle": "KinGallery - The Smile at 9h",
-      "ogDescription": "This is not animation; it's a ritual. Mint art on Base.",
+      "tagline": "Each mint creates magic for the next person 🔮",
+      "ogTitle": "KinGallery - Revolutionary Entanglement System",
+      "ogDescription": "World's first collaborative NFT entanglement. Each mint generates magic for the next person in an eternal circle. #1000 → #1",
       "ogImageUrl": `${URL}/hero.png`,
       "noindex": false
     }
