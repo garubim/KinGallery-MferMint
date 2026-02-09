@@ -54,6 +54,8 @@ While workiing on documents, please translate any Portuguese content that you fi
 - ✅ **UI Improvements Deployed**: All 5 visual enhancements now live in production
 - ✅ **Smoke Trait Fix**: Correct logic deployed (most Mfers smoke by default)
 - ✅ **Magic Button Stable**: Glass reflex optimizations deployed
+- ✅ **Vault System**: Complete Magic Button protection system implemented (Feb 9, 2026)
+- ✅ **Farcaster Layout**: 424px width standardization complete for miniapp compliance
 
 **✅ DEPLOYED UI Improvements**:
 1. **✅ Original Mfer Image Loading** - Successfully implemented and deployed
@@ -116,17 +118,22 @@ While workiing on documents, please translate any Portuguese content that you fi
 3. **New Contract Deploy**: With built-in indexing capabilities
 4. **Farcaster Miniapp**: Test integration with existing hybrid architecture
 5. **Base.app Integration**: Smart Wallet only mode validation
+6. **Magic Button Vault**: Complete protection system with PIN security and flight recording
 
 **Technical Improvements:**
 - [ ] Base Indexer API integration for complete NFT history  
 - [ ] IPFS metadata pipeline for entangled Mfer data
 - [ ] Contract upgrade with `getAllMints()` view function
 - [ ] Netlify production deployment optimization
+- [ ] Farcaster manifest implementation and testing
+- [ ] Fresh contract deployment decision (clean #001 start vs current #043+ continuation)
 
 ### ❌ NOT STARTED 
 - Farcaster miniapp deployment configuration (documented: uses `sdk.wallet` EIP-1193 provider)
 - Base.app integration (requires Smart Wallet only mode)
 - Production build optimization
+- Fresh contract deployment decision (clean #001 start vs current #043+)
+- Farcaster manifest implementation with account association
 
 ## Project Overview
 
@@ -152,16 +159,16 @@ While workiing on documents, please translate any Portuguese content that you fi
 2. **Artist Contract** (`contracts/MferBk0Base.sol`)
    - ✅ **DEPLOYED & VERIFIED**: `0xb222e11864A2050bd19e2Df6648CfbB971f28325` (Base chain)
    - Verified on Sourcify: January 14, 2026 (Exact Match)
-   - Includes required functions: `payAndMint(address,address,string),` and `processPayment(address,address,uint256,string)`
+   - Includes required functions: `payAndMint(address,address,string)` and `processPayment(address,address,uint256,string)`
    - Features: Creator-friendly (artists mint free), royalties, onchain poetry
-   - Old incompatible contracts should be labeled as "Legacy Testing Contracts" (`0x86a34dfab59996c6fb809d1f2b016a0ed397e682`0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241', and other previous ones) should NOT be used
+   - Old incompatible contracts should be labeled as "Legacy Testing Contracts" (`0x86a34dfab59996c6fb809d1f2b016a0ed397e682`, `0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241`, and other previous ones) should NOT be used
 
 3. **Frontend** (`app/components/MagicMintButton.tsx`)
    - Next.js 16 with wagmi v2.19 + viem v2.44 for wallet integration
    - Direct transaction submission to blockchain (no backend)
-   - Paymaster sponsorship via Coinbase SDK admins all secrets (automatic)
-   - Payment mode toggle (ETH/USDC) with animated UI- not active ATM
-   - Animated ritual phrases system before wallet connect, after connect until mint, through mint, until page redirect to page2, where the NFT is displayed with metadata. Animated phrases are all prerendered WebP animated images loaded locally.
+   - Paymaster sponsorship via Coinbase SDK handles all secrets (automatic)
+   - Payment mode toggle (ETH/USDC) with animated UI - not active ATM
+   - Animated ritual phrases system before wallet connect, after connect until mint, through mint, until page redirect to page2, where the NFT is displayed with metadata. Animated phrases are all pre-rendered WebP animated images loaded locally.
    - Environment variables for contract addresses (fallbacks hardcoded)
 
 ## Critical Workflows
@@ -204,8 +211,8 @@ NOT UPDATED from here down ↓
 ## Data Flow Patterns
 
 ### Mint Flow with magicbutton
-1. User connects wallet via WalletConnect, onchainkit or wagmi after being welcomed by Maggic button animaated sentences.
-2. User than gets new messages from Magic button which empowers all the citizens that have been joining Omero's ride towards both, his pass and future simultaneously.
+1. User connects wallet via WalletConnect, onchainkit or wagmi after being welcomed by Magic button animated sentences.
+2. User then gets new messages from Magic button which empowers all the citizens that have been joining Omero's ride towards both, his pass and future simultaneously.
 3. Magic button came to their final destination. The flow will grow even more during the next few days. They'll celebrate the fresh and the smoked, classic and new. Some novelties that already feel old. Brings us to the main reason of our encounter. Just a few years back we learned a new connected language that came with new actions as mint and stake, no it wasn't a frat barbecue party, although it feels long ago. User clicks magic button → 
 4. Frontend encodes `payAndMint(artistContract, to, paymentId)` call using viem
 5. `walletClient.sendTransaction()` sends directly to KinGallery contract with value=0.0003 ETH
