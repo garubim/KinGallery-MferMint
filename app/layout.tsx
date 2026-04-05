@@ -19,6 +19,7 @@ export const metadata = {
     images: ['https://kingallery.netlify.app/hero.png'],
   },
   other: {
+    'base:app_id': '693d82a4d77c069a945bde6b',
     // Farcaster Mini App metadata
     'fc:miniapp': JSON.stringify({
       version: 'next',
