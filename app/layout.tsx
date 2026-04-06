@@ -9,21 +9,21 @@ export const metadata = {
   openGraph: {
     title: 'KinGallery - The Smile at 9h',
     description: 'This is not animation; it\'s a ritual. Mint art on Base.',
-    images: ['https://kingallery.netlify.app/hero.png'],
+    images: ['https://kingallery.netlify.app/hero1.png'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'KinGallery - The Smile at 9h',
     description: 'This is not animation; it\'s a ritual',
-    images: ['https://kingallery.netlify.app/hero.png'],
+    images: ['https://kingallery.netlify.app/hero1.png'],
   },
   other: {
     'base:app_id': '693d82a4d77c069a945bde6b',
     // Farcaster Mini App metadata
     'fc:miniapp': JSON.stringify({
       version: '1',
-      imageUrl: 'https://kingallery.netlify.app/hero.png',
+      imageUrl: 'https://kingallery.netlify.app/hero1.png',
       button: {
         title: 'Mint Art',
         action: {
