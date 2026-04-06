@@ -3,17 +3,16 @@
     "header": "eyJmaWQiOjM0OTY3NSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDFkN0YyYmRBQzhlMEI2MmY1ZDdCMmQxODQ1NGYxMjVBOTA4QzNGYWYifQ",
     "payload": "eyJkb21haW4iOiJraW5nYWxsZXJ5Lm5ldGxpZnkuYXBwIn0",
     "signature": "WhDoBJIEai/ysx0fAvberINt7AmxQZI7tXNzo9XgfWwpUhNoZwdi3lJ7hscLeON5O26i2wJXnjKRvEtoekJpEhw="
-  }
-{
+  },
   "frame": {
     "name": "KinGallery",
     "version": "1",
     "iconUrl": "https://kingallery.netlify.app/icon.png",
     "homeUrl": "https://kingallery.netlify.app",
-    "imageUrl": "https://kingallery.netlify.app/image.png",
-    "buttonTitle": "Check this out",
+    "imageUrl": "https://kingallery.netlify.app/hero.png",
+    "buttonTitle": "Mint Art",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
-    "splashBackgroundColor": "#6200EA",
+    "splashBackgroundColor": "#05080a",
     "subtitle": "Etch Your Mark with kinGallery",
     "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
     "primaryCategory": "art-creativity",
@@ -31,8 +30,6 @@
     "tagline": "Etch your Mark on Base",
     "ogTitle": "KinGallery - The Smile at 9h",
     "ogDescription": "Each mint creates entanglement Magic on KinGallery",
-    "ogImageUrl": "https://kingallery.netlify.app/og.png",
-    "castShareUrl": "https://kingallery.netlify.app/icon-etch.png"
+    "ogImageUrl": "https://kingallery.netlify.app/og.png"
   }
 }
-
