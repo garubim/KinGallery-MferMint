@@ -1,29 +1,33 @@
 {
-  "accountAssociation": {
-    "header": "",
-    "payload": "",
-    "signature": ""
-  },
-  "miniapp": {
-    "version": "1",
+  "frame": {
     "name": "KinGallery",
-    "homeUrl": "https://kingallery.netlify.app/",
+    "version": "1",
     "iconUrl": "https://kingallery.netlify.app/icon-etch.png",
-    "splashImageUrl": "https://kingallery.netlify.app/Splash01.png",
-    "splashBackgroundColor": "#05080a",
-    "webhookUrl": "",
-    "subtitle": "Collaborative NFT Minting",
-    "description": "Revolutionary collaborative NFT system on Base. Each mint creates entanglement magic for the next person with gas sponsorship.",
+    "homeUrl": "https://kingallery.netlify.app",
+    "imageUrl": "https://kingallery.netlify.app/KinGallery-ScreenShot01.png",
+    "buttonTitle": "Open KinGallery",
+    "splashImageUrl": "https://kingallery.netlify.app/splash.png",
+    "splashBackgroundColor": "#6200EA",
+    "webhookUrl": "https://kingallery.netlify.app//api/webhook",
+    "subtitle": "Etch Your Mark with kinGallery",
+    "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
+    "primaryCategory": "art-creativity",
     "screenshotUrls": [
       "https://kingallery.netlify.app/KinGallery-ScreenShot01.png"
     ],
-    "primaryCategory": "collectibles",
-    "tags": ["nft", "base", "mint", "collaborative", "entanglement"],
     "heroImageUrl": "https://kingallery.netlify.app/hero.png",
-    "tagline": "Each mint creates magic for the next",
-    "ogTitle": "KinGallery - Collaborative NFT Minting",
-    "ogDescription": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
+    "tags": [
+      "mint",
+      "base",
+      "nft",
+      "legend",
+      "mark"
+    ],
+    "tagline": "Etch your Mark on Base",
+    "ogTitle": "KinGallery - The Smile at 9h",
+    "ogDescription": "Each mint creates entanglement Magic on KinGallery",
     "ogImageUrl": "https://kingallery.netlify.app/og.png",
-    "noindex": false
+    "castShareUrl": "https://farcaster.xyz/~/compose?text=Check+ot+KinGallery"
   }
 }
+
