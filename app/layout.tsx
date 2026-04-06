@@ -25,7 +25,7 @@ export const metadata = {
       version: '1',
       imageUrl: 'https://kingallery.netlify.app/hero1.png',
       button: {
-        title: 'Mint Art',
+        title: 'Etch Your Mark',
         action: {
           type: 'launch_miniapp',
           name: 'KinGallery',
