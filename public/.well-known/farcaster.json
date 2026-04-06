@@ -9,7 +9,7 @@
     "version": "1",
     "iconUrl": "https://kingallery.netlify.app/icon.png",
     "homeUrl": "https://kingallery.netlify.app",
-    "imageUrl": "https://kingallery.netlify.app/hero.png",
+    "imageUrl": "https://kingallery.netlify.app/hero1.png",
     "buttonTitle": "Etch Your Mark",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
     "splashBackgroundColor": "#05080a",
@@ -19,7 +19,7 @@
     "screenshotUrls": [
       "https://kingallery.netlify.app/ScreenShot01.jpg"
     ],
-    "heroImageUrl": "https://kingallery.netlify.app/hero.png",
+    "heroImageUrl": "https://kingallery.netlify.app/hero1.png",
     "tags": [
       "mint",
       "base",
