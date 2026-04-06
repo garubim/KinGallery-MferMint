@@ -20,7 +20,7 @@ export async function GET() {
       "subtitle": "Etch Your Mark with kinGallery",
       "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
       "primaryCategory": "art-creativity",
-      "heroImageUrl": `${URL}/hero.png`,
+      "heroImageUrl": `${URL}/hero1.png`,
       "tags": ["mint", "base", "nft", "legend", "mark"],
       "tagline": "Etch your Mark on Base",
       "ogTitle": "KinGallery - The Smile at 9h",
