@@ -8,14 +8,14 @@
     "version": "1",
     "name": "KinGallery",
     "homeUrl": "https://kingallery.netlify.app/",
-    "iconUrl": "https://kingallery.netlify.app/icon.png",
-    "splashImageUrl": "https://kingallery.netlify.app/splash.png",
+    "iconUrl": "https://kingallery.netlify.app/icon-etch.png",
+    "splashImageUrl": "https://kingallery.netlify.app/Splash01.png",
     "splashBackgroundColor": "#05080a",
     "webhookUrl": "",
     "subtitle": "Collaborative NFT Minting",
     "description": "Revolutionary collaborative NFT system on Base. Each mint creates entanglement magic for the next person with gas sponsorship.",
     "screenshotUrls": [
-      "https://kingallery.netlify.app/screenshot1.png"
+      "https://kingallery.netlify.app/KinGallery-ScreenShot01.png"
     ],
     "primaryCategory": "collectibles",
     "tags": ["nft", "base", "mint", "collaborative", "entanglement"],
