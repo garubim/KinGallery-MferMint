@@ -8,18 +8,17 @@
   "frame": {
     "name": "KinGallery",
     "version": "1",
-    "iconUrl": "https://kingallery.netlify.app/icon-etch.png",
+    "iconUrl": "https://kingallery.netlify.app/icon.png",
     "homeUrl": "https://kingallery.netlify.app",
     "imageUrl": "https://kingallery.netlify.app/KinGallery-ScreenShot01.png",
     "buttonTitle": "Check this out",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
     "splashBackgroundColor": "#6200EA",
-    "webhookUrl": "https://kingallery.netlify.app//api/webhook",
     "subtitle": "Etch Your Mark with kinGallery",
     "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
     "primaryCategory": "art-creativity",
     "screenshotUrls": [
-      "https://kingallery.netlify.app/KinGallery-ScreenShot01.png"
+      "https://kingallery.netlify.app/ScreenShot01.jpg"
     ],
     "heroImageUrl": "https://kingallery.netlify.app/hero.png",
     "tags": [
@@ -33,7 +32,7 @@
     "ogTitle": "KinGallery - The Smile at 9h",
     "ogDescription": "Each mint creates entanglement Magic on KinGallery",
     "ogImageUrl": "https://kingallery.netlify.app/og.png",
-    "castShareUrl": "https://farcaster.xyz/~/compose?text=Check+ot+KinGallery"
+    "castShareUrl": "https://kingallery.netlify.app/icon-etch.png"
   }
 }
 
