@@ -58,8 +58,8 @@ export default function GalleryPage() {
     setRpcError(null);
     
     try {
-      // Use configured Mfer contract or fallback to canonical deployed address
-      const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS || '0xb222e11864A2050bd19e2Df6648CfbB971f28325';
+      // Use configured Mfer contract or fallback to NEW entanglement contract 🔮
+      const mferContractAddress = process.env.NEXT_PUBLIC_MFERBKOBASE_CONTRACT || process.env.NEXT_PUBLIC_MFER_ADDRESS || '0x887a664cb4f617e5a761ad9768bb59dccdd0f87b';
       console.log('🎯 Using contract address:', mferContractAddress);
       setLastQueriedContract(mferContractAddress);
       
@@ -226,31 +226,41 @@ export default function GalleryPage() {
         }
       }
 
-      // 🚨 FINAL FALLBACK: Emergency demo tokens
-      console.log('🎭 ALL METHODS FAILED - Using emergency demo tokens');
-      const emergencyTokens = [
-        {
-          tokenId: 13,
-          owner: '0xbcd980d37293CBee62Bf5f93a26a0B744C18964D',
-          blockNumber: 'Unknown',
-          txHash: 'unavailable',
-          mintDate: 'Recent',
-          title: 'Mfer-0-#13/1000'
-        },
-        {
-          tokenId: 12,
-          owner: '0xbcd980d37293CBee62Bf5f93a26a0B744C18964D',
-          blockNumber: 'Unknown',
-          txHash: 'unavailable',
-          mintDate: 'Recent',
-          title: 'Mfer-0-#12/1000'
-        }
-      ];
+      // 🚨 FINAL FALLBACK: Only show demo tokens in development
+      const isDevelopment = process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'preview';
+      
+      if (isDevelopment) {
+        console.log('🎭 DEV MODE: Using emergency demo tokens');
+        const emergencyTokens = [
+          {
+            tokenId: 13,
+            owner: '0xbcd980d37293CBee62Bf5f93a26a0B744C18964D',
+            blockNumber: 'Unknown',
+            txHash: 'unavailable',
+            mintDate: 'Recent',
+            title: 'Mfer-0-#13/1000'
+          },
+          {
+            tokenId: 12,
+            owner: '0xbcd980d37293CBee62Bf5f93a26a0B744C18964D',
+            blockNumber: 'Unknown',
+            txHash: 'unavailable',
+            mintDate: 'Recent',
+            title: 'Mfer-0-#12/1000'
+          }
+        ];
 
-      setMintedNFTs(emergencyTokens);
-      setRpcSource('emergency-demo');
-      setRpcLogsCount(emergencyTokens.length);
-      setRpcReturnedNoLogs(true);
+        setMintedNFTs(emergencyTokens);
+        setRpcSource('emergency-demo');
+        setRpcLogsCount(emergencyTokens.length);
+        setRpcReturnedNoLogs(true);
+      } else {
+        console.log('🏭 PRODUCTION MODE: No demo tokens, gallery empty until first real mint');
+        setMintedNFTs([]);
+        setRpcSource('production-empty');
+        setRpcLogsCount(0);
+        setRpcReturnedNoLogs(true);
+      }
 
     } catch (overallError) {
       console.error('🚨 OVERALL fetchMintedNFTs ERROR:', overallError);
@@ -501,7 +511,7 @@ export default function GalleryPage() {
             originalTransactionHash={originalTransactionHash || undefined}
           />
           
-          {/* 📱 SOCIAL SHARE ICONS - Share entanglement info */}
+          {/* 📱 SOCIAL SHARE ICONS - Always show for sharing gallery */}
           <SocialShareIcons 
             tokenId={tokenId}
             ethMferId={ethMferId}
@@ -609,9 +619,8 @@ export default function GalleryPage() {
           background: #000000;
           display: flex;
           flex-direction: column;
-          justify-content: flex-start;
           align-items: center;
-          padding: 16px 12px;
+          padding: 16px;
           position: relative;
           overflow-x: hidden;
         }
@@ -620,9 +629,9 @@ export default function GalleryPage() {
           content: '';
           position: fixed;
           top: 0;
-          left: 50%;
+          left: calc(50% + 8px);
           transform: translateX(-50%);
-          width: min(460px, 98vw);
+          width: min(470px, 100vw);
           height: 100%;
           background: url('/walls/disc-wall-brightgold.webp');
           background-size: cover;
@@ -655,7 +664,7 @@ export default function GalleryPage() {
 
         .gallery-header {
           text-align: center;
-          padding: 30px 20px 15px 20px;
+          padding: 30px 25px;
           position: relative;
           z-index: 2;
           width: 100%;
@@ -702,7 +711,6 @@ export default function GalleryPage() {
           max-width: 384px;
           min-width: 0px;
           margin: 20px auto;
-          margin-right: 4px;
           display: flex;
           flex-direction: column;
           gap: 32px;
@@ -710,7 +718,7 @@ export default function GalleryPage() {
           justify-content: flex-start;
           position: relative;
           z-index: 2;
-          padding: 0 0px;
+          padding: 0;
         }
 
         .nft-wrapper {
@@ -797,11 +805,10 @@ export default function GalleryPage() {
           background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(12px);
           border-radius: 24px;
-          margin-right: 4px;
           padding: 20px 20px;
           border: 1px solid rgba(255, 255, 255, 0.12);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-          margin:  0 auto;
+          margin: 0 auto;
           position: relative;
           z-index: 2;
         }
