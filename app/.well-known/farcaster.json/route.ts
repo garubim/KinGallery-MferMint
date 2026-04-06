@@ -1,37 +1,39 @@
 export async function GET() {
   const URL = process.env.NEXT_PUBLIC_URL || 'https://kingallery.netlify.app';
-  
+
   return Response.json({
     "accountAssociation": {
-      // IMPORTANTE: Generate on https://www.base.dev/preview?tab=account
-      // 1. Deploy o app em produção
-      // 2. Cole sua URL no Base Build Account Association Tool
-      // 3. Clique "Verify" e siga as instruções
-      // 4. Cole os valores gerados aqui
-      "header": "",
-      "payload": "",
-      "signature": ""
+      "header": "eyJmaWQiOjM0OTY3NSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDFkN0YyYmRBQzhlMEI2MmY1ZDdCMmQxODQ1NGYxMjVBOTA4QzNGYWYifQ",
+      "payload": "eyJkb21haW4iOiJraW5nYWxsZXJ5Lm5ldGxpZnkuYXBwIn0",
+      "signature": "WhDoBJIEai/ysx0fAvberINt7AmxQZI7tXNzo9XgfWwpUhNoZwdi3lJ7hscLeON5O26i2wJXnjKRvEtoekJpEhw="
     },
-    "miniapp": {
+    "frame": {
       "version": "1",
       "name": "KinGallery",
       "homeUrl": URL,
-      "iconUrl": `${URL}/icon-etch.png`,
+      "iconUrl": `${URL}/icon.png`,
+      "imageUrl": `${URL}/hero.png`,
+      "buttonTitle": "Mint Art",
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
       "webhookUrl": `${URL}/api/webhook`,
-      "subtitle": "Revolutionary collaborative NFT entanglement on Base",
+      "subtitle": "Etch Your Mark with kinGallery",
       "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
-      "screenshotUrl":
-        `${URL}/KinGallery-ScreenShot01.png`,
       "primaryCategory": "art-creativity",
-      "tags": ["art", "nft", "base", "entanglement", "collaborative", "ritual", "revolutionary", "mfer"],
       "heroImageUrl": `${URL}/hero.png`,
+      "tags": ["mint", "base", "nft", "legend", "mark"],
       "tagline": "Etch your Mark on Base",
       "ogTitle": "KinGallery - The Smile at 9h",
       "ogDescription": "Each mint creates entanglement Magic on KinGallery",
       "ogImageUrl": `${URL}/og.png`,
       "noindex": false
+    }
+  }, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Cache-Control': 'public, max-age=300',
     }
   });
 }
