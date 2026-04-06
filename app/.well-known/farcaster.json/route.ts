@@ -12,7 +12,7 @@ export async function GET() {
       "name": "KinGallery",
       "homeUrl": URL,
       "iconUrl": `${URL}/icon.png`,
-      "imageUrl": `${URL}/hero.png`,
+      "imageUrl": `${URL}/hero1.png`,
       "buttonTitle": "Etch Your Mark",
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
