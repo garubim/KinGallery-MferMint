@@ -14,9 +14,6 @@
     "buttonTitle": "Check this out",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
     "splashBackgroundColor": "#6200EA",
-    "requiredChains": [
-      "eip155:8453"
-    ],
     "subtitle": "Etch Your Mark with kinGallery",
     "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
     "primaryCategory": "art-creativity",
