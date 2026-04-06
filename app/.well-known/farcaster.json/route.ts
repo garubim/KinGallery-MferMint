@@ -3,7 +3,7 @@ export async function GET() {
   
   return Response.json({
     "accountAssociation": {
-      // IMPORTANTE: Gerar em https://www.base.dev/preview?tab=account
+      // IMPORTANTE: Generate on https://www.base.dev/preview?tab=account
       // 1. Deploy o app em produção
       // 2. Cole sua URL no Base Build Account Association Tool
       // 3. Clique "Verify" e siga as instruções
@@ -14,25 +14,23 @@ export async function GET() {
     },
     "miniapp": {
       "version": "1",
-      "name": "KinGallery - Entanglement System",
+      "name": "KinGallery",
       "homeUrl": URL,
-      "iconUrl": `${URL}/icon.png`,
+      "iconUrl": `${URL}/icon-etch.png`,
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
       "webhookUrl": `${URL}/api/webhook`,
       "subtitle": "Revolutionary collaborative NFT entanglement on Base",
-      "description": "Experience the world's first collaborative entanglement system. Each mint creates magic for the next person in an eternal circular pattern. Deploy #6 with revolutionary entanglement now live on Base with gas sponsorship.",
-      "screenshotUrls": [
-        `${URL}/hero.png`,
-        `${URL}/entanglement-demo.png`
-      ],
-      "primaryCategory": "social",
+      "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
+      "screenshotUrl":
+        `${URL}/KinGallery-ScreenShot01.png`,
+      "primaryCategory": "art-creativity",
       "tags": ["art", "nft", "base", "entanglement", "collaborative", "ritual", "revolutionary", "mfer"],
       "heroImageUrl": `${URL}/hero.png`,
-      "tagline": "Each mint creates magic for the next person 🔮",
-      "ogTitle": "KinGallery - Revolutionary Entanglement System",
-      "ogDescription": "World's first collaborative NFT entanglement. Each mint generates magic for the next person in an eternal circle. #1000 → #1",
-      "ogImageUrl": `${URL}/hero.png`,
+      "tagline": "Etch your Mark on Base",
+      "ogTitle": "KinGallery - The Smile at 9h",
+      "ogDescription": "Each mint creates entanglement Magic on KinGallery",
+      "ogImageUrl": `${URL}/og.png`,
       "noindex": false
     }
   });
