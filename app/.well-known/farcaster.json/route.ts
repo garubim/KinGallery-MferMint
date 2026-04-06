@@ -17,7 +17,7 @@ export async function GET() {
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
       "webhookUrl": `${URL}/api/webhook`,
-      "subtitle": "Etch Your Mark with kinGallery",
+      "subtitle": "Etch Your Mark with KinGallery",
       "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
       "primaryCategory": "art-creativity",
       "heroImageUrl": `${URL}/hero1.png`,
