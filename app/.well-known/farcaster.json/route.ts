@@ -13,7 +13,7 @@ export async function GET() {
       "homeUrl": URL,
       "iconUrl": `${URL}/icon.png`,
       "imageUrl": `${URL}/hero.png`,
-      "buttonTitle": "Mint Art",
+      "buttonTitle": "Etch Your Mark",
       "splashImageUrl": `${URL}/splash.png`,
       "splashBackgroundColor": "#05080a",
       "webhookUrl": `${URL}/api/webhook`,
