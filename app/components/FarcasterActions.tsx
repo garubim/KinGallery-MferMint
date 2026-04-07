@@ -16,7 +16,27 @@ export default function FarcasterActions() {
 
   const handleShare = async () => {
     try {
-      window.open(`https://warpcast.com/compose?text=Check out my art on KinGallery!&embeds[]=https://kingallery.netlify.app`, '_blank');
+      const castText = 'Check out my art on KinGallery!';
+      const embedUrl = 'https://kingallery.netlify.app';
+
+      // Use SDK composeCast for native in-frame sharing
+      if (sdk.actions?.composeCast) {
+        await sdk.actions.composeCast({
+          text: castText,
+          embeds: [embedUrl],
+        });
+      } else if (sdk.actions?.openUrl) {
+        // Fallback to SDK openUrl (opens within Farcaster)
+        await sdk.actions.openUrl(
+          `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(embedUrl)}`
+        );
+      } else {
+        // Last resort fallback for non-frame contexts
+        window.open(
+          `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&embeds[]=${encodeURIComponent(embedUrl)}`,
+          '_blank'
+        );
+      }
     } catch (error) {
       console.error('Error sharing:', error);
     }

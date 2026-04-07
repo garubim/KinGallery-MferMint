@@ -13,6 +13,7 @@
     "buttonTitle": "Etch Your Mark",
     "splashImageUrl": "https://kingallery.netlify.app/splash.png",
     "splashBackgroundColor": "#05080a",
+    "webhookUrl": "https://kingallery.netlify.app/api/webhook",
     "subtitle": "Etch Your Mark with KinGallery",
     "description": "Revolutionary NFT system where each mint creates entanglement magic for the next person. Mint on Base with zero gas fees.",
     "primaryCategory": "art-creativity",
@@ -30,6 +31,7 @@
     "tagline": "Etch your Mark on Base",
     "ogTitle": "KinGallery - The Smile at 9h",
     "ogDescription": "Each mint creates entanglement Magic on KinGallery",
-    "ogImageUrl": "https://kingallery.netlify.app/og.png"
+    "ogImageUrl": "https://kingallery.netlify.app/og.png",
+    "noindex": false
   }
 }
