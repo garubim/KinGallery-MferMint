@@ -1,6 +1,7 @@
 'use client';
 
 import { useFarcasterDetection } from '@/app/hooks/useFarcasterDetection';
+import sdk from '@farcaster/miniapp-sdk';
 
 /**
  * 🔮 Farcaster Entanglement Display
@@ -59,14 +60,34 @@ export default function FarcasterEntanglementDisplay({
       </div>
       
       <div className="farcaster-actions">
-        <button 
+        <button
           className="share-entanglement"
-          onClick={() => {
-            const text = `Just minted Token #${tokenId} entangled with Ethereum Mfer #${ethMferId} on @KinGallery! 🔮 Each mint creates magic for the next person in an eternal circle. Revolutionary collaborative NFT system on @base 🔵`;
-            window.open(`https://warpcast.com/compose?text=${encodeURIComponent(text)}&embeds[]=https://kingallery.netlify.app`, '_blank');
+          onClick={async () => {
+            const text = `Just minted Token #${tokenId} entangled with Ethereum Mfer #${ethMferId} on @KinGallery! Each mint creates magic for the next person in an eternal circle. Revolutionary collaborative NFT system on @base`;
+            const embedUrl = 'https://kingallery.netlify.app';
+
+            try {
+              if (sdk.actions?.composeCast) {
+                await sdk.actions.composeCast({
+                  text,
+                  embeds: [embedUrl],
+                });
+              } else if (sdk.actions?.openUrl) {
+                await sdk.actions.openUrl(
+                  `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(embedUrl)}`
+                );
+              } else {
+                window.open(
+                  `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(embedUrl)}`,
+                  '_blank'
+                );
+              }
+            } catch (error) {
+              console.error('Error sharing entanglement:', error);
+            }
           }}
         >
-          Share Your Entanglement 🔗
+          Share Your Entanglement
         </button>
       </div>
       
