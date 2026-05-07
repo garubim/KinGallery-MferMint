@@ -167,6 +167,7 @@ export default function MagicButton({
 
         // Auto-reset after 2 seconds (success)
         setTimeout(() => {
+          setInternalSuccess(false);
           setIsClicking(false);
           notifyStateChange('idle');
         }, 2000);
@@ -182,6 +183,7 @@ export default function MagicButton({
 
       // Auto-reset after 2 seconds (error)
       setTimeout(() => {
+        setInternalError(false);
         setIsClicking(false);
         notifyStateChange('idle');
       }, 2000);

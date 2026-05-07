@@ -29,7 +29,7 @@ export type TransactionState =
 /**
  * Critical transaction validations for MagicMintButton
  * Maps common transaction errors to user-friendly messages
- *//
+ */
 export function mapTransactionError(error: any): {
   message: string;
   isRetryable: boolean;

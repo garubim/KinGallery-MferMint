@@ -218,7 +218,7 @@ export default function Page() {
                 }}
               />
               
-              {/* Fullscreen Icon */}}
+              {/* Fullscreen Icon */}
               <button 
                 className="fullscreen-btn-home"
                 onClick={() => window.open(getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK), '_blank')}
@@ -248,7 +248,7 @@ export default function Page() {
           </div>
 
           <div className="button-section">
-            {/* 🛡️ PROTECTED Magic Button - Vault System Active */}}
+            {/* 🛡️ PROTECTED Magic Button - Vault System Active */}
             <SafeMagicButton />
           </div>
 
