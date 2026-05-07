@@ -20,12 +20,12 @@ npm run dev  # Starts http://localhost:3000
 
 ### Deploy (Fresh Contract)
 1. Open Remix: https://remix.ethereum.org
-2. Use: `/contracts/MferBk0Base_FreshStart_Standby.sol`
+2. Use: `/contracts/MferBk0Base_WithEntanglement.sol`
 3. Compile with Solidity 0.8.19
 4. Deploy to Base (8453) with constructor args:
-   - gallery: 0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6 (KinGallery)
+   - gallery: `0xebc497a5c36cb1a9264fd122a586b3f461fcc568` (KinGallery)
    - initialOwner: Your wallet address
-5. Update `.env.local`: `NEXT_PUBLIC_MFER_ADDRESS=0x[new address]`
+5. Update contract address in app config
 
 ### Test Flow
 1. Connect wallet (Smart Wallet or EOA)
@@ -75,18 +75,20 @@ if (hasCollision) {
 ```
 KinGallery+MferMint/
 ├── contracts/
-│   ├── KinGallery.sol                    # Payment hub (v2: 0x0426...)
-│   └── MferBk0Base_FreshStart_Standby.sol # Artist contract (ready to deploy)
+│   ├── KinGallery.sol                      # Gallery/payment contract (0xebc497...)
+│   └── MferBk0Base_WithEntanglement.sol    # Active artist contract (0x887a66...)
 ├── app/
-│   ├── page.tsx                           # Home (welcome page)
+│   ├── page.tsx                            # Home (welcome page)
 │   ├── gallery/
-│   │   └── page.tsx                      # Page 2 (mint result + certidão)
+│   │   └── page.tsx                       # Page 2 (mint result + certificate)
 │   └── components/
-│       ├── MagicMintButton.tsx            # Main UI (animation + entanglement logic)
+│       ├── MagicMintButton.tsx             # Main UI (animation + entanglement logic)
 │       └── ArtworkMetadata.tsx            # Mint info + collision display
-├── MFER_GENESIS_STORY.md                 # The philosophy & story
-├── QUICK_REFERENCE.md                    # 5-min fix guide
-└── [other documentation]
+├── docs/
+│   └── ENTANGLED_MFERS_ARCHITECTURE.md    # Entanglement system deep-dive
+├── MFER_GENESIS_STORY.md                  # The philosophy & story
+├── HASH_COLLISION_SYSTEM.md               # Rarity mechanics
+└── MINT_NARRATIVE.md                      # Ritual copy & UX narrative
 ```
 
 ## 🎯 Key Features
@@ -160,24 +162,18 @@ NOTE: Only interactive element = "view on basescan" link (small text under tx ha
 No action buttons - pure information display per Magic Button philosophy
 ```
 
-## 🔐 Environment Setup
+## 🔐 Environment & Secrets
 
-Create `.env.local`:
-```env
-# CDP Paymaster (public, safe to expose)
-NEXT_PUBLIC_PAYMASTER_URL=https://api.developer.coinbase.com/rpc/v2/base/[YOUR_KEY]
-
-# WalletConnect (public ID)
-NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=44788a3961a4e5fa217c4ddb6ae62da8
-
-# Contract Addresses
-NEXT_PUBLIC_KINGALLERY_CONTRACT=0x0426413cBfC3b11f6DEd32D3ef30D53a56B12FF6
-NEXT_PUBLIC_MFERBKOBASE_CONTRACT=0x[new address after deploy]
-NEXT_PUBLIC_USDC_CONTRACT=0x833589fCD6eDb6E08f4c7C32d4f71b54bda02913
-
-# Chain
-NEXT_PUBLIC_CHAIN_ID=8453
+**No `.env` files used.** All secrets are managed via CDP SDK server-side.
+The RPC endpoint API key is public per CDP's own documentation:
 ```
+https://api.developer.coinbase.com/rpc/v1/base/QDv2XZtiPNHyVtbLUsY5QT7UTHM6Re2N
+```
+
+**Active contract addresses (Base 8453):**
+- KinGallery: `0xebc497a5c36cb1a9264fd122a586b3f461fcc568`
+- MferMint: `0x887a664cb4f617e5a761ad9768bb59dccdd0f87b`
+- USDC: `0x833589fCD6eDb6E08f4c7C32d4f71b54bda02913`
 
 ## 🧪 Testing Checklist
 
@@ -249,8 +245,9 @@ If the answer is yes to all: submit a PR.
 ## 📚 Further Reading
 
 - [MFER_GENESIS_STORY.md](./MFER_GENESIS_STORY.md) - Full story & philosophy
-- [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - 5-min reference
-- [DIAGNOSTICO_PAYANDMINT_EOA_FAILURES.md](./DIAGNOSTICO_PAYANDMINT_EOA_FAILURES.md) - Technical deep-dive
+- [HASH_COLLISION_SYSTEM.md](./HASH_COLLISION_SYSTEM.md) - Rarity mechanics
+- [MINT_NARRATIVE.md](./MINT_NARRATIVE.md) - Ritual copy & UX flow
+- [docs/ENTANGLED_MFERS_ARCHITECTURE.md](./docs/ENTANGLED_MFERS_ARCHITECTURE.md) - Entanglement deep-dive
 
 ## 📞 Support
 
