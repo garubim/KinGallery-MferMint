@@ -4,8 +4,8 @@ import { useAccount, useSignMessage } from 'wagmi';
 import { useEffect, useRef } from 'react';
 
 /**
- * Hook que automaticamente pede assinatura quando o user conecta a wallet
- * Pede assinatura SEMPRE ao conectar (não usa localStorage)
+ * Hook that automatically requests a signature when the user connects their wallet
+ * Requests signature EVERY TIME on connect (does not use localStorage)
  */
 export function useAutoSignOnConnect() {
   const { address, isConnected } = useAccount();
@@ -14,21 +14,21 @@ export function useAutoSignOnConnect() {
 
   useEffect(() => {
     if (!isConnected || !address) {
-      // Reset quando desconecta
+      // Reset when disconnected
       addressRef.current = null;
       return;
     }
 
-    // Se mudou de carteira ou conectou uma nova, pede assinatura
+    // If wallet changed or a new one connected, request signature
     if (addressRef.current === address) {
-      // Mesmo endereço já está sendo processado
+      // Same address already being processed
       return;
     }
 
-    // Novo endereço conectado - pedir assinatura
+    // New address connected - request signature
     addressRef.current = address;
 
-    // Esperar um pouquinho pra wallet estar pronta (UI atualizar)
+    // Wait a moment for the wallet to be ready (UI to update)
     const timer = setTimeout(() => {
       const message = `Sign to verify your wallet for KinGallery\n\nAddress: ${address}\nTimestamp: ${new Date().toISOString()}`;
       
@@ -40,7 +40,7 @@ export function useAutoSignOnConnect() {
           },
           onError: (error) => {
             console.warn('⚠️ User rejected signature:', error.message);
-            // Pode tentar de novo se rejeitar
+            // Can retry if rejected
           },
         }
       );

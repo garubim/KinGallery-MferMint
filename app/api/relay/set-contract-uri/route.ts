@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       message,
     } = await request.json();
 
-    // Validar campos obrigatórios
+    // Validate required fields
     if (!proxyAddress || !coinAddress || !newURI || !ownerAddress || !signature || !message) {
       return NextResponse.json(
         {
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     console.log('  Message:', message);
     console.log('  Signature:', signature.substring(0, 20) + '...');
 
-    // Chamar seu relayer server local
+    // Call local relayer server
     const relayerUrl = process.env.RELAYER_SERVER_URL || 'http://localhost:3001';
     
     console.log('📤 Calling relayer:', relayerUrl);

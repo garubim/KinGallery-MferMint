@@ -12,7 +12,7 @@ import { getIPFSUrl, KNOWN_CIDs } from '@/lib/ipfs-helper';
 
 export default function Page() {
   const { disconnect } = useDisconnect();
-  const [showSplash, setShowSplash] = useState(false); // TODO: true para deploy
+  const [showSplash, setShowSplash] = useState(false); // TODO: set to true for deploy
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const [videoSlow, setVideoSlow] = useState(false);
@@ -22,7 +22,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    // Avisa se o vídeo está demorando muito
+    // Warn if video is taking too long
     const slowTimer = setTimeout(() => {
       if (!videoLoaded && !videoError) {
         setVideoSlow(true);
@@ -33,14 +33,14 @@ export default function Page() {
   }, [videoLoaded, videoError]);
 
   useEffect(() => {
-    // SDK carrega em background sem bloquear render
+    // SDK loads in background without blocking render
     if (typeof window !== 'undefined') {
       sdk.actions.ready()
         .then(() => console.log('✅ Farcaster SDK ready'))
         .catch(() => console.warn('⚠️ SDK não disponível (app funciona normalmente)'));
     }
 
-    // Timeout único - fecha splash após 4s
+    // Single timeout - close splash after 4s
     const timer = setTimeout(() => setShowSplash(false), 4000);
     return () => clearTimeout(timer);
   }, []);
@@ -218,7 +218,7 @@ export default function Page() {
                 }}
               />
               
-              {/* Ícone Fullscreen */}
+              {/* Fullscreen Icon */}}
               <button 
                 className="fullscreen-btn-home"
                 onClick={() => window.open(getIPFSUrl(KNOWN_CIDs.MFER_ARTWORK), '_blank')}
@@ -248,7 +248,7 @@ export default function Page() {
           </div>
 
           <div className="button-section">
-            {/* 🛡️ PROTECTED Magic Button - Vault System Active */}
+            {/* 🛡️ PROTECTED Magic Button - Vault System Active */}}
             <SafeMagicButton />
           </div>
 
@@ -286,7 +286,7 @@ export default function Page() {
           transform: translate(-50%, -50%);
           width: min(480px, 100vw);
           height: min(98vh, 1100px);
-          /* Fundo texturizado dourado - mais largo para ver laterais */
+          /* Textured gold background - wider to show sides */
           background: url('/walls/disc-wall-gold.webp') center/cover no-repeat;
           opacity: 0.6;
           z-index: -1;
@@ -383,7 +383,7 @@ export default function Page() {
           z-index: 1;
         }
 
-        /* Botão Fullscreen Home */
+        /* Fullscreen Home Button */
         .fullscreen-btn-home {
           position: absolute;
           bottom: 12px;

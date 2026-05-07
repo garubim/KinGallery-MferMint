@@ -18,7 +18,7 @@ interface NFTMintedPageProps {
 /**
  * NFT Minted Success Page
  * 
- * Exibido após mint bem-sucedido
+ * Displayed after successful mint
  * - Matrix confetti celebration effect
  * - Frase poética: "The soul spins at a base - where the smile comes home."
  * - NFT Success Card com informações

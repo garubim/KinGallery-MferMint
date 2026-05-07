@@ -1,6 +1,6 @@
 /**
- * API route para gerar/servir imagem de NFT dinamicamente
- * Redireciona para o artwork IPFS ou gera uma imagem com dados do token
+ * API route to dynamically generate/serve NFT images
+ * Redirects to the artwork IPFS or generates an image with token data
  */
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -18,11 +18,11 @@ export async function GET(
     );
   }
 
-  // Por enquanto, retorna a imagem do artwork (você pode customizar depois)
-  // Esta é a imagem animada do Mfer-0'-Base
+  // For now, returns the artwork image (can be customized later)
+  // This is the animated image of Mfer-0-Base
   const artworkUrl = 'https://ipfs.io/ipfs/bafybeiaevaflz35fjr4qhrrcaejbxqiie5v3itvgqmabtstwbpfe7vlodq';
 
-  // Redireciona para a imagem
+  // Redirect to the image
   return NextResponse.redirect(artworkUrl, {
     status: 307, // Temporary redirect
   });

@@ -1,7 +1,7 @@
 /**
  * MagicButton Component Exports
  * 
- * Este arquivo centraliza as exportações para facilitar imports
+ * This file centralizes exports to simplify imports
  */
 
 export { default as MagicButton } from './MagicButton';
@@ -12,16 +12,16 @@ export type { MagicButtonProps } from './MagicButton';
 /**
  * Quick Import Guide
  * 
- * // Apenas o botão
+ * // Button only
  * import { MagicButton } from '@/components/MagicButton';
  * 
  * // Com tipos
  * import { MagicButton, StateAnimationMap, ButtonState } from '@/components/MagicButton';
  * 
- * // Componentes individuais (se necessário)
+ * // Individual components (if needed)
  * import { AnimatedTextLayer } from '@/components/MagicButton';
  * import { AnimatedTextComposer } from '@/components/MagicButton';
  * 
- * // Para CodePoem
+ * // For CodePoem
  * import CodePoemMintButton from '@/components/CodePoemMintButton';
  */

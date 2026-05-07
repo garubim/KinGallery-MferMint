@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Script para verificar estado atual dos contratos KinGallery e MferBk0Base
- * Ajuda a diagnosticar problemas com payAndMint EOA failures
+ * Script to check the current state of KinGallery and MferBk0Base contracts
+ * Helps diagnose issues with payAndMint EOA failures
  */
 
 const https = require('https');
@@ -10,7 +10,7 @@ const https = require('https');
 const CONTRACTS = {
   kingallery: '0x8ABb13088C1707E9d5BE43daC0e78E8D9D35e44F',
   mfer: '0x01ECF65958dB5d1859d815ffC96b7b8C5e16E241',
-  newMfer: '0x159137BF79634F97A900C85c4685652d9ed2870b' // contrato que você deployou
+  newMfer: '0x159137BF79634F97A900C85c4685652d9ed2870b' // contract you deployed
 };
 
 const KinGallery_ABI = [
@@ -130,7 +130,7 @@ function encodeCall(abi, functionName) {
   const fnAbi = abi.find(f => f.name === functionName);
   if (!fnAbi) throw new Error(`Function ${functionName} not found in ABI`);
   
-  // Para funções sem parâmetros, é só os 4 primeiros bytes do hash da assinatura
+  // For functions with no parameters, just the first 4 bytes of the function signature hash
   const signature = `${functionName}()`;
   const hash = require('crypto').createHash('sha256').update(signature).digest('hex');
   return '0x' + hash.substring(0, 8);

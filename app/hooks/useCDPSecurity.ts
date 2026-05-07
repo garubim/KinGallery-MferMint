@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { useAccount, useDisconnect } from 'wagmi';
 
 /**
- * Hook crítico para segurança pré-deployment
- * Implementa:
- * 1. Auto-disconnect quando o usuário fecha a aba
- * 2. Health check do RPC endpoint
- * 3. Token expiration monitoring (futuro - se migrar para CDP)
+ * Critical security hook for pre-deployment
+ * Implements:
+ * 1. Auto-disconnect when the user closes the tab
+ * 2. RPC endpoint health check
+ * 3. Token expiration monitoring (future - if migrating to CDP)
  */
 export function useCDPSecurity() {
   const { isConnected } = useAccount();
@@ -16,13 +16,13 @@ export function useCDPSecurity() {
   const [rpcHealthy, setRpcHealthy] = useState(true);
   const [lastHealthCheck, setLastHealthCheck] = useState<number>(0);
 
-  // ✅ CRÍTICO: Auto-disconnect quando fecha a aba
+  // ✅ CRITICAL: Auto-disconnect when tab is closed
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (isConnected) {
         console.log('🔒 Tab fechada - desconectando wallet automaticamente...');
         disconnect();
-        // Limpa dados sensíveis
+        // Clear sensitive data
         localStorage.removeItem('wagmi.wallet');
         localStorage.removeItem('wagmi.chain');
       }
@@ -35,11 +35,11 @@ export function useCDPSecurity() {
     };
   }, [isConnected, disconnect]);
 
-  // ✅ CRÍTICO: Valida health do RPC antes de mintar
+  // ✅ CRITICAL: Validate RPC health before minting
   const checkRPCHealth = async () => {
     const now = Date.now();
     
-    // Evita spam - só check a cada 30 segundos
+    // Avoid spam - only check every 30 seconds
     if (now - lastHealthCheck < 30000) {
       return rpcHealthy;
     }

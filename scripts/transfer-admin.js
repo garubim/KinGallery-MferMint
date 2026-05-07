@@ -1,15 +1,15 @@
 import hre from 'hardhat';
 
 /**
- * Script para transferir ADMIN_ROLE de uma address para outra no KinGallery
+ * Script to transfer ADMIN_ROLE from one address to another in KinGallery
  * 
  * Usage:
  * npx hardhat run scripts/transfer-admin.js --network base
  * 
- * Variáveis de ambiente:
- * - KINGALLERY_ADDRESS: endereço do contrato KinGallery (obrigatório)
- * - FROM_ADMIN: endereço do admin atual (opcional - defaults to current signer)
- * - TO_ADMIN: endereço do novo admin (obrigatório)
+ * Environment variables:
+ * - KINGALLERY_ADDRESS: KinGallery contract address (required)
+ * - FROM_ADMIN: current admin address (optional - defaults to current signer)
+ * - TO_ADMIN: new admin address (required)
  */
 
 async function main() {

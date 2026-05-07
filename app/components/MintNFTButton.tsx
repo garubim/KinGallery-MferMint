@@ -6,10 +6,10 @@ import { useState } from 'react';
 /**
  * MintNFTButton Example
  * 
- * Botão especializado para minting de NFTs com:
- * - Animação elegante durante mint
- * - Overlay com efeito Matrix durante blockchain write
- * - Feedback visual em cada etapa
+ * Specialized button for NFT minting with:
+ * - Elegant animation during mint
+ * - Matrix effect overlay during blockchain write
+ * - Visual feedback at each step
  */
 
 export interface MintNFTButtonProps {
@@ -32,8 +32,8 @@ export default function MintNFTButton({
       setIsProcessing(true);
       if (debug) console.log('🎬 Starting NFT mint...');
 
-      // Simular chamada de smart contract
-      // Em produção: chamar wallet provider (wagmi, ethers, etc)
+      // Simulate smart contract call
+      // In production: call wallet provider (wagmi, ethers, etc)
       await new Promise((resolve) => setTimeout(resolve, 3000));
 
       const mockTxHash = '0x' + Math.random().toString(16).slice(2);
@@ -42,7 +42,7 @@ export default function MintNFTButton({
       onMintSuccess?.(mockTxHash);
       setIsProcessing(false);
 
-      // Auto-reset após 2 segundos
+      // Auto-reset after 2 seconds
       setTimeout(() => {
         setIsProcessing(false);
       }, 2000);

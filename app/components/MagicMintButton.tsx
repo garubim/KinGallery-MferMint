@@ -238,7 +238,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
   };
 
   const handleMint = async () => {
-    // �️ PROTEÇÃO: Prevenir múltiplas transações simultâneas
+  // 🛡️ PROTECTION: Prevent multiple simultaneous transactions
     if (isProcessingTransaction) {
       console.log('⚠️ Transação já em progresso, ignorando nova chamada');
       return;
@@ -255,7 +255,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
     if (!address) return;
     
-    // 🛡️ Marca que está processando transação
+    // 🛡️ Mark as processing transaction
     setIsProcessingTransaction(true);
     
     // ✅ ORIGINAL CODE: No RPC health check needed (worked fine for 2 months)
@@ -514,7 +514,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
 
   return (
     <div className={`magic-button-container ${isSliding ? 'slide-out' : ''} ${showError ? 'error-active' : ''}`}>
-      {/* Success Overlay removido - animações vão rodar na página 2 */}
+      {/* Success Overlay removed - animations will run on page 2 */}
 
       {/* Magic button - Main animation */}
       {showWalletModal && (
@@ -575,7 +575,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
                 {/* 🔷 Base Smart Account - Passkey (PRIMEIRO) */}
                 <button
                   onClick={() => {
-                    // 🔧 FIX: Smart Wallet é sempre idx=0 na nova ordem
+                    // 🔧 FIX: Smart Wallet is always idx=0 in the new order
                     const smartWalletConnector = connectors.find(
                       (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 0
                     );
@@ -592,10 +592,10 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
                   {isConnecting && ' (Connecting...)'}
                 </button>
 
-                {/* 💳 Coinbase Wallet - EOA (SEGUNDO) */}
+                {/* 💳 Coinbase Wallet - EOA (SECOND) */}
                 <button
                   onClick={() => {
-                    // 🔧 FIX: EOA Wallet é sempre idx=1 na nova ordem
+                    // 🔧 FIX: EOA Wallet is always idx=1 in the new order
                     const eaoConnector = connectors.find(
                       (c, idx) => c.id === 'coinbaseWalletSDK' && idx === 1
                     );
@@ -829,7 +829,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <button 
             onClick={isOnGalleryPage
-              ? handleMint  // 🎯 PÁGINA 2: Sempre redireciona para página 1
+              ? handleMint  // 🎯 PAGE 2: Always redirects to page 1
               : !isConnected 
               ? () => setShowWalletModal(true)
               : chain?.id !== base.id 
@@ -1253,19 +1253,19 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
         }
 
         .reflex-1 {
-          opacity: 0.3;  /* Ajuste aqui para primeira camada */
-          mix-blend-mode: screen; /* Modo de composição camada 1 */
+          opacity: 0.3;  /* Adjust here for first layer */
+          mix-blend-mode: screen; /* Blend mode layer 1 */
         }
 
         .reflex-2 {
-          opacity: 0.2; /* Ajuste aqui para segunda camada */
+          opacity: 0.2; /* Adjust here for second layer */
           filter: brightness(0.99);
-          mix-blend-mode: overlay; /* Modo de composição camada 2 */
+          mix-blend-mode: overlay; /* Blend mode layer 2 */
         }
 
         .reflex-3 {
-          opacity: 0.1; /* Ajuste aqui para terceira camada */
-          mix-blend-mode: hard-light; /* Modo de composição camada 3 */
+          opacity: 0.1; /* Adjust here for third layer */
+          mix-blend-mode: hard-light; /* Blend mode layer 3 */
         }
 
         /* Loading overlay - wallet connecting */
@@ -1491,7 +1491,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           animation: fadeIn 0.4s ease;
         }
 
-        /* Success Badge - Reduzido e Semi-Transparente */
+        /* Success Badge - Reduced and Semi-Transparent */
         .success-overlay-expanded {
           position: fixed;
           bottom: 60px;
@@ -1519,7 +1519,7 @@ export default function MagicMintButton({ isOnGalleryPage = false }: { isOnGalle
           backdrop-filter: blur(10px);
         }
 
-        /* Checkmark Grande e Animado */
+        /* Large Animated Checkmark */
         .success-checkmark {
           font-size: 80px;
           margin-bottom: 24px;

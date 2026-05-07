@@ -46,8 +46,8 @@ export default function FarcasterActions() {
     sdk.actions.close();
   };
 
-  // ⚠️ TEMPORÁRIO: Sempre mostra botões para teste
-  // TODO: Adicionar verificação isMiniKit quando disponível
+  // ⚠️ TEMPORARY: Always shows buttons for testing
+  // TODO: Add isMiniKit check when available
   // if (!isMiniKit) return null;
 
   return (

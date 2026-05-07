@@ -4,13 +4,13 @@ import { useCallback, useState, useRef, ReactNode } from 'react';
 import BlockchainWriteOverlay, { BlockchainWriteOverlayProps } from '../BlockchainWriteOverlay';
 
 export interface MagicButtonProps {
-  /** Conteúdo do botão ou usar textAnimationMap para frases animadas */
+  /** Button content or use textAnimationMap for animated phrases */
   children?: ReactNode;
 
-  /** Mapa de animações de texto para cada estado (DEPRECATED - use MagicMintButton.tsx) */
+  /** Text animation map for each state (DEPRECATED - use MagicMintButton.tsx) */
   textAnimationMap?: Record<string, any>;
 
-  /** Callback para click */
+  /** Click callback */
   onClick?: () => void | Promise<void>;
 
   /** Loading state */
@@ -25,28 +25,28 @@ export interface MagicButtonProps {
   /** Tamanho */
   size?: 'sm' | 'md' | 'lg';
 
-  /** Variante de cor */
+  /** Color variant */
   variant?: 'mint' | 'glow' | 'neon';
 
-  /** Desabilitado */
+  /** Disabled */
   disabled?: boolean;
 
-  /** Classe CSS customizada */
+  /** Custom CSS class */
   className?: string;
 
-  /** Callback quando estado muda */
+  /** Callback when state changes */
   onStateChange?: (state: string) => void;
 
   /** Debug logging */
   debug?: boolean;
 
-  /** Mostrar partículas */
+  /** Show particles */
   showParticles?: boolean;
 
-  /** Mostrar BlockchainWriteOverlay durante loading */
+  /** Show BlockchainWriteOverlay during loading */
   showBlockchainOverlay?: boolean;
 
-  /** Props customizadas para BlockchainWriteOverlay */
+  /** Custom props for BlockchainWriteOverlay */
   blockchainOverlayProps?: Partial<BlockchainWriteOverlayProps>;
 }
 
@@ -63,14 +63,14 @@ const variantStyles = {
 };
 
 /**
- * MagicButton com suporte a animações de texto (frases WebP com alpha)
+ * MagicButton with text animation support (WebP phrases with alpha)
  * 
- * Uso básico:
+ * Basic usage:
  * ```tsx
  * <MagicButton onClick={handleMint}>✨ Mint NFT</MagicButton>
  * ```
  * 
- * Com animações de texto:
+ * With text animations:
  * ```tsx
  * const textMap = {
  *   idle: { 
@@ -125,7 +125,7 @@ export default function MagicButton({
   const [internalError, setInternalError] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Determinar estado atual
+  // Determine current state
   const isLoading = loading || internalLoading;
   const isSuccess = success || internalSuccess;
   const isError = error || internalError;
@@ -135,13 +135,13 @@ export default function MagicButton({
     if (isError) return 'error';
     if (isLoading) return 'loading';
     if (isClicking) return 'press';
-    // hover seria detectado por onHover
+    // hover would be detected by onHover
     return 'idle';
   }, [isLoading, isSuccess, isError, isClicking]);
 
   const currentState = getState();
 
-  // Notificar mudança de estado
+  // Notify state change
   const notifyStateChange = useCallback(
     (state: string) => {
       if (debug) console.log(`🎯 Button state: ${state}`);
@@ -165,9 +165,8 @@ export default function MagicButton({
         setInternalSuccess(true);
         notifyStateChange('success');
 
-        // Auto-reset após 2 segundos
+        // Auto-reset after 2 seconds (success)
         setTimeout(() => {
-          setInternalSuccess(false);
           setIsClicking(false);
           notifyStateChange('idle');
         }, 2000);
@@ -181,9 +180,8 @@ export default function MagicButton({
       setInternalError(true);
       notifyStateChange('error');
 
-      // Auto-reset após 2 segundos
+      // Auto-reset after 2 seconds (error)
       setTimeout(() => {
-        setInternalError(false);
         setIsClicking(false);
         notifyStateChange('idle');
       }, 2000);
@@ -250,7 +248,7 @@ export default function MagicButton({
           }
         `}</style>
 
-        {/* Spinner para LOADING */}
+        {/* Spinner for LOADING */}
         {isLoading && (
           <div
             className="absolute inset-0 flex items-center justify-center"
@@ -294,7 +292,7 @@ export default function MagicButton({
           </div>
         )}
 
-        {/* Conteúdo do botão */}
+        {/* Button content */}
         <div
           style={{
             opacity: isLoading || isSuccess || isError ? 0 : 1,

@@ -1,4 +1,4 @@
-// Hook para interagir com o servidor relayer
+// Hook to interact with the relayer server
 import { useState } from 'react';
 import { useAccount } from 'wagmi';
 

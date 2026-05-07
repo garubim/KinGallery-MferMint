@@ -11,7 +11,7 @@ export function useSecureWallet() {
   const [hasValidatedWithPasskey, setHasValidatedWithPasskey] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
 
-  // Validar conexão com passkey (força biometria real)
+  // Validate connection with passkey (forces real biometrics)
   const validateWithPasskey = useCallback(async () => {
     if (!address) {
       console.error('❌ Nenhuma wallet conectada para validar');
@@ -22,7 +22,7 @@ export function useSecureWallet() {
     console.log('🔐 Iniciando validação biométrica obrigatória...');
 
     try {
-      // Força assinatura de uma mensagem - isso OBRIGA a Smart Wallet a pedir biometria
+      // Forces signing a message - this FORCES the Smart Wallet to request biometrics
       const message = `KinGallery Security Validation\nAddress: ${address}\nTimestamp: ${new Date().toISOString()}\n\nAo assinar, você confirma sua identidade com biometria obrigatória.`;
 
       await new Promise<void>((resolve, reject) => {
@@ -52,16 +52,16 @@ export function useSecureWallet() {
     }
   }, [address, signMessage]);
 
-  // Desconexão LIMPA - de verdade mesmo
+  // CLEAN disconnection - for real
   const secureDisconnect = useCallback(async () => {
     console.log('🚪 Iniciando desconexão segura e completa...');
 
     try {
-      // 1. Desconectar do wagmi
+      // 1. Disconnect from wagmi
       wagmiDisconnect();
       console.log('✓ Desconectado do wagmi');
 
-      // 2. Limpar localStorage de forma que não reconecte
+      // 2. Clear localStorage so it doesn't reconnect
       try {
         const keysToRemove = [
           'wagmi.connected',
@@ -80,7 +80,7 @@ export function useSecureWallet() {
         console.warn('⚠️ Erro ao limpar localStorage:', e);
       }
 
-      // 3. Limpar sessionStorage também
+      // 3. Clear sessionStorage as well
       try {
         sessionStorage.clear();
         console.log('✓ SessionStorage limpo');
@@ -88,7 +88,7 @@ export function useSecureWallet() {
         console.warn('⚠️ Erro ao limpar sessionStorage:', e);
       }
 
-      // 4. Limpar estado de validação
+      // 4. Clear validation state
       setHasValidatedWithPasskey(false);
       console.log('✓ Estado de validação resetado');
 
@@ -103,7 +103,7 @@ export function useSecureWallet() {
     }
   }, [wagmiDisconnect]);
 
-  // Resetar validação quando desconectar
+  // Reset validation when disconnecting
   useEffect(() => {
     if (!isConnected) {
       setHasValidatedWithPasskey(false);
@@ -111,14 +111,14 @@ export function useSecureWallet() {
   }, [isConnected]);
 
   return {
-    // Estado
+    // State
     address,
     isConnected,
     hasValidatedWithPasskey,
     isValidating,
     isSigning,
 
-    // Ações
+    // Actions
     validateWithPasskey,
     secureDisconnect,
   };

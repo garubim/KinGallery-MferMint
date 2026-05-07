@@ -1,6 +1,6 @@
 /**
- * Validações críticas de transação para MagicMintButton
- * Implementa TransactionState completo e error handling robusto
+ * Critical transaction validations for MagicMintButton
+ * Implements complete TransactionState and robust error handling
  */
 
 export type TransactionState = 
@@ -27,8 +27,9 @@ export type TransactionState =
     };
 
 /**
- * Mapeia erros comuns de transação para mensagens amigáveis
- */
+ * Critical transaction validations for MagicMintButton
+ * Maps common transaction errors to user-friendly messages
+ *//
 export function mapTransactionError(error: any): {
   message: string;
   isRetryable: boolean;
@@ -116,7 +117,7 @@ export function mapTransactionError(error: any): {
     };
   }
   
-  // Default: tratamos como retryable por segurança
+  // Default: treat as retryable for safety
   return {
     message: `❌ Erro: ${errorMsg.substring(0, 100)}... Tente novamente.`,
     isRetryable: true,
@@ -125,7 +126,7 @@ export function mapTransactionError(error: any): {
 }
 
 /**
- * Valida se a transação é segura para enviar
+ * Validates if a transaction is safe to send
  */
 export function validateTransactionInput(input: {
   to: string;
@@ -133,7 +134,7 @@ export function validateTransactionInput(input: {
   data: string;
   chainId: number;
 }): { valid: boolean; error?: string } {
-  // Validar endereço
+  // Validate address
   if (!input.to || !input.to.startsWith('0x') || input.to.length !== 42) {
     return { valid: false, error: 'Endereço do contrato inválido' };
   }
@@ -143,7 +144,7 @@ export function validateTransactionInput(input: {
     return { valid: false, error: 'Valor não pode ser negativo' };
   }
 
-  // Validar data (call data não pode estar vazio para função payAndMint)
+  // Validate data (call data cannot be empty for payAndMint function)
   if (!input.data || input.data === '0x') {
     return { valid: false, error: 'Dados da chamada estão vazios' };
   }
@@ -157,7 +158,7 @@ export function validateTransactionInput(input: {
 }
 
 /**
- * Monitora timeout de transação
+ * Monitors transaction timeout
  */
 export function createTransactionTimeout(seconds: number): AbortSignal {
   const controller = new AbortController();
@@ -165,7 +166,7 @@ export function createTransactionTimeout(seconds: number): AbortSignal {
     controller.abort();
   }, seconds * 1000);
 
-  // Limpar timeout quando a transação terminar
+  // Clear timeout when transaction finishes
   const originalAbort = controller.abort.bind(controller);
   controller.abort = function() {
     clearTimeout(timeoutId);

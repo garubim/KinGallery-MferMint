@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 /**
  * Matrix Confetti Effect
  * 
- * Animação de celebração durante o sucesso do mint
- * - Caracteres Matrix caindo como confete (CSS animations)
- * - Efeito de "celebração" visual
- * - Desaparece após 3-4 segundos
+ * Celebration animation during mint success
+ * - Matrix characters falling as confetti (CSS animations)
+ * - Visual "celebration" effect
+ * - Disappears after 3-4 seconds
  */
 
 interface MatrixParticle {
@@ -25,7 +25,7 @@ export default function MatrixConfetti() {
   const [particles, setParticles] = useState<MatrixParticle[]>([]);
 
   useEffect(() => {
-    // Gera partículas de confete Matrix
+    // Generate Matrix confetti particles
     const generatedParticles: MatrixParticle[] = Array.from(
       { length: 40 },
       (_, i) => ({
@@ -39,7 +39,7 @@ export default function MatrixConfetti() {
 
     setParticles(generatedParticles);
 
-    // Remove confete após 4 segundos
+    // Remove confetti after 4 seconds
     const timer = setTimeout(() => {
       setParticles([]);
     }, 4000);

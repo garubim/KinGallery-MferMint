@@ -5,24 +5,24 @@ import MagicButton, { MagicButtonProps } from './MagicButton/MagicButton';
 
 /**
  * CodePoemMintButton (DEPRECATED)
- * 
- * Este componente é uma versão experimental do MagicButton
- * com animações de texto integradas aos estados.
- * 
- * Usar MagicMintButton.tsx em produção em vez disso.
+ *
+ * This component is an experimental version of MagicButton
+ * with text animations integrated into states.
+ *
+ * Use MagicMintButton.tsx in production instead.
  */
 export interface CodePoemMintButtonProps extends Omit<MagicButtonProps, 'textAnimationMap'> {
-  /** Callback após mint bem-sucedido */
+  /** Callback after successful mint */
   onMintSuccess?: (metadata: { poem: string; createdAt: string }) => void;
 
-  /** Callback para erro */
+  /** Error callback */
   onMintError?: (error: Error) => void;
 
-  /** Poema sendo mintado */
+  /** Poem being minted */
   poem?: string;
 }
 
-// Animações padrão dos assets já prontos (PLACEHOLDER)
+// Default animations from ready assets (PLACEHOLDER)
 const defaultTextAnimations = {
   idle: {
     state: 'idle',
@@ -36,25 +36,25 @@ const defaultTextAnimations = {
 export default function CodePoemMintButton({
   onMintSuccess,
   onMintError,
-  poem = `/**\n * manifestoSoul — versão rápida\n * no núcleo da noite, o código respira\n * sussurros onchain dobram-se em loops\n * mintamos o echo e chamemos de lar\n */\nfunction manifestoSoul() external pure returns (string memory) {\n  return "eternal";\n}`,
+  poem = `/**\n * manifestoSoul - versão rápida\n * no núcleo da noite, o código respira\n * sussurros onchain dobram-se em loops\n * mintamos o echo e chamemos de lar\n */\nfunction manifestoSoul() external pure returns (string memory) {\n  return "eternal";\n}`,
   ...buttonProps
 }: CodePoemMintButtonProps) {
   const textAnimations = defaultTextAnimations;
 
   const handleMint = useCallback(async () => {
     try {
-      // Simular delay para demo (em produção, usar MagicMintButton.tsx)
+      // Simulate delay for demo (in production, use MagicMintButton.tsx)
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Salvar metadata
+      // Save metadata
       const metadata = {
-        name: 'CodePoem — EternalLoop',
+        name: 'CodePoem - EternalLoop',
         description: 'A codepoem from the eternal realm',
         poem,
         createdAt: new Date().toISOString(),
       };
 
-      // Trigger localStorage save (placeholder para IPFS)
+      // Trigger localStorage save (placeholder for IPFS)
       const raw = localStorage.getItem('codepoem_mints_v1') || '[]';
       const arr = JSON.parse(raw);
       arr.unshift(metadata);
@@ -69,7 +69,7 @@ export default function CodePoemMintButton({
   }, [poem, onMintSuccess, onMintError]);
 
   const handleStateChange = (newState: string) => {
-    // No-op: apenas para compatibilidade com MagicButton
+    // No-op: for compatibility with MagicButton only
   };
 
   return (

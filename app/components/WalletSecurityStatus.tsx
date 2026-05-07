@@ -32,7 +32,7 @@ export function WalletSecurityStatus() {
     const success = await secureDisconnect();
     if (success) {
       setShowDropdown(false);
-      // Reload para limpar qualquer cache
+      // Reload to clear any cache
       setTimeout(() => {
         window.location.reload();
       }, 500);
@@ -54,7 +54,7 @@ export function WalletSecurityStatus() {
         onClick={() => setShowDropdown(!showDropdown)}
         style={{
           background: hasValidatedWithPasskey
-            ? 'rgba(0, 255, 136, 0.15)' // Verde quando validado
+            ? 'rgba(0, 255, 136, 0.15)' // Green when validated
             : 'rgba(255, 153, 0, 0.15)', // Orange when connected but not validated
           border: `1px solid ${hasValidatedWithPasskey ? 'rgba(0, 255, 136, 0.4)' : 'rgba(255, 153, 0, 0.4)'}`,
           borderRadius: '8px',
